@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#00ae66</color>
+    <color name="colorPrimaryDark">#00ae66</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="transparent">#00000000</color>
+    <!--主题颜色-->
+    <color name="theme_bg">#1b1b1b</color>
+    <color name="theme_font">#dbb76b</color>
+    <color name="white">#ffffff</color><!--白色 -->
+    <color name="tab_munu_bg">#F6F6F5</color>
+    <color name="red">#ff0000</color><!--红色 -->
+    <color name="se_b">#bbbbbb</color>
+    <color name="dark_gray">#666666</color>
+    <color name="gray">#67bf59</color>]
+    <color name="titleBlue">#00ae66</color>
+    <color name="tab_layout_standard">#464646</color>
+    <color name="dark_back">#232323</color>
+    <color name="dark_ad_yellow">#f7ad00</color>
+    <color name="light_gray">#f6f6f6</color>
+</resources>
+

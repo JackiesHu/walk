@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="10dp"
+    >
+    <RelativeLayout
+        android:id="@+id/rl_munu_search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        >
+        <EditText
+            android:id="@+id/et_search"
+            android:paddingLeft="28dp"
+            android:paddingBottom="2dp"
+            android:paddingTop="2dp"
+            android:paddingRight="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/munu_search_bg"
+            android:textColor="@color/se_b"
+            android:layout_marginRight="52dp"
+            android:imeOptions="actionSearch"
+            android:textSize="14dp"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_munu_search"
+            android:layout_gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+
+            />
+        <TextView
+            android:id="@+id/search_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="取消"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="6dp"
+            />
+    </RelativeLayout>
+
+</LinearLayout>

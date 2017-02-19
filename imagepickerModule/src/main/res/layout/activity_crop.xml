@@ -1,0 +1,125 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <FrameLayout android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <RelativeLayout
+        android:id="@+id/image_crop_bar"
+        android:layout_width="match_parent"
+        android:layout_height="70px"
+        android:background="@color/theme_bg"
+        >
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/theme_bg"
+        android:layout_below="@id/image_crop_bar"
+        android:clickable="true">
+        <ImageView
+            android:id="@+id/btn_pic_rechoose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/selector_ic_back"
+            android:textSize="16sp"
+            android:layout_marginLeft="10dp"
+            android:padding="8dp"
+            android:gravity="center"
+            android:onClick="BackOnclick"
+            android:clickable="true"
+            />
+        <TextView
+            android:id="@+id/btn_pic_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/sel_top_ok"
+            android:clickable="true"
+            android:paddingBottom="6dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="6dp"
+            android:text="使用"
+            android:textColor="#ffffff"
+            android:textSize="14dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="#cc22292f" />
+
+    </RelativeLayout>
+
+
+    <!--<RelativeLayout
+        android:id="@+id/photo_preview_dock"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        >
+        <TextView
+            android:id="@+id/btn_pic_rechoose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/divider"
+            android:background="@drawable/yoda_login"
+            android:gravity="center"
+            android:text="重选"
+            android:textColor="@color/white"
+            android:paddingBottom="6dp"
+            android:paddingTop="6dp"
+            android:layout_marginRight="10dp"
+            android:textSize="16dp" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            android:layout_centerInParent="true"
+            android:background="@color/white" />
+
+        <TextView
+            android:id="@+id/btn_pic_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/divider"
+            android:background="@drawable/yoda_login"
+            android:gravity="center"
+            android:paddingBottom="6dp"
+            android:paddingTop="6dp"
+            android:text="确定"
+            android:textColor="@color/white"
+            android:layout_marginLeft="10dp"
+            android:textSize="16dp" />
+
+    </RelativeLayout>-->
+
+    <ImageView
+        android:id="@+id/iv_show"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:scaleType="centerInside"
+        />
+
+
+</RelativeLayout>
