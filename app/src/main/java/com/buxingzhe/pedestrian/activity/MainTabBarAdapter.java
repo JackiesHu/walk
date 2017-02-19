@@ -36,6 +36,7 @@ public class MainTabBarAdapter extends TabBarBaseAdapter {
     }
 
     private void initViewInfo() {
+
         mTitleList.add("步行");
         mTitleList.add("发现");
         mTitleList.add("社区");
