@@ -2,6 +2,7 @@ package com.buxingzhe.pedestrian.application;
 
 import android.app.Application;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.buxingzhe.pedestrian.PDConfig;
 
 
@@ -14,5 +15,6 @@ public class PDApplication extends Application {
     public void onCreate() {
         super.onCreate();
         PDConfig.getInstance().init(this);
+        SDKInitializer.initialize(this);
     }
 }
