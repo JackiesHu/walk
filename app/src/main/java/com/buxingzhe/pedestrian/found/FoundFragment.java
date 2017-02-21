@@ -14,6 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.baidu.mapapi.bikenavi.BikeNavigateHelper;
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.MapView;
 import com.buxingzhe.pedestrian.R;
 
 
@@ -24,7 +27,9 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     private Context mContext;
     private Toolbar toolbar;
     private RelativeLayout vMunuSearch;
-
+    private BikeNavigateHelper mNaviHelper;
+    private MapView vMapView;
+    private BaiduMap mBaidumap = null;
     public FoundFragment() {
 
     }
@@ -44,6 +49,8 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     public void findViewId(View view) {
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         vMunuSearch = (RelativeLayout) view.findViewById(R.id.rl_munu_search);
+        vMapView = (MapView) view.findViewById(R.id.map);
+        mBaidumap = vMapView.getMap();
         toolbar.setTitle("发现");// 标题的文字需在setSupportActionBar之前，不然会无效
         setHasOptionsMenu(true);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
@@ -64,5 +71,17 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                 startActivity(intent);
                 break;
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+    private void initNaviHelper(){
+
+
     }
 }

@@ -56,6 +56,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--百度key -->
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="nhyHUpEKigoFE7T5a1VYwifg2g8PEPPf"/>
         <activity android:name=".found.ActivitySearchFound"
             android:theme="@style/AppTheme.NoActionBar"
             ></activity>
