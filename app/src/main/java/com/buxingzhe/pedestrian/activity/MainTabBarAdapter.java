@@ -29,9 +29,10 @@ public class MainTabBarAdapter extends TabBarBaseAdapter {
 
     public MainTabBarAdapter() {
         inflater = (LayoutInflater) PDConfig.getInstance().getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        textNormalColor = SystemUtils.getByColor(R.color.white);
-        textSelectColor = SystemUtils.getByColor(R.color.red);
+        textNormalColor = SystemUtils.getByColor(R.color.tab_title);
+        textSelectColor = SystemUtils.getByColor(R.color.titleBlue);
         initViewInfo();
+
 
     }
 
@@ -39,19 +40,22 @@ public class MainTabBarAdapter extends TabBarBaseAdapter {
 
         mTitleList.add("步行");
         mTitleList.add("发现");
+        mTitleList.add("");
         mTitleList.add("社区");
         mTitleList.add("我");
 
 
-        mIconNormalList.add(R.mipmap.navi_recommend);
-        mIconNormalList.add(R.mipmap.navi_recommend);
-        mIconNormalList.add(R.mipmap.navi_recommend);
-        mIconNormalList.add(R.mipmap.navi_recommend);
+        mIconNormalList.add(R.mipmap.ic_buxing_nor);
+        mIconNormalList.add(R.mipmap.ic_find_nor);
+        mIconNormalList.add(R.drawable.munu_tab_bg);
+        mIconNormalList.add(R.mipmap.ic_shequ_nor);
+        mIconNormalList.add(R.mipmap.ic_me_nor);
 
-        mIconSelectList.add(R.mipmap.navi_recommend_select);
-        mIconSelectList.add(R.mipmap.navi_recommend_select);
-        mIconSelectList.add(R.mipmap.navi_recommend_select);
-        mIconSelectList.add(R.mipmap.navi_recommend_select);
+        mIconSelectList.add(R.mipmap.ic_buxing_press);
+        mIconSelectList.add(R.mipmap.ic_find_press);
+        mIconSelectList.add(R.drawable.munu_tab_bg);
+        mIconSelectList.add(R.mipmap.ic_shequ_press);
+        mIconSelectList.add(R.mipmap.ic_me_press);
 
     }
 
@@ -67,7 +71,7 @@ public class MainTabBarAdapter extends TabBarBaseAdapter {
         holder.ItemTabIm = (ImageView) view.findViewById(R.id.ItemTabIm);
         holder.ItemTabText = (TextView) view.findViewById(R.id.ItemTabText);
         holder.ItemTabMark = (ImageView) view.findViewById(R.id.ItemTabMark);
-        holder.ItemTabText.setVisibility(View.GONE);
+        holder.ItemTabText.setVisibility(View.VISIBLE);
         holder.ItemTabMark.setVisibility(View.GONE);
         setHolderData(holder, postion);
         mHolderList.add(holder);
@@ -76,20 +80,21 @@ public class MainTabBarAdapter extends TabBarBaseAdapter {
 
     public void switchView(int id) {
         for (int i = 0; i < mHolderList.size(); i++) {
+
             Holder holder = mHolderList.get(i);
             setHolderData(holder, i);
+
         }
         Holder holder = mHolderList.get(id);
         holder.ItemTabIm.setBackgroundResource(mIconSelectList.get(id));
         holder.ItemTabText.setTextColor(textSelectColor);
-    }
 
+    }
     class Holder {
         ImageView ItemTabIm;
         TextView ItemTabText;
         ImageView ItemTabMark;
     }
-
     private void setHolderData(Holder holder, int postion) {
         holder.ItemTabText.setText(mTitleList.get(postion));
         holder.ItemTabText.setTextColor(textNormalColor);

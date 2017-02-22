@@ -18,5 +18,7 @@
     <color name="dark_back">#232323</color>
     <color name="dark_ad_yellow">#f7ad00</color>
     <color name="light_gray">#f6f6f6</color>
+    <color name="tab_bg">#F4F6F8</color>
+    <color name="tab_title">#B7B7B8</color>
 </resources>
 
