@@ -5,6 +5,6 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:layout_gravity="center_horizontal|bottom"
-    android:background="@color/transparent"
+    android:background="@color/tab_bg"
     android:paddingTop="5dp">
 </LinearLayout>
