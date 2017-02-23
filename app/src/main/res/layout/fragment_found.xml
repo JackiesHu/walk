@@ -43,23 +43,33 @@
 
         <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/traffic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_alignWithParentIfMissing="false"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="10dip"
-            android:orientation="vertical" >
+            android:layout_marginTop="60dip"
+            android:orientation="vertical"
+            android:background="@drawable/munu_search_bg"
+            android:gravity="center"
+            android:padding="6dp"
+            >
 
-            <Button
-                android:id="@+id/customicon"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginTop="10dip"
-                android:layout_weight="1.0"
-                android:onClick="changeRouteIcon"
-                android:text="自定义起终点图标" />
+           <ImageView
+               android:id="@+id/iv_traffic"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:src="@mipmap/ic_lukuang_nor"
+               />
+            <TextView
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="路况"
+                android:textColor="@color/dark_back"
+                />
         </LinearLayout>
     </RelativeLayout>
 
