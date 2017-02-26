@@ -19,7 +19,7 @@ public class WalkFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_walk, null);
+        View view = inflater.inflate(R.layout.fragment_layout_walk,container,false);
         mContext = getContext();
         findId(view);
         onClick();
