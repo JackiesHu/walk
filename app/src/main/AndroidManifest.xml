@@ -76,8 +76,11 @@
             android:windowSoftInputMode="adjustUnspecified|stateHidden"
             ></activity>
         <activity android:name=".found.WalkDetialsDiscussActivity"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden"
             android:theme="@style/AppTheme.NoActionBar"
-            android:exported="true"
+            ></activity>
+        <activity android:name=".found.tag.TagAddActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustUnspecified|stateHidden"
             ></activity>
         <activity
