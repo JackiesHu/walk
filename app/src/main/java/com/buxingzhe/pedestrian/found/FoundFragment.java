@@ -7,12 +7,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -50,6 +52,7 @@ import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.baiduView.OverlayManager;
 import com.buxingzhe.pedestrian.baiduView.WalkingRouteOverlay;
 import com.buxingzhe.pedestrian.bean.AddressSuggLoca;
+import com.buxingzhe.pedestrian.utils.EnterActUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,11 +80,13 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     private MyLocationConfiguration.LocationMode mCurrentMode;
     private Marker prevMarker;
     private RouteLine route = null;
-
+    private LinearLayout vTraffic;
 
     // 搜索相关
     RoutePlanSearch mSearch = null;
     OverlayManager routeOverlay = null;
+    private boolean isCloseTraffic;
+    private ImageView vImageTraffic;
     public FoundFragment() {
 
     }
@@ -99,12 +104,15 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     private void onClick() {
         vMunuSearch.setOnClickListener(this);
         mBaidumap.setOnMarkerClickListener(markerClickListener);
+        vTraffic.setOnClickListener(this);
     }
 
     public void findViewId(View view) {
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         vMunuSearch = (RelativeLayout) view.findViewById(R.id.rl_munu_search);
         vMapView = (MapView) view.findViewById(R.id.map);
+        vTraffic = (LinearLayout)view.findViewById(R.id.traffic);
+        vImageTraffic = (ImageView) view.findViewById(R.id.iv_traffic);
         mBaidumap = vMapView.getMap();
         toolbar.setTitle("发现");
 
@@ -133,6 +141,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         mBaidumap.animateMapStatus(u);
         initLocation();
         initOverlay();
+        setTraffic();
     }
     public void initOverlay() {
         List<AddressSuggLoca> suggLocas = createSuggData();
@@ -171,7 +180,17 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         mLocClient.setLocOption(option);
         mLocClient.start();
     }
-
+    /**
+     * 设置是否显示交通图
+     */
+    public void setTraffic() {
+        mBaidumap.setTrafficEnabled(!isCloseTraffic);
+        if (isCloseTraffic){
+            vImageTraffic.setImageResource(R.mipmap.ic_lukuang_press);
+        }else {
+            vImageTraffic.setImageResource(R.mipmap.ic_lukuang_nor);
+        }
+    }
     BaiduMap.OnMarkerClickListener markerClickListener = new BaiduMap.OnMarkerClickListener() {
         @Override
         public boolean onMarkerClick(Marker marker) {
@@ -185,6 +204,12 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                 prevMarker.setIcon(bdnor);
             }
             prevMarker = marker;
+            double lat = ll.latitude;
+            double lng =  ll.longitude;
+            AddressSuggLoca addressSuggLoca = new AddressSuggLoca();
+            addressSuggLoca.lat = lat;
+            addressSuggLoca.lng = lng;
+            goWalkDetail(addressSuggLoca);
             return false;
         }
     };
@@ -209,6 +234,12 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                 overlay.addToMap();
                 overlay.zoomToSpan();
 
+            }if (result.getRouteLines().size() > 1 ) {
+
+
+            }else {
+                Log.d("route result", "结果数<0");
+                return;
             }
         }
         @Override
@@ -249,7 +280,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         @Override
         public BitmapDescriptor getTerminalMarker() {
            /* if (useDefaultIcon) {*/
-                return BitmapDescriptorFactory.fromResource(R.mipmap.ic_luxian_end);
+                return BitmapDescriptorFactory.fromResource(R.mipmap.ic_luxian_start);
             /*}
             return null;*/
         }
@@ -284,6 +315,11 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
 
         public void onReceivePoi(BDLocation poiLocation) {
         }
+    }
+    private void goWalkDetail(AddressSuggLoca suggLoca){
+        Intent intent = new Intent(getActivity(),WalkDetailsActivity.class);
+        intent.putExtra("loactionData",suggLoca);
+        EnterActUtils.startAct(getActivity(),intent);
     }
     private List<AddressSuggLoca> createSuggData(){
         List<AddressSuggLoca> vAddres = new ArrayList<AddressSuggLoca>();
@@ -328,6 +364,10 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
             case R.id.rl_munu_search:
                 Intent intent = new Intent(getContext(),ActivitySearchFound.class);
                 startActivity(intent);
+                break;
+            case R.id.traffic:
+                isCloseTraffic = !isCloseTraffic;
+                setTraffic();
                 break;
         }
     }

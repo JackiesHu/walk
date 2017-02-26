@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+    <com.buxingzhe.pedestrian.widget.TitleBarView
+        android:id="@+id/tag_title_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        >
+    </com.buxingzhe.pedestrian.widget.TitleBarView>
+
+    <RelativeLayout
+        android:id="@+id/addTagRL"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/tag_title_bar"
+        >
+        <TextView
+            android:id="@+id/et_tag"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:hint="请输入新标签"
+            android:layout_margin="10dp"
+            android:paddingLeft="10dp"
+            android:textSize="14sp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"/>
+    </RelativeLayout>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_below="@id/addTagRL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ListView
+            android:id="@+id/myHistoryActListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@color/light_gray_line"
+            android:dividerHeight="1dp">
+        </ListView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</RelativeLayout>

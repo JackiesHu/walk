@@ -3,14 +3,17 @@ package com.buxingzhe.pedestrian.activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.buxingzhe.pedestrian.R;
+import com.buxingzhe.pedestrian.User.MeFragment;
+import com.buxingzhe.pedestrian.community.CommunityFragment;
 import com.buxingzhe.pedestrian.found.FoundFragment;
+import com.buxingzhe.pedestrian.run.RunFragment;
+import com.buxingzhe.pedestrian.walk.WalkFragment;
 import com.buxingzhe.pedestrian.widget.MWTTabBar;
 
 import java.util.ArrayList;
@@ -30,7 +33,7 @@ public class MainActivity extends BaseActivity implements  View.OnClickListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
         mContext = this;
 
@@ -72,18 +75,17 @@ public class MainActivity extends BaseActivity implements  View.OnClickListener 
         return super.onOptionsItemSelected(item);
     }
     private void construct() {
+        WalkFragment mWalkFragment = new WalkFragment();
+        FoundFragment mFoundFragment = new FoundFragment();
+        RunFragment mRunFragment = new RunFragment();
+        CommunityFragment mCommunityFragment = new CommunityFragment();
+        MeFragment mMeFragment = new MeFragment();
 
-        FoundFragment mFoundFragment1 = new FoundFragment();
-        FoundFragment mFoundFragment2 = new FoundFragment();
-        FoundFragment mFoundFragment3 = new FoundFragment();
-        FoundFragment mFoundFragment4 = new FoundFragment();
-        FoundFragment mFoundFragment5 = new FoundFragment();
-
-        fragments.add(mFoundFragment1);
-        fragments.add(mFoundFragment2);
-        fragments.add(mFoundFragment3);
-        fragments.add(mFoundFragment4);
-        fragments.add(mFoundFragment5);
+        fragments.add(mWalkFragment);
+        fragments.add(mFoundFragment);
+        fragments.add(mRunFragment);
+        fragments.add(mCommunityFragment);
+        fragments.add(mMeFragment);
 
     }
     @Override
@@ -93,8 +95,8 @@ public class MainActivity extends BaseActivity implements  View.OnClickListener 
             vRun.setImageResource(R.mipmap.ic_run_press);
         }else {
             vRun.setImageResource(R.mipmap.ic_run_nor);
-            adapter.switchView(id);
         }
+        adapter.switchView(id);
         mViewPager.setCurrentItem(id);
     }
 }

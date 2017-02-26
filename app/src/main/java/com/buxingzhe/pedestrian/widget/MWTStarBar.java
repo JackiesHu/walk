@@ -2,6 +2,7 @@ package com.buxingzhe.pedestrian.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,15 +20,15 @@ import java.util.List;
 
 public class MWTStarBar extends LinearLayout {
     private final static int dividerSize = 10;
+    private MWTStarOnclick mwtStarOnclick;
+    private List<StarBarBean> starBarBeanList;
+    private Context mContext;
 
     public void setStarBarBeanList(List<StarBarBean> starBarBeanList) {
         this.starBarBeanList = starBarBeanList;
         if (mContext != null)
             initView(mContext);
     }
-
-    private List<StarBarBean> starBarBeanList;
-    private Context mContext;
     public MWTStarBar(Context context) {
         super(context);
         initView(context);
@@ -51,6 +52,17 @@ public class MWTStarBar extends LinearLayout {
         }
         for (int i=0;i<starBarBeanList.size();i++){
             ImageView imageView = new ImageView(getContext());
+            imageView.setId(i);
+
+            imageView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mwtStarOnclick != null){
+                        int id = view.getId()+1;
+                        mwtStarOnclick.upStarIco(id);
+                    }
+                }
+            });
             StarBarBean starBarBean = starBarBeanList.get(i);
             LayoutParams params;
             if (starBarBean.height <0 || starBarBean.width < 0){
@@ -79,5 +91,9 @@ public class MWTStarBar extends LinearLayout {
     }
     public void refreshView(){
         invalidate();
+    }
+    public void setMwtStarOnclick(MWTStarOnclick mwtStarOnclick) {
+        this.mwtStarOnclick = mwtStarOnclick;
+        initView(mContext);
     }
 }
