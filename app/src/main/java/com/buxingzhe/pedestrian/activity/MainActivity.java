@@ -13,7 +13,7 @@ import com.buxingzhe.pedestrian.User.MeFragment;
 import com.buxingzhe.pedestrian.community.CommunityFragment;
 import com.buxingzhe.pedestrian.found.FoundFragment;
 import com.buxingzhe.pedestrian.run.RunFragment;
-import com.buxingzhe.pedestrian.walk.WalkFragment;
+import com.buxingzhe.pedestrian.walk.WalkedFragment;
 import com.buxingzhe.pedestrian.widget.MWTTabBar;
 
 import java.util.ArrayList;
@@ -75,7 +75,7 @@ public class MainActivity extends BaseActivity implements  View.OnClickListener 
         return super.onOptionsItemSelected(item);
     }
     private void construct() {
-        WalkFragment mWalkFragment = new WalkFragment();
+        WalkedFragment mWalkFragment = new WalkedFragment();
         FoundFragment mFoundFragment = new FoundFragment();
         RunFragment mRunFragment = new RunFragment();
         CommunityFragment mCommunityFragment = new CommunityFragment();

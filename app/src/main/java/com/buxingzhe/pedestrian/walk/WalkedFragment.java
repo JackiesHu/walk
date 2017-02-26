@@ -15,7 +15,7 @@ import com.buxingzhe.pedestrian.widget.TitleBarView;
 /**
  * Created by quanjing on 2017/2/23.
  */
-public class WalkFragment extends BaseFragment {
+public class WalkedFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
