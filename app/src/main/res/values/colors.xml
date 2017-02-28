@@ -21,5 +21,6 @@
     <color name="tab_bg">#F4F6F8</color>
     <color name="tab_title">#B7B7B8</color>
     <color name="light_gray_line">#DDDDDD</color>
+    <color name="deep_orange">#fe8417</color>
 </resources>
 

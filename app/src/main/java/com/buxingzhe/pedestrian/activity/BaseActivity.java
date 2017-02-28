@@ -62,5 +62,13 @@ public class BaseActivity extends AppCompatActivity implements TitleBarLinstener
         if (vTitleBar != null){
             vTitleBar.hideStatusbar();
         }
+        if (vTitleBar != null)
+            vTitleBar.setTitleBarLinstener(this);
+    }
+    protected void setRightTitle(String title){
+        if (vTitleBar != null){
+            vTitleBar.setRight(title);
+            vTitleBar.showRight();
+        }
     }
 }

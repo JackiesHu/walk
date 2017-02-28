@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.bean.HotUserTag;
+import com.buxingzhe.pedestrian.utils.SystemUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class AddTagAdapter extends BaseAdapter{
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         Holder holder;
         if (convertView==null){
             holder = new Holder();
@@ -63,19 +64,41 @@ public class AddTagAdapter extends BaseAdapter{
         }else{
             holder = (Holder) convertView.getTag();
         }
-        HotUserTag hotUserTag = hotUserTags.get(position);
+        final HotUserTag hotUserTag = hotUserTags.get(position);
         if (!TextUtils.isEmpty(hotUserTag.tag)){
             holder.tv_tag.setText(hotUserTag.tag);
         }
-
+        final ImageView tvSelect = holder.tv_select;
+        final TextView tvTag = holder.tv_tag;
+        setVisible(holder.tv_select,holder.tv_tag,hotUserTag.isSelect);
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hotUserTags.get(position).isSelect = !hotUserTags.get(position).isSelect;
+                setVisible(tvSelect,tvTag, hotUserTag.isSelect);
+            }
+        });
         return convertView;
     }
+    private void setVisible(ImageView weekSelect,TextView tv,boolean select){
+        if (select){
+            weekSelect.setVisibility(View.VISIBLE);
+            tv.setTextColor(SystemUtils.getByColor(R.color.deep_orange));
+        }else {
+            tv.setTextColor(SystemUtils.getByColor(R.color.dark_back));
+            weekSelect.setVisibility(View.GONE);
+        }
 
+    }
     public void setHotUserTagDatas(boolean isClean,List<HotUserTag> hotUserTags){
         if (isClean){
             this.hotUserTags.clear();
         }
         this.hotUserTags.addAll(hotUserTags);
         notifyDataSetChanged();
+    }
+
+    public List<HotUserTag> getHotUserTags() {
+        return hotUserTags;
     }
 }

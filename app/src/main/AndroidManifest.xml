@@ -83,6 +83,10 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustUnspecified|stateHidden"
             ></activity>
+        <activity android:name=".found.tag.TagCreateActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden"
+            ></activity>
         <activity
             android:name="com.pizidea.imagepicker.activity.ImagesGridActivity"
             android:screenOrientation="portrait"
