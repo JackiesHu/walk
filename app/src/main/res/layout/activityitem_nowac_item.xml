@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_rl"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:paddingTop="5dp"
+    android:paddingLeft="10dp"
+    android:paddingBottom="5dp"
+    android:paddingRight="10dp"
+    >
+    <ImageView
+        android:id="@+id/nowitem_Imageview"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="fitXY"
+        android:src="@mipmap/fengjing2"
+        />
+    <RelativeLayout
+        android:layout_alignBottom="@+id/nowitem_Imageview"
+        android:layout_width="match_parent"
+        android:layout_height="36dp">
+        <TextView
+            android:layout_centerVertical="true"
+            android:id="@+id/tv_nv_time"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="14dp"
+            android:text="000"
+            android:gravity="center"
+            android:background="@mipmap/ac_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp" />
+        <TextView
+            android:layout_centerVertical="true"
+            android:id="@+id/tv_nv_num"
+            android:layout_toLeftOf="@+id/tv_nv_time"
+            android:layout_marginRight="10dp"
+            android:text="000"
+            android:background="@mipmap/ac_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="item_Time_TextView"
+            android:id="@+id/item_Time_TextView"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="8dp"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_toRightOf="@+id/item_Time_ImageView"/>
+
+        <ImageView
+
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:id="@+id/item_Time_ImageView"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="8dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/ac_tag"/>
+
+        <ImageView
+            android:layout_width="17dp"
+            android:layout_height="15dp"
+            android:id="@+id/item_count_ImageView"
+            android:layout_marginTop="8dp"
+            android:layout_toLeftOf="@+id/item_num_TextView"
+            android:layout_marginRight="2dp"
+            android:src="@mipmap/ac_tag"
+            android:scaleType="fitXY"
+
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="18dp"
+            android:text="New Text"
+            android:textColor="#666666"
+            android:id="@+id/item_num_TextView"
+            android:layout_marginTop="6dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="5dp"
+            android:gravity="center"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/item_info_TextView"
+            android:layout_below="@+id/item_Time_ImageView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:textSize="14sp"
+            android:lineSpacingExtra="3dp"
+            android:textColor="#111111"
+            android:lines="2"
+            android:ellipsize="end"
+            />
+    </RelativeLayout>
+</RelativeLayout>
