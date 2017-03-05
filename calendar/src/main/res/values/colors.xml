@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="calendar_bg_color">#FFFFFF</color>
+    <color name="holiday_text_color">#9082BD</color>
+    <color name="select_circle_color">#00AE66</color>
+    <color name="colorBackground">#F0F1F5</color>
+    <!-- week bar color-->
+    <color name="calendar_week_bar_color">#232323</color>
+    <color name="calendar_week_bar_gray_color">#AAAAAA</color>
+    <!-- calendar-->
+    <color name="ll">#575471</color>
+
+</resources>
