@@ -13,7 +13,7 @@ import java.util.Map;
 
 
 public class CalendarUtils {
-    private static String [] WEEKS= {"星期日","星期一","星期二","星期三","星期五","星期六"};
+    private static String[] WEEKS = {"星期日", "星期一", "星期二", "星期三", "星期四","星期五", "星期六"};
     private static CalendarUtils sUtils;
     private static Map<String, int[]> sAllHolidays;
 
@@ -116,6 +116,7 @@ public class CalendarUtils {
 
     /**
      * 获取输入的日期所在日历中的行数（第一行是数字0）
+     *
      * @param year
      * @param month
      * @param day
@@ -201,6 +202,7 @@ public class CalendarUtils {
 
     /**
      * 获取指定日期是 星期几
+     *
      * @param year
      * @param month
      * @param day
@@ -210,6 +212,7 @@ public class CalendarUtils {
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month, day);
         int w = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+        w = (w + 7) % 7;
         if (w < 0)
             w = 0;
         return WEEKS[w];

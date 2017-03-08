@@ -8,16 +8,16 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
+import com.buxingzhe.pedestrian.widget.CalendarLayout;
 import com.buxingzhe.pedestrian.widget.MaterialSpinnerLayout;
-import com.buxingzhe.pedestrian.widget.VerticalScrollView;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.jeek.calendar.widget.calendar.OnCalendarClickListener;
-import com.jeek.calendar.widget.calendar.schedule.CalendarLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,9 @@ import lecho.lib.hellocharts.view.LineChartView;
 /**
  * Created by quanjing on 2017/2/23.
  */
-public class WalkedFragment extends BaseFragment {
+public class WalkedFragment extends BaseFragment implements View.OnClickListener {
+
+    private ImageView mTitleCalendarImageView;
     private TextView mCurrentSelectedDate;
     private LineChartView mLineChartView;
 
@@ -45,7 +47,6 @@ public class WalkedFragment extends BaseFragment {
     private MaterialSpinnerLayout mMaterialSpinnerLayout;
 
     private CalendarLayout mCalendarLayout;
-    private VerticalScrollView mScrollView;
 
     private String[] WALK_SPINNER_DATA;
 
@@ -66,13 +67,19 @@ public class WalkedFragment extends BaseFragment {
         setData();
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mCurrentSelectedDate.setText(mCalendarLayout.getCurrrentSelectedDate());
+    }
+
     private void findId(View view) {
         mCurrentSelectedDate = (TextView) view.findViewById(R.id.currentSelectedDate);
         mLineChartView = (LineChartView) view.findViewById(R.id.linechartview);
         mMaterialSpinner = (MaterialSpinner) view.findViewById(R.id.walk_spinner);
         mMaterialSpinnerLayout = (MaterialSpinnerLayout) view.findViewById(R.id.walk_spinner_layout);
-        mScrollView = (VerticalScrollView) view.findViewById(R.id.scrollView);
-        mCalendarLayout = (CalendarLayout) view.findViewById(R.id.calendar_layout);
+        mCalendarLayout = (CalendarLayout) view.findViewById(R.id.walk_calendar_layout);
+        mTitleCalendarImageView = (ImageView) view.findViewById(R.id.walk_title_calendar);
 
     }
 
@@ -80,10 +87,11 @@ public class WalkedFragment extends BaseFragment {
         mLineChartView.setOnValueTouchListener(new MineLineChartOnValueSelectListener());
         mMaterialSpinner.setOnItemSelectedListener(new MineOnItemSelectedListener());
         mCalendarLayout.setOnCalendarClickListener(new MineCalendarClickListener());
+        mTitleCalendarImageView.setOnClickListener(this);
     }
 
     private void setData() {
-        mCalendarLayout.setScrollView(mScrollView);
+
         setSpinnerData();
         setChartData();
     }
@@ -240,6 +248,16 @@ public class WalkedFragment extends BaseFragment {
         menu.clear();
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.walk_title_calendar://title calendar
+                mCalendarLayout.skipTodayCalendar();
+                break;
+
+        }
+    }
+
 
     private class MineLineChartOnValueSelectListener implements LineChartOnValueSelectListener {
         @Override
@@ -264,6 +282,7 @@ public class WalkedFragment extends BaseFragment {
     private class MineCalendarClickListener implements OnCalendarClickListener {
         @Override
         public void onClickDate(int year, int month, int day) {
+            mCalendarLayout.setSelectPosition(mCalendarLayout.getPosition(year, month, day));
             mCurrentSelectedDate.setText(mCalendarLayout.getCurrrentSelectedDate());
         }
     }

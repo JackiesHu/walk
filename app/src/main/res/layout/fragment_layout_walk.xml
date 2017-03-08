@@ -13,68 +13,56 @@
         android:background="@color/calendar_bg_color"
         app:week_text_size="@integer/calendar_text_size"/>
 
-    <include layout="@layout/layout_calendar"/>
-
-    <!--<com.jeek.calendar.widget.calendar.schedule.CalendarLayout-->
-        <!--android:id="@+id/calendar_layout"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--app:default_view="week">-->
-
-
-        <!--<RelativeLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content">-->
-
-            <!--<com.jeek.calendar.widget.calendar.month.MonthCalendarView-->
-                <!--android:id="@+id/month_calendar"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="@dimen/month_calendar_height"-->
-                <!--android:background="@color/calendar_bg_color"-->
-                <!--android:overScrollMode="never"-->
-                <!--android:paddingBottom="5dp"-->
-                <!--app:month_day_text_size="@integer/calendar_text_size"-->
-                <!--app:month_holiday_color="@color/holiday_text_color"-->
-                <!--app:month_selected_circle_color="@color/select_circle_color"-->
-                <!--app:month_show_holiday_hint="false"-->
-                <!--app:month_show_lunar="false"-->
-                <!--app:month_show_task_hint="false"/>-->
-
-            <!--<com.jeek.calendar.widget.calendar.week.WeekCalendarView-->
-                <!--android:id="@+id/week_calendar"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="@dimen/week_calendar_height"-->
-                <!--android:background="@color/calendar_bg_color"-->
-                <!--android:overScrollMode="never"-->
-                <!--android:paddingBottom="5dp"-->
-                <!--android:visibility="gone"-->
-                <!--app:week_day_text_size="@integer/calendar_text_size"-->
-                <!--app:week_holiday_color="@color/holiday_text_color"-->
-                <!--app:week_selected_circle_color="@color/select_circle_color"-->
-                <!--app:week_show_holiday_hint="false"-->
-                <!--app:week_show_lunar="false"-->
-                <!--app:week_show_task_hint="false"/>-->
-
-        <!--</RelativeLayout>-->
-
-    <!--</com.jeek.calendar.widget.calendar.schedule.CalendarLayout>-->
-
-    <TextView
-        android:id="@+id/currentSelectedDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/calendar_bg_color"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="2017年2月13日 星期三"
-        android:textSize="18sp"/>
-
-    <com.buxingzhe.pedestrian.widget.VerticalScrollView
-        android:id="@+id/scrollView"
+    <com.buxingzhe.pedestrian.widget.CalendarLayout
+        android:id="@+id/walk_calendar_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <!-- walk 数据-->
-        <include layout="@layout/fragment_layout_walk_detail"/>
-    </com.buxingzhe.pedestrian.widget.VerticalScrollView>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.jeek.calendar.widget.calendar.month.MonthCalendarView
+                android:id="@+id/month_calendar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/month_calendar_height"
+                android:background="#FFFFFF"
+                android:overScrollMode="never"
+                app:month_day_text_size="15"
+                app:month_selected_circle_color="#00AE66"/>
+
+            <com.jeek.calendar.widget.calendar.week.WeekCalendarView
+                android:id="@+id/week_calendar"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="#FFFFFF"
+                android:overScrollMode="never"
+                android:visibility="gone"
+                app:week_day_text_size="15"
+                app:week_selected_circle_color="#00AE66"/>
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:id="@+id/walk_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/currentSelectedDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/calendar_bg_color"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text=""
+                android:textSize="18sp"/>
+
+            <!-- walk 数据-->
+            <include layout="@layout/fragment_layout_walk_detail"/>
+        </LinearLayout>
+
+    </com.buxingzhe.pedestrian.widget.CalendarLayout>
 </LinearLayout>

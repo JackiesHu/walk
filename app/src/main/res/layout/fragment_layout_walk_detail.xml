@@ -1,320 +1,326 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:id="@+id/rlNoTask"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="#F5F5F5"
-              android:orientation="vertical">
-    <!-- 天气模块-->
+<com.buxingzhe.pedestrian.widget.VerticalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbarSize="0dp">
+
     <LinearLayout
+        android:id="@+id/rlNoTask"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/bg_corn_white"
-        android:gravity="center_vertical">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_buxing_weather"/>
-
+        android:layout_height="match_parent"
+        android:background="#F5F5F5"
+        android:orientation="vertical">
+        <!-- 天气模块-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:layout_marginLeft="15dp"
-            android:orientation="vertical">
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_corn_white"
+            android:gravity="center_vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/walk_weather"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-1^ ~ 8^ 晴 东风2级"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/walk_weather"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-1^ ~ 8^ 晴 东风2级"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/walk_weather"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-1^ ~ 8^ 晴 东风2级"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/walk_weather"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-1^ ~ 8^ 晴 东风2级"/>
-            </LinearLayout>
-        </LinearLayout>
-
-    </LinearLayout>
-    <!-- 步数-->
-    <RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:layout_marginBottom="10dp"
-    android:layout_marginLeft="15dp"
-    android:layout_marginRight="15dp"
-    android:layout_marginTop="10dp"
-    android:background="@drawable/bg_corn_white">
-
-    <LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:gravity="center_vertical">
-
-    <ImageView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:src="@mipmap/ic_buxing_bushu"/>
-
-    <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="15dp"
-    android:text="@string/walk_number"
-    android:textColor="#464646"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:layout_alignParentRight="true"
-    android:gravity="center_vertical">
-
-    <TextView
-    android:id="@+id/walk_number"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="12789"
-    android:textColor="#232323"
-    android:textSize="18sp"
-    android:textStyle="bold"/>
-
-    <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text=" 步"
-    android:textColor="#999999"
-    android:textSize="12sp"/>
-
-    </LinearLayout>
-
-    </RelativeLayout>
-
-    <!-- 里程-->
-    <RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:layout_marginBottom="10dp"
-    android:layout_marginLeft="15dp"
-    android:layout_marginRight="15dp"
-    android:layout_marginTop="10dp"
-    android:background="@drawable/bg_corn_white">
-
-    <LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:gravity="center_vertical">
-
-    <ImageView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:src="@mipmap/ic_buxing_licheng"/>
-
-    <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="15dp"
-    android:text="@string/walk_mileage"
-    android:textColor="#464646"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:layout_alignParentRight="true"
-    android:gravity="center_vertical">
-
-    <TextView
-    android:id="@+id/walk_licheng"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="12789"
-    android:textColor="#232323"
-    android:textSize="18sp"
-    android:textStyle="bold"/>
-
-    <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text=" km"
-    android:textColor="#999999"
-    android:textSize="12sp"/>
-
-    </LinearLayout>
-
-    </RelativeLayout>
-    <!-- 活动-->
-    <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
-    android:layout_marginLeft="15dp"
-    android:layout_marginRight="15dp"
-    android:layout_marginTop="10dp"
-    android:background="@drawable/bg_corn_white"
-    android:orientation="vertical">
-
-    <RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/walk_action"
-    android:textColor="#232323"
-    android:textSize="15sp"/>
-
-    <TextView
-    android:id="@+id/walk_action_title"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="2016冬日公园散步"
-    android:textColor="#999999"
-    android:textSize="14sp"/>
-    </LinearLayout>
-
-    <TextView
-    android:id="@+id/walk_action_time"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignParentRight="true"
-    android:text="19:30"
-    android:textColor="#999999"
-    android:textSize="14sp"/>
-    </RelativeLayout>
-
-    <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="10dp">
-
-    <ImageView
-    android:id="@+id/walk_action_pic"
-    android:layout_width="53dp"
-    android:layout_height="40dp"
-    android:src="@mipmap/ic_launcher"/>
-
-    <TextView
-    android:id="@+id/walk_action_content"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="10dp"
-    android:lineSpacingExtra="3dp"
-    android:text="2016冬日公园散步2016冬日ssssssssssš公园散步2016冬日公园散步2016冬日公园散步2016冬日公园散步2016冬日公园散步2016冬日公园散步2016冬日公园散步2016冬日公园散步"
-    android:textColor="#464646"
-    android:textSize="12sp"/>
-    </LinearLayout>
-
-    </LinearLayout>
-    <!-- 数据分析-->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#FFFFFF">
-
-            <TextView
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_margin="15dp"
-                android:text="@string/walk_data_analysis"
-                android:textColor="#232323"
-                android:textSize="15sp"/>
-            <com.buxingzhe.pedestrian.widget.MaterialSpinnerLayout
-                android:id="@+id/walk_spinner_layout"
-                android:layout_width="120dp"
-                android:layout_height="30dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="15dp"
-                android:background="@drawable/bg_corn_gray"
-                android:gravity="center">
+                android:src="@mipmap/ic_buxing_weather"/>
 
-                <com.jaredrummler.materialspinner.MaterialSpinner
-                    android:id="@+id/walk_spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="步数"
-                    app:ms_background_color="#EEEEEE"
-                    app:ms_text_color="#232323"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/walk_weather"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-1^ ~ 8^ 晴 东风2级"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/walk_weather_index_air"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="35优"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/walk_weather_index_dress"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-1^ ~ 8^ 晴 东风2级"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/walk_weather_index_walk"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-1^ ~ 8^ 晴 东风2级"/>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+        <!-- 步数-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_corn_white">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical">
 
                 <ImageView
-                    android:id="@+id/walk_spinner_arrow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:src="@mipmap/ic_bushu_arrow_down"/>
+                    android:src="@mipmap/ic_buxing_bushu"/>
 
-            </com.buxingzhe.pedestrian.widget.MaterialSpinnerLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="@string/walk_number"
+                    android:textColor="#464646"/>
 
-            <!--<com.jaredrummler.materialspinner.MaterialSpinner-->
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/walk_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="12789"
+                    android:textColor="#232323"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" 步"
+                    android:textColor="#999999"
+                    android:textSize="12sp"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <!-- 里程-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_corn_white">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/ic_buxing_licheng"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="@string/walk_mileage"
+                    android:textColor="#464646"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/walk_licheng"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="12789"
+                    android:textColor="#232323"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" km"
+                    android:textColor="#999999"
+                    android:textSize="12sp"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+        <!-- 活动-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_corn_white"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/walk_action"
+                        android:textColor="#232323"
+                        android:textSize="15sp"/>
+
+                    <TextView
+                        android:id="@+id/walk_action_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2016冬日公园散步"
+                        android:textColor="#999999"
+                        android:textSize="14sp"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/walk_action_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="19:30"
+                    android:textColor="#999999"
+                    android:textSize="14sp"/>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <ImageView
+                    android:id="@+id/walk_action_pic"
+                    android:layout_width="53dp"
+                    android:layout_height="40dp"
+                    android:src="@mipmap/ic_launcher"/>
+
+                <TextView
+                    android:id="@+id/walk_action_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:lineSpacingExtra="3dp"
+                    android:text="2016冬日公园散步2016冬日ssssssssssš公园散步2016冬日公园散步2016冬日公园散步2016冬日公园散步2016冬日公园散步2016冬日公园散步2016冬日公园散步2016冬日公园散步"
+                    android:textColor="#464646"
+                    android:textSize="12sp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+        <!-- 数据分析-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="15dp"
+                    android:text="@string/walk_data_analysis"
+                    android:textColor="#232323"
+                    android:textSize="15sp"/>
+
+                <com.buxingzhe.pedestrian.widget.MaterialSpinnerLayout
+                    android:id="@+id/walk_spinner_layout"
+                    android:layout_width="120dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="15dp"
+                    android:background="@drawable/bg_corn_gray"
+                    android:gravity="center">
+
+                    <com.jaredrummler.materialspinner.MaterialSpinner
+                        android:id="@+id/walk_spinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="步数"
+                        app:ms_background_color="#EEEEEE"
+                        app:ms_text_color="#232323"/>
+
+                    <ImageView
+                        android:id="@+id/walk_spinner_arrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:src="@mipmap/ic_bushu_arrow_down"/>
+
+                </com.buxingzhe.pedestrian.widget.MaterialSpinnerLayout>
+
+                <!--<com.jaredrummler.materialspinner.MaterialSpinner-->
                 <!--android:id="@+id/walk_spinner"-->
                 <!--android:layout_width="120dp"-->
                 <!--android:layout_height="30dp"-->
@@ -323,174 +329,175 @@
                 <!--app:ms_background_color="#EEEEEE"-->
                 <!--android:layout_centerVertical="true"-->
                 <!--android:layout_marginRight="15dp"/>-->
-        </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#E4E4E4"></View>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:background="#FFFFFF"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/walk_data_day"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/walk_data_day"
-                android:textColor="#232323"
-                android:textSize="14sp"/>
-
-            <TextView
-                android:id="@+id/walk_data_week"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/walk_data_week"
-                android:textColor="#232323"
-                android:textSize="14sp"/>
-
-            <TextView
-                android:id="@+id/walk_data_month"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/walk_data_month"
-                android:textColor="#232323"
-                android:textSize="14sp"/>
-
-            <TextView
-                android:id="@+id/walk_data_year"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/walk_data_year"
-                android:textColor="#232323"
-                android:textSize="14sp"/>
-        </LinearLayout>
-        <!-- 折线图-->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="7dp"
-            android:layout_marginRight="7dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/bg_corn_white_normal"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="10dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/walk_number"
-                    android:textColor="#464646"
-                    android:textSize="14sp"/>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textColor="#464646"
-                        android:textSize="14sp"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="步"
-                        android:textColor="#464646"
-                        android:textSize="14sp"/>
-                </LinearLayout>
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="10dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/walk_data_average"
-                        android:textColor="#464646"
-                        android:textSize="14sp"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textColor="#464646"
-                        android:textSize="14sp"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="步"
-                        android:textColor="#464646"
-                        android:textSize="14sp"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="今天"
-                        android:textColor="#464646"
-                        android:textSize="14sp"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="18：59"
-                        android:textColor="#464646"
-                        android:textSize="14sp"/>
-                </LinearLayout>
-
             </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#DDDDDD"/>
+                android:background="#E4E4E4"></View>
 
-            <lecho.lib.hellocharts.view.LineChartView
-                android:id="@+id/linechartview"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"/>
-        </LinearLayout>
-    </LinearLayout>
+                android:layout_height="30dp"
+                android:background="#FFFFFF"
+                android:orientation="horizontal">
 
-</LinearLayout>
+                <TextView
+                    android:id="@+id/walk_data_day"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/walk_data_day"
+                    android:textColor="#232323"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:id="@+id/walk_data_week"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/walk_data_week"
+                    android:textColor="#232323"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:id="@+id/walk_data_month"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/walk_data_month"
+                    android:textColor="#232323"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:id="@+id/walk_data_year"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/walk_data_year"
+                    android:textColor="#232323"
+                    android:textSize="14sp"/>
+            </LinearLayout>
+            <!-- 折线图-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="7dp"
+                android:layout_marginRight="7dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_corn_white_normal"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/walk_number"
+                        android:textColor="#464646"
+                        android:textSize="14sp"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#464646"
+                            android:textSize="14sp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="步"
+                            android:textColor="#464646"
+                            android:textSize="14sp"/>
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="10dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/walk_data_average"
+                            android:textColor="#464646"
+                            android:textSize="14sp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#464646"
+                            android:textSize="14sp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="步"
+                            android:textColor="#464646"
+                            android:textSize="14sp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="今天"
+                            android:textColor="#464646"
+                            android:textSize="14sp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="18：59"
+                            android:textColor="#464646"
+                            android:textSize="14sp"/>
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="#DDDDDD"/>
+
+                <lecho.lib.hellocharts.view.LineChartView
+                    android:id="@+id/linechartview"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</com.buxingzhe.pedestrian.widget.VerticalScrollView>

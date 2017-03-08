@@ -17,7 +17,7 @@ public class WeekAdapter extends PagerAdapter {
     private TypedArray mArray;
     private WeekCalendarView mWeekCalendarView;
     private DateTime mStartDate;
-    private int mWeekCount = 220; //TODO 显示周数
+    private int mWeekCount = 550; // 显示周数 10年
 
     public WeekAdapter(Context context, TypedArray array, WeekCalendarView weekCalendarView) {
         mContext = context;

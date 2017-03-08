@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_content"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".activity.MainActivity"
-    android:background="?attr/colorPrimaryDark"
-    android:orientation="vertical"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/main_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/colorPrimaryDark"
+                android:fitsSystemWindows="true"
+                android:orientation="vertical"
+                tools:context=".activity.MainActivity"
     >
+
     <com.buxingzhe.pedestrian.widget.MWTNonSwipeableViewPager
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:layout_weight="1.0"
         android:layout_above="@+id/main_tab"
-        />
+        android:layout_weight="1.0"
+        android:background="@color/white"/>
+
     <RelativeLayout
-        android:layout_alignParentBottom="true"
         android:id="@+id/main_tab"
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:background="@color/tab_bg"
-        >
+        android:layout_alignParentBottom="true"
+        android:background="@color/tab_bg">
+
         <com.buxingzhe.pedestrian.widget.MWTTabBar
             android:id="@+id/TabBar"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:paddingBottom="4dp"
-            />
+            android:paddingBottom="4dp"/>
     </RelativeLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        >
+        android:layout_alignParentBottom="true">
+
         <ImageView
             android:id="@+id/main_run"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_run_nor"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="10dp"
-            />
+            android:layout_marginBottom="7.5dp"
+            android:src="@mipmap/ic_run_nor"/>
     </RelativeLayout>
 
 </RelativeLayout>

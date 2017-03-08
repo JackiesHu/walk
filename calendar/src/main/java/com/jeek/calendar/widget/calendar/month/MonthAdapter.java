@@ -17,13 +17,13 @@ public class MonthAdapter extends PagerAdapter {
     private Context mContext;
     private TypedArray mArray;
     private MonthCalendarView mMonthCalendarView;
-    private int mMonthCount = 48;
+    private int mMonthCount = 120;// 10年
 
     public MonthAdapter(Context context, TypedArray array, MonthCalendarView monthCalendarView) {
         mContext = context;
         mArray = array;
         mMonthCalendarView = monthCalendarView;
-        mViews = new SparseArray<>();
+        mViews = new SparseArray<MonthView>();
     }
 
     @Override

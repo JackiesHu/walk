@@ -94,6 +94,10 @@ public class MonthCalendarView extends ViewPager implements OnMonthClickListener
         }
     }
 
+    public Calendar getTodayCalendar(){
+        return Calendar.getInstance();
+    }
+
     /**
      * 设置点击日期监听
      * @param onCalendarClickListener
@@ -109,5 +113,6 @@ public class MonthCalendarView extends ViewPager implements OnMonthClickListener
     public MonthView getCurrentMonthView() {
         return getMonthViews().get(getCurrentItem());
     }
+
 
 }
