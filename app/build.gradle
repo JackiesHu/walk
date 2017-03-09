@@ -10,6 +10,16 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+    }
+    //    配置keystore签名
+    signingConfigs {
+        release {
+            storeFile file(KEYSTORE)
+            storePassword KEYPASSWORD
+            keyAlias KETALIAS
+            keyPassword KEYALIASPASSWORD
+        }
     }
     buildTypes {
         release {
