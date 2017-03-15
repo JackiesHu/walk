@@ -411,6 +411,7 @@ public class RunFragment extends BaseFragment implements View.OnClickListener, C
                 mOnInteractionData.onInteraction();
             }
 
+
         }
 
         @Override
