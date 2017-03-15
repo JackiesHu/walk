@@ -108,9 +108,13 @@ public class TitleBarView extends FrameLayout {
     }
     public void setLeft(String title){
         vLeft.setText(title);
+        vLeft.setVisibility(View.VISIBLE);
+        vImgLeft.setVisibility(GONE);
     }
     public void setRight(String title){
         vRight.setText(title);
+        vRight.setVisibility(View.VISIBLE);
+        vImgRight.setVisibility(GONE);
     }
     public void setRightIcon(int id){
         vImgRight.setImageResource(id);
@@ -177,6 +181,9 @@ public class TitleBarView extends FrameLayout {
                 }
             }
         });
+    }
+    public void setImgRightList(OnClickListener onClickListener){
+        vImgRight.setOnClickListener(onClickListener);
     }
     public void showRight(){
         vRight.setVisibility(VISIBLE);
