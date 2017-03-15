@@ -1,6 +1,8 @@
 package com.buxingzhe.pedestrian.community.community;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.bean.AdvCommunityData;
+import com.buxingzhe.pedestrian.utils.EnterActUtils;
 
 import java.util.ArrayList;
 
@@ -20,11 +23,13 @@ import java.util.ArrayList;
 public class CommActAdapter extends RecyclerView.Adapter<CommActAdapter.CommActHolder>
 {
     private Context mContext;
+    private Activity mActivity;
     private LayoutInflater mLayoutInflater;
     private ArrayList<AdvCommunityData> datas = new ArrayList<AdvCommunityData>();
-    public CommActAdapter(Context context,ArrayList<AdvCommunityData> datas) {
+    public CommActAdapter(Context context,Activity mActivity,ArrayList<AdvCommunityData> datas) {
         this.datas = datas;
         this.mContext = context;
+        this.mActivity = mActivity;
         mLayoutInflater = LayoutInflater.from(mContext);
     }
 
@@ -37,6 +42,7 @@ public class CommActAdapter extends RecyclerView.Adapter<CommActAdapter.CommActH
 
     @Override
     public void onBindViewHolder(CommActAdapter.CommActHolder holder, int position) {
+        //holder.itemView.setTag(datas.get(position));
         /*if(datas!=null && datas.size()>0){
             final AdvCommunityData listdata=datas.get(position);
             if(listdata!=null){
@@ -68,7 +74,9 @@ public class CommActAdapter extends RecyclerView.Adapter<CommActAdapter.CommActH
     class myCommAct implements View.OnClickListener{
         @Override
         public void onClick(View view) {
-
+            Intent intent = new Intent();
+            intent.setClass(mContext,CommActInfoActivity.class);
+            EnterActUtils.startAct(mActivity,intent);
         }
     }
     @Override
@@ -92,7 +100,6 @@ public class CommActAdapter extends RecyclerView.Adapter<CommActAdapter.CommActH
             nowitem_Imageview= (ImageView) itemView.findViewById(R.id.nowitem_Imageview);
             item_Time_TextView = (TextView) itemView.findViewById(R.id.item_Time_TextView);
             item_num_TextView= (TextView) itemView.findViewById(R.id.item_num_TextView);
-            item_info_TextView= (TextView) itemView.findViewById(R.id.item_info_TextView);
             tv_nv_num= (TextView) itemView.findViewById(R.id.tv_nv_num);
             tv_nv_time= (TextView) itemView.findViewById(R.id.tv_nv_time);
             rl_rl= (RelativeLayout) itemView.findViewById(R.id.rl_rl);

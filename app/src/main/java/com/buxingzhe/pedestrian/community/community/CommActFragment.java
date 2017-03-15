@@ -34,8 +34,9 @@ public class CommActFragment extends BaseFragment {
         vRecyclerView = (RecyclerView)view.findViewById(R.id.walk_list);
     }
     private void setAct() {
+        mActivity = getActivity();
         ArrayList<AdvCommunityData> communityDatas = createCommunities();
-        mAdapter = new CommActAdapter(mContext,communityDatas);
+        mAdapter = new CommActAdapter(mContext,mActivity,communityDatas);
         LinearLayoutManager linearLayoutManger =  new LinearLayoutManager(getContext());
         vRecyclerView.setLayoutManager(linearLayoutManger);//这里用线性显示 类似于listview
         vRecyclerView.setAdapter(mAdapter);

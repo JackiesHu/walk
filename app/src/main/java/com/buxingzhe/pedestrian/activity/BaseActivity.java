@@ -71,4 +71,10 @@ public class BaseActivity extends AppCompatActivity implements TitleBarLinstener
             vTitleBar.showRight();
         }
     }
+    protected void setRightIco(int drawable){
+        if (vTitleBar != null){
+            vTitleBar.setRightIcon(drawable);
+            vTitleBar.showRightImg();
+        }
+    }
 }

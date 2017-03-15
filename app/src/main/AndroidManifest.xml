@@ -89,6 +89,10 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustUnspecified|stateHidden"
             ></activity>
+        <activity android:name=".community.community.CommActInfoActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden"
+            ></activity>
         <activity
             android:name="com.pizidea.imagepicker.activity.ImagesGridActivity"
             android:screenOrientation="portrait"
