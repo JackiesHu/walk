@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
 import com.buxingzhe.pedestrian.community.community.CommActFragment;
+import com.buxingzhe.pedestrian.community.community.CommCircleFragment;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 
 import java.util.ArrayList;
@@ -100,8 +101,8 @@ public class CommunityFragment extends BaseFragment implements View.OnClickListe
         FragmentPagerAdapter adapter = new FragmentPagerAdapter(getFragmentManager());
         CommActFragment commActFragment = new CommActFragment();
         fragments.add(commActFragment);
-        CommActFragment commActFragment2 = new CommActFragment();
-        fragments.add(commActFragment2);
+        CommCircleFragment commCircle = new CommCircleFragment();
+        fragments.add(commCircle);
         vCityViewPager.setAdapter(adapter);
     }
     private void changeCommunity(){

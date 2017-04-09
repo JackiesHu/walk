@@ -15,7 +15,8 @@ import com.buxingzhe.pedestrian.bean.AdvCommunityData;
 import java.util.ArrayList;
 
 /**
- * Created by quanjing on 2017/2/28.
+ * 社区
+ * Created by jackie on 2017/2/28.
  */
 public class CommActFragment extends BaseFragment {
     private RecyclerView vRecyclerView;
