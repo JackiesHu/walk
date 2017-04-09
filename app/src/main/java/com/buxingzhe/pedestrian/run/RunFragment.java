@@ -22,14 +22,18 @@ import android.widget.TextView;
 
 import com.baidu.mapapi.map.MapView;
 import com.buxingzhe.pedestrian.R;
-import com.buxingzhe.pedestrian.activity.BaseFragment;
+import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.listen.OnInteractionData;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.buxingzhe.pedestrian.widget.TitleBarLinstener;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import rx.Subscriber;
 
 import static com.buxingzhe.pedestrian.R.id.run_iv_start;
 import static com.buxingzhe.pedestrian.R.id.run_iv_zoom_suofang;
@@ -38,7 +42,7 @@ import static com.buxingzhe.pedestrian.R.id.run_iv_zoom_zhankai;
 /**
  * Created by quanjing on 2017/2/23.
  */
-public class RunFragment extends BaseFragment implements View.OnClickListener, Chronometer.OnChronometerTickListener {
+public class RunFragment extends MapFragment implements View.OnClickListener, Chronometer.OnChronometerTickListener {
 
     private OnInteractionData mOnInteractionData;
 
@@ -46,9 +50,6 @@ public class RunFragment extends BaseFragment implements View.OnClickListener, C
         mOnInteractionData = onInteractionData;
     }
 
-    // 地图相关
-    private MapView mMapView;
-    private ImageView mIVLocation, mIVRunStart, mIVZoomSuoFang, mIVZoomZhankai;
 
     // 倒计时开始计步
 //    private TextView mTVCountDown;
@@ -101,6 +102,8 @@ public class RunFragment extends BaseFragment implements View.OnClickListener, C
                     mIVZoomSuoFang.setClickable(true);
                     mIVZoomZhankai.setClickable(true);
                     mChronometer.start();
+
+                    recordTrack();
                 }
             }
 
@@ -108,14 +111,28 @@ public class RunFragment extends BaseFragment implements View.OnClickListener, C
     };
 
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initGPS();
+    }
+
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_run, null);
         findId(view);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         setData();
         onClick();
-        return view;
     }
 
     private void findId(View view) {
@@ -155,15 +172,14 @@ public class RunFragment extends BaseFragment implements View.OnClickListener, C
     }
 
     private void setData() {
-        initCountDownTV();
-
         setInitTitle();
-
         mLLBottomAllView.setVisibility(View.GONE);
         mIVZoomSuoFang.setVisibility(View.GONE);
         if (!isRunState) {
             mTVRunState.setText(getResources().getString(R.string.run_pause));
         }
+
+        initCountDownTV();
 
     }
 
@@ -173,7 +189,7 @@ public class RunFragment extends BaseFragment implements View.OnClickListener, C
     private void initCountDownTV() {
         mTVCountDown = new TextView(getContext());
         mTVCountDown.setBackgroundColor(Color.parseColor("#B3000000"));
-        mTVCountDown.setTextSize(TypedValue.COMPLEX_UNIT_SP, 360.0f);
+        mTVCountDown.setTextSize(TypedValue.COMPLEX_UNIT_PX, 360.0f);
         mTVCountDown.setTextColor(Color.parseColor("#FFFFFF"));
         mTVCountDown.setGravity(Gravity.CENTER);
         mTVCountDown.setFocusable(true);
@@ -220,6 +236,7 @@ public class RunFragment extends BaseFragment implements View.OnClickListener, C
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.run_iv_location://TODO 定位
+                requestLocation();
                 break;
             case run_iv_start://开始Run
                 mIVRunStart.setVisibility(View.GONE);
@@ -227,6 +244,7 @@ public class RunFragment extends BaseFragment implements View.OnClickListener, C
                 mTVCountDown.setVisibility(View.VISIBLE);
 
                 //TODO 此时倒计时需要全凭
+
                 WindowManager windowManager = getActivity().getWindowManager();
                 int[] screenAttr = SystemUtils.getDisplayWidth(getContext());
                 WindowManager.LayoutParams params = new WindowManager.LayoutParams(screenAttr[0], screenAttr[1]);
@@ -296,8 +314,10 @@ public class RunFragment extends BaseFragment implements View.OnClickListener, C
                 break;
             case R.id.run_iv_run_state://运动状态（暂停／继续）
                 changeRunState();
+                recordTrack();
                 break;
             case R.id.run_iv_run_done:// TODO 运动完成
+                recordTrack();
                 isRunDone = true;
                 isRunState = false;
 //                saveCurrentRunTime(mCountdownView);
@@ -411,6 +431,50 @@ public class RunFragment extends BaseFragment implements View.OnClickListener, C
                 mOnInteractionData.onInteraction();
             }
 
+            //TODO 发送数据到服务端
+            Map<String, String> paramsMap = new HashMap<String,String>();
+            paramsMap.put("userId","");//用户ID ,不可空
+            paramsMap.put("token","");//访问凭证 不可空
+            paramsMap.put("type","");//类型 : 0 步行，1骑行 ,不可空	type
+            paramsMap.put("activity","");//活动Id, 可空
+            paramsMap.put("title","");//记录标题，可空
+            paramsMap.put("stepCount","");//Integer  步数，可空
+            paramsMap.put("distance","");//Integer 距离，可空
+            paramsMap.put("duration","");//Integer 时长，可空
+            paramsMap.put("altitudeAsend","");//海拔上升，可空
+            paramsMap.put("altitudeHigh","");//最高海拔，可空
+            paramsMap.put("altitudeLow","");//最低海拔，可空
+            paramsMap.put("calorie","");//卡路里，可空
+            paramsMap.put("fat","");//脂肪，可空
+            paramsMap.put("nutrition","");//蛋白质，可空
+            paramsMap.put("routePic","");//Data 路径图片，可空
+            paramsMap.put("viewUrls","");//Data 风景图片，可空,最多三张
+            paramsMap.put("star","");//Double 星级，可空
+            paramsMap.put("streetStar","");//Double 星级，可空
+            paramsMap.put("safeStar","");//Double 星级，可空
+            paramsMap.put("envirStar","");//Double 星级，可空
+            paramsMap.put("introduction","");//介绍，可空
+            paramsMap.put("tags","");//记录标签，可空
+            paramsMap.put("path","");//路径点集，可空
+            paramsMap.put("location","");//步行记录位置
+            NetRequestManager.getInstance().uploadWalkRecord(paramsMap, new Subscriber<String>() {
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onNext(String s) {
+
+                }
+
+            });
+
 
         }
 
@@ -433,5 +497,4 @@ public class RunFragment extends BaseFragment implements View.OnClickListener, C
         super.onDestroyView();
         seconds = 0;
     }
-
 }

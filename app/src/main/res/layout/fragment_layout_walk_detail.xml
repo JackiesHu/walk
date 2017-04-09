@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.buxingzhe.pedestrian.widget.VerticalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbarSize="0dp">
+                                                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="match_parent"
+                                                    android:scrollbarSize="0dp">
 
     <LinearLayout
         android:id="@+id/rlNoTask"
@@ -15,10 +15,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="@dimen/bxz_20px"
+            android:layout_marginLeft="@dimen/bxz_30px"
+            android:layout_marginRight="@dimen/bxz_30px"
+            android:layout_marginTop="@dimen/bxz_20px"
             android:background="@drawable/bg_corn_white"
             android:gravity="center_vertical">
 
@@ -30,12 +30,18 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
+                android:layout_marginLeft="@dimen/bxz_30px"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/bxz_10px">
+
+                    <TextView
+                        android:id="@+id/walk_weather_tv_address"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -43,14 +49,16 @@
                         android:text="@string/walk_weather"/>
 
                     <TextView
+                        android:id="@+id/walk_weather_tv_"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="-1^ ~ 8^ 晴 东风2级"/>
+                        android:layout_marginLeft="@dimen/bxz_18px"/>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/bxz_10px">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -58,14 +66,16 @@
                         android:text="@string/walk_weather_index_air"/>
 
                     <TextView
+                        android:id="@+id/walk_weather_tv_air_quality"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="35优"/>
+                        android:layout_marginLeft="@dimen/bxz_18px"/>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/bxz_10px">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -73,9 +83,10 @@
                         android:text="@string/walk_weather_index_dress"/>
 
                     <TextView
+                        android:id="@+id/walk_weather_tv_wear_suggest"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="-1^ ~ 8^ 晴 东风2级"/>
+                        android:layout_marginLeft="@dimen/bxz_18px"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -88,9 +99,10 @@
                         android:text="@string/walk_weather_index_walk"/>
 
                     <TextView
+                        android:id="@+id/walk_weather_tv_sport_suggest"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="-1^ ~ 8^ 晴 东风2级"/>
+                        android:layout_marginLeft="@dimen/bxz_18px"/>
                 </LinearLayout>
             </LinearLayout>
 

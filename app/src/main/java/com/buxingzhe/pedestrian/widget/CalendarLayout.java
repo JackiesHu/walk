@@ -30,6 +30,7 @@ public class CalendarLayout extends LinearLayout {
     private MonthCalendarView mMonthCalendarView;
     private WeekCalendarView mWeekCalendarView;
     private LinearLayout contentView;
+    private VerticalScrollView mVerticalScrollView;
 
     private int mTouchSlop;
     private int swipHeight;// contentView可以移动的距离
@@ -73,7 +74,7 @@ public class CalendarLayout extends LinearLayout {
 
         mMonthCalendarView.setOnCalendarClickListener(mMonthCalendarClickListener);
         mWeekCalendarView.setOnCalendarClickListener(mWeekCalendarClickListener);
-        VerticalScrollView mVerticalScrollView = (VerticalScrollView) contentView.getChildAt(1);
+        mVerticalScrollView = (VerticalScrollView) contentView.getChildAt(1);
         mVerticalScrollView.setScrollChangedListener(new MineScrollViewChangedListener());
 
         initData();
@@ -159,6 +160,7 @@ public class CalendarLayout extends LinearLayout {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         swipHeight = mMonthCalendarView.getMeasuredHeight() - SystemUtils.dip2px(mContext, 48);
+        Log.i("swipHeight = "+ swipHeight);
     }
 
     @Override
@@ -173,13 +175,24 @@ public class CalendarLayout extends LinearLayout {
                 mLastY = downY = y;
                 break;
             case MotionEvent.ACTION_MOVE:
-                float dy = y - mLastY;
-//                Log.i("dy= "+dy);
-                if (Math.abs(dy) > mTouchSlop) {
-                    if ((dy > 0 && contentView.getTranslationY() <= 0)
-                            || (dy < 0 && contentView.getTranslationY() >= -swipHeight)) {
-                        mLastY = y;
-//                        return true;
+
+                //如果显示的是周，辣么把滑动事件下发给子view
+                if(mWeekCalendarView.getVisibility() != View.VISIBLE){
+                    float dy = y - mLastY;
+//                    Log.i("onInterceptTouchEvent dy= "+dy +" contentView.getTranslationY()= "+contentView.getTranslationY());
+                    if (Math.abs(dy) > mTouchSlop) {
+                        if ((dy > 0 && contentView.getTranslationY() <= 0)
+                                || (dy < 0 && contentView.getTranslationY() >= -swipHeight)) {
+                            mLastY = y;
+
+                            return true;
+                        }
+                    }
+
+                }else{
+                    Log.i("mVerticalScrollView.getScrollY()= "+ mVerticalScrollView.getScrollY());
+                    if(mVerticalScrollView.isScrolledToTop()){
+                        return true;
                     }
                 }
                 break;
@@ -201,17 +214,19 @@ public class CalendarLayout extends LinearLayout {
             case MotionEvent.ACTION_MOVE:
                 mIsScrolling = true;
                 float dy = y - mLastY;
-                // 向下滑动
+//                Log.i("onTouchEvent  dy= "+dy +" contentView.getTranslationY()= "+contentView.getTranslationY());
+                // 向下滑动，但是界面不动（已经到顶部了）
                 if (dy > 0 && contentView.getTranslationY() + dy >= 0) {
                     contentView.setTranslationY(0);
                     translationSwipView();
                     return true;
                 }
 
-                //向上滑动
+                //向上滑动，但是界面不动（已经到底部了）
                 if (dy < 0 && contentView.getTranslationY() + dy <= -swipHeight) {
                     contentView.setTranslationY(-swipHeight);
                     translationSwipView();
+                    mVerticalScrollView.setScrolledToTop(false);
                     return true;
                 }
                 // 滑动中

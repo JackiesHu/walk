@@ -1,0 +1,72 @@
+package com.buxingzhe.pedestrian.http.apiservice;
+
+import com.buxingzhe.pedestrian.http.NetRequestParams;
+
+import java.util.Map;
+
+import retrofit2.http.Field;
+import retrofit2.http.FieldMap;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.POST;
+import rx.Observable;
+
+/**
+ * Created by zhaishaoping on 27/03/2017.
+ */
+
+public interface NetRequestService {
+
+    //用户登陆
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_USER_LOGIN)
+    Observable</* RequestResultInfo<UserLoginResultInfo> */ String> login(@FieldMap Map<String, String> loginMap);
+
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_USER_LOGIN_PHONE)
+    Observable</*  RequestResultInfo<UserLoginResultInfo> */ String> loginByPhone(@FieldMap Map<String, String> loginMap);
+
+    //修改用户信息
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_USER_MODIFY_USER_INFO)
+    Observable</* RequestResultInfo<UserModifyInfo> */ String> modifyUserInfo(@FieldMap Map<String, String> modifyInfoMap);
+
+    //增加用户步票
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_USER_ADD_WALK_NUM)
+    Observable</* RequestResultInfo<UserAddWalkNumInfo> */ String> addWalkNum(@FieldMap Map<String, String> walkNumMap);
+
+    //获取用户信息
+    @POST(NetRequestParams.WALK_USER_GET_INFO)
+    Observable getUserInfo(@Field("userId") String userId, @Field("token") String token);
+
+    //用户注册
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_USER_REGISTER)
+    Observable</* RequestResultInfo<UserLoginResultInfo> */ String>  register(@FieldMap Map<String, String> registerMap);
+
+    //上传步行或者骑行记录
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_UPLOAD_WALK)
+    Observable</* RequestResultInfo<String> */ String>  uploadWalkRecord(@FieldMap Map<String, String> registerMap);
+
+    //获取步行或者骑行记录
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_GET_WALK_RECORD)
+    Observable</* RequestResultInfo<WalkRecordResultInfo> */ String>  getWalkRecord(@Field("recordId") String recordId);
+
+
+    //获取当天天气 // cityName: 城市名，不包含区，市等字符 不可空
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_GET_CURRENT_WEATHER)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getCurrentWeather(@Field("cityName") String cityName);
+
+    //获取历史天气  //  data: 日期 格式为20170401
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_GET_HISTORY_WEATHER)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getHistoryWeather(@Field("cityName") String cityName, @Field("date") String date);
+
+
+
+
+
+}

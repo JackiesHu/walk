@@ -2,16 +2,22 @@ package com.buxingzhe.pedestrian.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.buxingzhe.pedestrian.widget.TitleBarLinstener;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
 
+import rx.Subscription;
+
 /**
  * Created by quanjing on 2017/2/3.
  */
 public class BaseActivity extends AppCompatActivity implements TitleBarLinstener {
+
+    protected Subscription mSubscription;
     protected Context mContext;
     protected Activity mActivity;
     protected TitleBarView vTitleBar;
@@ -76,5 +82,19 @@ public class BaseActivity extends AppCompatActivity implements TitleBarLinstener
             vTitleBar.setRightIcon(drawable);
             vTitleBar.showRightImg();
         }
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mSubscription!=null && mSubscription.isUnsubscribed()){
+            mSubscription.unsubscribe();
+        }
+        super.onDestroy();
     }
 }

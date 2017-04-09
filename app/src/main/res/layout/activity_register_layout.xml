@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@mipmap/login_bg">
+
+    <LinearLayout
+        android:layout_width="@dimen/bxz_530px"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/bxz_90px"
+            android:gravity="bottom"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="bottom"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/bxz_8px"
+                    android:src="@mipmap/login_ic_user"/>
+
+                <EditText
+                    android:id="@+id/register_et_nickname"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/bxz_28px"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:inputType="text"
+                    android:hint="@string/register_hint_phone"
+                    android:lines="1"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#EEEEEE"
+                    android:textSize="@dimen/bxz_32px_tv"/>
+
+                <ImageView
+                    android:id="@+id/register_iv_nickname_del"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/bxz_94px"
+                    android:visibility="invisible"
+                    android:src="@mipmap/login_ic_denglu_delete"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bxz_1px"
+                android:layout_marginTop="@dimen/bxz_16px"
+                android:background="#FFFFFF"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/bxz_90px"
+            android:gravity="bottom"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="bottom"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/bxz_8px"
+                    android:src="@mipmap/login_ic_phone"/>
+
+                <EditText
+                    android:id="@+id/register_et_phone"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/bxz_28px"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="@string/login_hint_phone"
+                    android:inputType="phone"
+                    android:lines="1"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#EEEEEE"
+                    android:textSize="@dimen/bxz_32px_tv"/>
+
+                <ImageView
+                    android:id="@+id/register_iv_phone_del"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/bxz_94px"
+                    android:visibility="invisible"
+                    android:src="@mipmap/login_ic_denglu_delete"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bxz_1px"
+                android:layout_marginTop="@dimen/bxz_16px"
+                android:background="#FFFFFF"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/bxz_90px"
+            android:gravity="bottom"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="bottom"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/bxz_8px"
+                    android:src="@mipmap/login_ic_password"/>
+
+                <EditText
+                    android:id="@+id/register_et_pwd"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/bxz_28px"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="@string/login_hint_pwd"
+                    android:inputType="textPassword"
+                    android:lines="1"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#EEEEEE"
+                    android:textSize="@dimen/bxz_32px_tv"/>
+
+                <ImageView
+                    android:id="@+id/register_iv_pwd_show"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/bxz_20px"
+                    android:src="@mipmap/login_ic_eye_close"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bxz_1px"
+                android:layout_marginTop="@dimen/bxz_16px"
+                android:background="#FFFFFF"/>
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/register_btn_register"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/bxz_80px"
+            android:layout_marginTop="@dimen/bxz_50px"
+            android:background="@drawable/bg_btn_login"
+            android:text="@string/login_btn_register"
+            android:textColor="#009B4C"
+            android:textSize="@dimen/bxz_36px_tv"/>
+
+        <TextView
+            android:id="@+id/register_login_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/bxz_348px"
+            android:layout_marginTop="@dimen/bxz_40px"
+            android:text="@string/register_login_back"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/bxz_30px_tv"/>
+
+
+    </LinearLayout>
+
+</RelativeLayout>

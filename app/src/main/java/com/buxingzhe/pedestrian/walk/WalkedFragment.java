@@ -12,8 +12,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.buxingzhe.lib.util.Log;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
+import com.buxingzhe.pedestrian.bean.walk.WalkWeatherInfo;
+import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
+import com.buxingzhe.pedestrian.utils.JsonParseUtil;
 import com.buxingzhe.pedestrian.widget.CalendarLayout;
 import com.buxingzhe.pedestrian.widget.MaterialSpinnerLayout;
 import com.jaredrummler.materialspinner.MaterialSpinner;
@@ -22,6 +26,8 @@ import com.jeek.calendar.widget.calendar.OnCalendarClickListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import lecho.lib.hellocharts.gesture.ContainerScrollType;
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.listener.LineChartOnValueSelectListener;
@@ -33,6 +39,7 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
+import rx.Subscriber;
 
 /**
  * Created by quanjing on 2017/2/23.
@@ -50,11 +57,19 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
 
     private String[] WALK_SPINNER_DATA;
 
+    //天气
+    @BindView(R.id.walk_weather_tv_address)TextView mWeatherAddress;
+    @BindView(R.id.walk_weather_tv_)TextView mWeather;
+    @BindView(R.id.walk_weather_tv_air_quality)TextView mWeatherAirQuality;
+    @BindView(R.id.walk_weather_tv_wear_suggest)TextView mWeatherWearSuggest;
+    @BindView(R.id.walk_weather_tv_sport_suggest)TextView mWeatherSportSuggest;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_layout_walk, container, false);
         mContext = getContext();
+        ButterKnife.bind(this,view);
         findId(view);
         return view;
     }
@@ -65,6 +80,11 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
         super.onViewCreated(view, savedInstanceState);
         onClick();
         setData();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -91,9 +111,54 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
     }
 
     private void setData() {
-
+        setWeatherData(false,"20170327");
         setSpinnerData();
         setChartData();
+    }
+
+    Subscriber mSubscriber =  new Subscriber<String>() {
+        @Override
+        public void onCompleted() {
+            Log.i("onCompleted");
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.i(e.getMessage());
+        }
+
+        @Override
+        public void onNext(String jsonStr) {
+            Log.i("onNext");
+
+            // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+            Object[] datas = JsonParseUtil.getInstance().parseJson(jsonStr, WalkWeatherInfo.class);
+            if ((Integer) datas[0] == 0) {
+                Log.i(datas[1].toString());
+
+                WalkWeatherInfo content = (WalkWeatherInfo) datas[1];
+                if (content != null) {
+                    Log.i(content.toString());
+                    mWeatherAddress.setText(content.getCityName());
+                    mWeather.setText(content.getTempLow()+"~"+ content.getTempHigh()+"  "+ content.getWeather()+"  "+ content.getWindDirection()+ content.getWindDegree());
+                    mWeatherAirQuality.setText(content.getAirQuality());
+                    mWeatherWearSuggest.setText(content.getWearSuggest());
+                    mWeatherSportSuggest.setText(content.getSportSuggest());
+                }
+
+            }
+        }
+
+    };
+
+    private void setWeatherData(boolean isCurrentWeatherData, String date) {
+        String cityName = "北京";//TODO
+        if (isCurrentWeatherData){
+            NetRequestManager.getInstance().getCurrentWeather(cityName,mSubscriber);
+        }else{
+            Log.i(date);
+            NetRequestManager.getInstance().getHistoryWeather(cityName,date,mSubscriber);
+        }
     }
 
     /**
@@ -284,6 +349,8 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
         public void onClickDate(int year, int month, int day) {
             mCalendarLayout.setSelectPosition(mCalendarLayout.getPosition(year, month, day));
             mCurrentSelectedDate.setText(mCalendarLayout.getCurrrentSelectedDate());
+            String date = year +(String.valueOf(month).length()==1?("0" + String.valueOf(month)):String.valueOf(month))+(String.valueOf(day).length()==1?("0" + String.valueOf(day)):String.valueOf(day));
+            setWeatherData(false,date);
         }
     }
 }

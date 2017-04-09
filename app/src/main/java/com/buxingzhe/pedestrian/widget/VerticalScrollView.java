@@ -14,7 +14,7 @@ public class VerticalScrollView extends ScrollView {
     // 滑动距离及坐标
     private float xDistance, yDistance, xLast, yLast;
 
-    private boolean isScrolledToTop = true; // 初始化的时候设置一下值
+    private boolean isScrolledToTop = false; // 初始化的时候设置一下值
     private boolean isScrolledToBottom = false;
 
     public VerticalScrollView(Context context, AttributeSet attrs, int defStyle) {
@@ -54,8 +54,8 @@ public class VerticalScrollView extends ScrollView {
                 xLast = curX;
                 yLast = curY;
 
-                if (xDistance > yDistance) {
-                    return false;
+                if (xDistance <= yDistance) {
+                    return true;
                 }
 
             case MotionEvent.ACTION_UP:
@@ -86,6 +86,11 @@ public class VerticalScrollView extends ScrollView {
     public boolean isScrolledToTop() {
         return isScrolledToTop;
     }
+
+    public void setScrolledToTop(boolean scrolledToTop) {
+        isScrolledToTop = scrolledToTop;
+    }
+
 
     public boolean isScrolledToBottom() {
         return isScrolledToBottom;

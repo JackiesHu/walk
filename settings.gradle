@@ -1,1 +1,1 @@
-include ':app', ':imagepickerModule', ':baidumapsapiasdemo', ':calendar',':common',':spinnerLibrary'
+include ':app', ':imagepickerModule', ':baidumapsapiasdemo', ':calendar', ':common', ':spinnerLibrary', ':countDownLibrary', ':umengLib'
