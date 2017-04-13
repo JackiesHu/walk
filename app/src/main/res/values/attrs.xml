@@ -5,4 +5,9 @@
         <attr name="itTextSize" format="dimension"></attr>
         <attr name="itTextColor" format="color"></attr>
     </declare-styleable>
+    <declare-styleable name="HorizontalListView">
+        <attr name="android:choiceMode"/>
+        <attr name="android:drawSelectorOnTop"/>
+        <attr name="android:listSelector"/>
+    </declare-styleable>
 </resources>

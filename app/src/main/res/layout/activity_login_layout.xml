@@ -42,7 +42,8 @@
                     android:lines="1"
                     android:textColor="#FFFFFF"
                     android:textColorHint="#EEEEEE"
-                    android:textSize="@dimen/bxz_32px_tv"/>
+                    android:textSize="@dimen/bxz_32px_tv"
+                    android:text="13051699580"/>
 
                 <ImageView
                     android:id="@+id/login_iv_phone_del"
@@ -90,7 +91,8 @@
                     android:lines="1"
                     android:textColor="#FFFFFF"
                     android:textColorHint="#EEEEEE"
-                    android:textSize="@dimen/bxz_32px_tv"/>
+                    android:textSize="@dimen/bxz_32px_tv"
+                    android:text="123456"/>
 
                 <ImageView
                     android:id="@+id/login_iv_pwd_show"

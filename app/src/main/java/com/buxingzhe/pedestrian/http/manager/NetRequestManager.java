@@ -94,4 +94,22 @@ public class NetRequestManager{
                 .subscribe(subscriber);
     }
 
+    //获取用户信息
+    public Subscription getUserInfo(String userId,String token,Subscriber subscriber){
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .getUserInfo(userId,token)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
+    //查询圈子
+    public Subscription getWalkRecords(String userId,int pageNo,int pageSize,Subscriber subscriber){
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .getWalkRecords(userId,pageNo,pageSize)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
 }

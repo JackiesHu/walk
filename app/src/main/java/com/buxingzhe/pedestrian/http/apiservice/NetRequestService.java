@@ -65,6 +65,10 @@ public interface NetRequestService {
     @POST(NetRequestParams.WALK_GET_HISTORY_WEATHER)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getHistoryWeather(@Field("cityName") String cityName, @Field("date") String date);
 
+    //查询圈子
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_GET_WALK_RECORDS)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getWalkRecords(@Field("userId") String userId, @Field("pageNo") int pageNo, @Field("pageSize") int pageSize);
 
 
 

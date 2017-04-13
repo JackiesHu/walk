@@ -28,7 +28,8 @@
             android:gravity="center"
             android:background="@mipmap/ac_tag"
             android:layout_width="wrap_content"
-            android:layout_height="22dp" />
+            android:layout_height="22dp"
+            android:textColor="@color/white"/>
         <TextView
             android:layout_centerVertical="true"
             android:id="@+id/tv_nv_num"
@@ -37,7 +38,8 @@
             android:text="000"
             android:background="@mipmap/ac_tag"
             android:layout_width="wrap_content"
-            android:layout_height="22dp" />
+            android:layout_height="22dp"
+            android:textColor="@color/white"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -47,7 +49,6 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:layout_above="@+id/item_num_TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="北山游步道徒步登山"
@@ -58,6 +59,7 @@
             android:textColor="@color/white"
             />
         <TextView
+            android:layout_below="@+id/item_Time_TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="这里是活动介绍一下"
@@ -68,5 +70,6 @@
             android:layout_marginLeft="10dp"
             android:textSize="14sp"
             />
+
     </RelativeLayout>
 </RelativeLayout>

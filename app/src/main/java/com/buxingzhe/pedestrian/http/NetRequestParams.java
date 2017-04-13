@@ -39,6 +39,10 @@ public class NetRequestParams {
     public static final String WALK_GET_HISTORY_WEATHER = "walkman/wmWeather/getHistoryWeather";
 
 
+    /** 查询圈子*/
+    public static final String WALK_GET_WALK_RECORDS = "walkman/wmWalkRecord/getWalkRecords";
+
+
 
 
 
