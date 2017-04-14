@@ -21,7 +21,7 @@ import com.buxingzhe.pedestrian.widget.HorizontalListView;
  */
 
 //extends RecyclerView.Adapter<CommCircleAdapter.CommActHolder>
-public class CommCircleAdapter extends BaseAdapter<String>{
+public class CommCircleAdapter extends BaseAdapter<String> {
     private Context mContext;
     private LayoutInflater mLayoutInflater;
 //    private List<WalkRecordInfo> walkRecordInfos = new ArrayList<>();
@@ -47,7 +47,12 @@ public class CommCircleAdapter extends BaseAdapter<String>{
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         String str = getDataSet().get(position);
-        ((MyViewHolder) holder).bind(str);
+        MyViewHolder myViewHolder = (MyViewHolder) holder;
+        myViewHolder.horizontalListView.setAdapter(new HorizontalAdapter(mContext));
+        setContentText(myViewHolder.tv_content, "夜景也太美丽了！美食也好好吃!夜景实在是太美了！美食也好好吃夜景也太美丽了！美食也好好吃!夜景实在是太美了！美食也好好吃夜景也太美丽了！美食也好好吃!夜景实在是太美了！美食也好好吃\"\n");
+
+        myViewHolder.bind(str);
+
     }
 
 
