@@ -8,15 +8,59 @@ package com.buxingzhe.pedestrian.bean.user;
 public class  UserLoginResultInfo {
     private String id;//userID
     private String createTime;//创建时间
-    private String avatar;//头像链接
+    private String avatarUrl;//头像链接
     private String nickName;//昵称
     private String gender;//性别
     private String height;//身高cm
     private String weight;//体重kg
+    private String age;//年龄
+    private String score;//积分
+    private String walkMoney;//步票
     private String unionId;//qq唯一标识
     private String openid;
     private String token;//访问凭证
     private String mobile;// 手机登陆接口 返回的手机号
+    private String registerType;// //注册类型 0 QQ 1 微信
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public String getScore() {
+        return score;
+    }
+
+    public void setScore(String score) {
+        this.score = score;
+    }
+
+    public String getWalkMoney() {
+        return walkMoney;
+    }
+
+    public void setWalkMoney(String walkMoney) {
+        this.walkMoney = walkMoney;
+    }
+
+    public String getRegisterType() {
+        return registerType;
+    }
+
+    public void setRegisterType(String registerType) {
+        this.registerType = registerType;
+    }
 
     public String getMobile() {
         return mobile;
@@ -42,13 +86,6 @@ public class  UserLoginResultInfo {
         this.createTime = createTime;
     }
 
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
 
     public String getNickName() {
         return nickName;
@@ -111,15 +148,19 @@ public class  UserLoginResultInfo {
         return "UserLoginResultInfo{" +
                 "id='" + id + '\'' +
                 ", createTime='" + createTime + '\'' +
-                ", avatar='" + avatar + '\'' +
+                ", avatarUrl='" + avatarUrl + '\'' +
                 ", nickName='" + nickName + '\'' +
                 ", gender='" + gender + '\'' +
                 ", height='" + height + '\'' +
                 ", weight='" + weight + '\'' +
+                ", age='" + age + '\'' +
+                ", score='" + score + '\'' +
+                ", walkMoney='" + walkMoney + '\'' +
                 ", unionId='" + unionId + '\'' +
                 ", openid='" + openid + '\'' +
                 ", token='" + token + '\'' +
                 ", mobile='" + mobile + '\'' +
+                ", registerType='" + registerType + '\'' +
                 '}';
     }
 }

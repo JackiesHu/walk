@@ -37,5 +37,7 @@ dependencies {
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.9.3@aar'
     compile 'org.greenrobot:greendao:3.2.0'
 
+    compile 'com.alibaba:fastjson:1.1.56.android'
+
 
 }

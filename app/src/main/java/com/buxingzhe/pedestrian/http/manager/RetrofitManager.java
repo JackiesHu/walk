@@ -7,6 +7,7 @@ import com.buxingzhe.pedestrian.PDConfig;
 import com.buxingzhe.pedestrian.http.NetRequestParams;
 import com.buxingzhe.pedestrian.http.apiservice.NetRequestService;
 import com.buxingzhe.pedestrian.http.factory.strings.StringConverterFactory;
+import com.buxingzhe.pedestrian.utils.SharedPreferencesUtil;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -20,6 +21,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import rx.Observable;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Created by zhaishaoping on 29/03/2017.
@@ -70,6 +74,7 @@ public class RetrofitManager {
                             .readTimeout(20, TimeUnit.SECONDS)
                             .writeTimeout(20, TimeUnit.SECONDS)
                             .addInterceptor(mRewriteCacheControlInterceptor)
+                            .addInterceptor(mCookiesInterceptor)
                             .addNetworkInterceptor(mRewriteCacheControlInterceptor)
                             .addInterceptor(mLoggingInterceptor)
                             .build();
@@ -121,6 +126,37 @@ public class RetrofitManager {
             Log.i(String.format(Locale.getDefault(),"Received response for %s in %.1fms%n%s",
                     response.request().url(),(t2-t1)/1e6d,response.headers()));
             return response;
+        }
+    };
+
+
+    private static final Interceptor mCookiesInterceptor = new  Interceptor(){
+
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Response originalResponse = chain.proceed(chain.request());
+            if (!originalResponse.headers("Set-Cookie").isEmpty()) {
+                final StringBuffer cookieBuffer = new StringBuffer();
+                Observable.from(originalResponse.headers("Set-Cookie"))
+                        .map(new Func1<String, String>() {
+                            @Override
+                            public String call(String s) {
+                                String[] cookieArray = s.split(";");
+                                return cookieArray[0];
+                            }
+                        })
+                        .subscribe(new Action1<String>() {
+                            @Override
+                            public void call(String cookie) {
+                                cookieBuffer.append(cookie).append(";");
+                            }
+                        });
+                SharedPreferencesUtil.getInstance().getSharedPreferences(PDConfig.getInstance().getContext())
+                        .edit()
+                        .putString("cookie",cookieBuffer.toString())
+                        .commit();
+            }
+            return originalResponse;
         }
     };
 

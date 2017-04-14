@@ -8,10 +8,14 @@ import android.view.View;
 import com.buxingzhe.pedestrian.widget.TitleBarLinstener;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
 
+import rx.Subscription;
+
 /**
  * Created by quanjing on 2017/2/23.
  */
 public class BaseFragment extends Fragment implements TitleBarLinstener {
+    protected Subscription mSubscription;
+
     protected Context mContext;
     protected Activity mActivity;
     protected TitleBarView vTitleBar;
@@ -121,5 +125,13 @@ public class BaseFragment extends Fragment implements TitleBarLinstener {
         if (vTitleBar != null){
             vTitleBar.showRightImg();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mSubscription!=null && mSubscription.isUnsubscribed()){
+            mSubscription.unsubscribe();
+        }
+        super.onDestroy();
     }
 }

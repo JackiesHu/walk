@@ -30,14 +30,15 @@ public interface NetRequestService {
     @POST(NetRequestParams.WALK_USER_MODIFY_USER_INFO)
     Observable</* RequestResultInfo<UserModifyInfo> */ String> modifyUserInfo(@FieldMap Map<String, String> modifyInfoMap);
 
-    //增加用户步票
+    //增加用户步票，（社交网络分享步行记录后调用）
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_USER_ADD_WALK_NUM)
     Observable</* RequestResultInfo<UserAddWalkNumInfo> */ String> addWalkNum(@FieldMap Map<String, String> walkNumMap);
 
-    //获取用户信息
+    //查询用户信息
+    @FormUrlEncoded
     @POST(NetRequestParams.WALK_USER_GET_INFO)
-    Observable getUserInfo(@Field("userId") String userId, @Field("token") String token);
+    Observable<String> getUserInfo(@Field("userId") String userId, @Field("token") String token);
 
     //用户注册
     @FormUrlEncoded
@@ -64,6 +65,11 @@ public interface NetRequestService {
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_GET_HISTORY_WEATHER)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getHistoryWeather(@Field("cityName") String cityName, @Field("date") String date);
+
+    //我的跑团
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_MINE_RUN_TEAM)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getMineRunTeam(@FieldMap Map<String, String> runTeamMap);
 
     //查询圈子
     @FormUrlEncoded

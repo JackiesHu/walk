@@ -3,6 +3,7 @@ package com.buxingzhe.pedestrian.walk;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,6 +41,7 @@ import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 import rx.Subscriber;
+
 
 /**
  * Created by quanjing on 2017/2/23.
@@ -111,54 +113,98 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
     }
 
     private void setData() {
-        setWeatherData(false,"20170327");
+        setWeatherData(true,"");
         setSpinnerData();
         setChartData();
     }
 
-    Subscriber mSubscriber =  new Subscriber<String>() {
-        @Override
-        public void onCompleted() {
-            Log.i("onCompleted");
-        }
 
-        @Override
-        public void onError(Throwable e) {
-            Log.i(e.getMessage());
-        }
+    private void setWeatherData(boolean isCurrentWeatherData){
+        setWeatherData(isCurrentWeatherData,"");
+    }
 
-        @Override
-        public void onNext(String jsonStr) {
-            Log.i("onNext");
-
-            // 由于服务端的返回数据格式不固定，因此这里采用手动解析
-            Object[] datas = JsonParseUtil.getInstance().parseJson(jsonStr, WalkWeatherInfo.class);
-            if ((Integer) datas[0] == 0) {
-                Log.i(datas[1].toString());
-
-                WalkWeatherInfo content = (WalkWeatherInfo) datas[1];
-                if (content != null) {
-                    Log.i(content.toString());
-                    mWeatherAddress.setText(content.getCityName());
-                    mWeather.setText(content.getTempLow()+"~"+ content.getTempHigh()+"  "+ content.getWeather()+"  "+ content.getWindDirection()+ content.getWindDegree());
-                    mWeatherAirQuality.setText(content.getAirQuality());
-                    mWeatherWearSuggest.setText(content.getWearSuggest());
-                    mWeatherSportSuggest.setText(content.getSportSuggest());
-                }
-
-            }
-        }
-
-    };
 
     private void setWeatherData(boolean isCurrentWeatherData, String date) {
         String cityName = "北京";//TODO
         if (isCurrentWeatherData){
-            NetRequestManager.getInstance().getCurrentWeather(cityName,mSubscriber);
+            mSubscription = NetRequestManager.getInstance().getCurrentWeather(cityName,new Subscriber<String>() {
+                @Override
+                public void onCompleted() {
+                    Log.i("onCompleted");
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    Log.i(e.getMessage());
+                }
+
+                @Override
+                public void onNext(String jsonStr) {
+                    Log.i("jsonStr" + jsonStr);
+
+                    // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+                    Object[] datas = JsonParseUtil.getInstance().parseJson(jsonStr, WalkWeatherInfo.class);
+                    if ((Integer) datas[0] == 0) {
+                        Log.i(datas[1].toString());
+
+                        WalkWeatherInfo content = (WalkWeatherInfo) datas[1];
+                        if (content != null) {
+                            Log.i(content.toString());
+                            WalkedFragment.this.setWeatherData(content);
+                        }
+
+                    }else{
+                        Toast.makeText(mContext, datas[2].toString(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            });
         }else{
             Log.i(date);
-            NetRequestManager.getInstance().getHistoryWeather(cityName,date,mSubscriber);
+            mSubscription = NetRequestManager.getInstance().getHistoryWeather(cityName,date, new Subscriber<String>() {
+                @Override
+                public void onCompleted() {
+                    Log.i("onCompleted");
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    Log.i(e.getMessage());
+                }
+
+                @Override
+                public void onNext(String jsonStr) {
+                    Log.i("jsonStr" + jsonStr);
+
+                    // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+                    Object[] datas = JsonParseUtil.getInstance().parseJson(jsonStr, WalkWeatherInfo.class);
+                    if ((Integer) datas[0] == 0) {
+                        Log.i(datas[1].toString());
+
+                        WalkWeatherInfo content = (WalkWeatherInfo) datas[1];
+                        if (content != null) {
+                            Log.i(content.toString());
+                            WalkedFragment.this.setWeatherData(content);
+                        }
+
+                    }else{
+                        Toast.makeText(mContext, datas[2].toString(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            });
         }
+    }
+
+    private void setWeatherData(WalkWeatherInfo content) {
+        if (TextUtils.isEmpty(content.getCityName())){
+            return;
+        }
+        mWeatherAddress.setText(content.getCityName());
+        mWeather.setText(content.getTempLow()+"~"+ content.getTempHigh()+"  "+ content.getWeather()+"  "+ content.getWindDirection()+ content.getWindDegree());
+        mWeatherAirQuality.setText(content.getAirQuality());
+        mWeatherWearSuggest.setText(content.getWearSuggest());
+        mWeatherSportSuggest.setText(content.getSportSuggest());
     }
 
     /**

@@ -2,6 +2,7 @@ package com.buxingzhe.pedestrian.utils;
 
 import android.text.TextUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -27,7 +28,7 @@ public class JsonParseUtil {
     }
 
 
-    public <T> Object [] parseJson(String jsonStr, Class clazz) {
+    public <T> Object [] parseJson(String jsonStr, Class<T> clazz) {
         if (TextUtils.isEmpty(jsonStr)){
             return null;
         }
@@ -47,7 +48,13 @@ public class JsonParseUtil {
                         if (rootJson.has("content")){
                             JSONObject content = rootJson.getJSONObject("content");
                             //将 jsonobject 转换成  json
-                            Object bean = mGson.fromJson(mGson.toJson(content), clazz);
+//                            Object bean = mGson.fromJson(mGson.toJson(content), clazz);
+
+                            String toJson = mGson.toJson(content);
+//                            Log.i(toJson);//nameValuePairs
+                            //String contentJsonString = JSON.toJSONString(content,true);
+//                            Log.i(contentJsonString);
+                            T bean = JSON.parseObject(toJson.substring("{\"nameValuePairs\":".length(), toJson.length()-1), clazz);
                             dataArray[1] = bean;
                         }
                         break;
@@ -67,7 +74,5 @@ public class JsonParseUtil {
             return dataArray;
         }
     }
-
-
 
 }

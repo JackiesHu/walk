@@ -22,9 +22,11 @@ import com.buxingzhe.lib.widget.AwesomeDialogUtil;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.bean.user.UserLoginResultInfo;
+import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
+import com.buxingzhe.pedestrian.utils.SharedPreferencesUtil;
 import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
@@ -65,6 +67,17 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         setContentView(R.layout.activity_login_layout);
         findId();
         registerListener();
+
+        //自动登陆
+       GlobalParams.TOKEN = SharedPreferencesUtil.getInstance().getSharedPreferences(getApplicationContext())
+                .getString("token", "");
+       GlobalParams.USER_ID = SharedPreferencesUtil.getInstance().getSharedPreferences(getApplicationContext())
+                .getString("uid", "");
+       GlobalParams.LOGIN_TYPE = SharedPreferencesUtil.getInstance().getSharedPreferences(getApplicationContext())
+                .getInt("loginType", 0);
+        if (!TextUtils.isEmpty(GlobalParams.TOKEN)){
+            login(null,GlobalParams.LOGIN_TYPE);
+        }
 
     }
 
@@ -239,12 +252,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         @Override
         public void onError(SHARE_MEDIA platform, int action, Throwable t) {
             Log.e(t.getMessage());
-            Toast.makeText(getApplicationContext(), "Authorize fail", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "认证失败", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onCancel(SHARE_MEDIA platform, int action) {
-            Toast.makeText(getApplicationContext(), "Authorize cancel", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "认证取消", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -254,42 +267,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
      * @param loginParams 参数封装的map
      * @param loginType   1：手机登陆，2：普通登陆  （设置此参数是因为 请求url不同）
      */
-    private void login(Map<String, String> loginParams, int loginType) {
+    private void login(Map<String, String> loginParams, final int loginType) {
         //TODO 访问服务端
 
         AwesomeDialogUtil.getInstance().create(this, "正在登陆...").showDialog();
 
-//        Subscriber subscriber = new Subscriber<RequestResultInfo<UserLoginResultInfo>>() {
-//
-//            @Override
-//            public void onCompleted() {
-//                Log.i("onCompleted");
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                Log.i("onError: " + e.getMessage());
-//                AwesomeDialogUtil.getInstance().create(LoginActivity.this).dismissDialog();
-//
-//            }
-//
-//            @Override
-//            public void onNext(RequestResultInfo<UserLoginResultInfo> userLoginResultInfoRequestResultInfo) {
-//                Log.i("onNext");
-//                AwesomeDialogUtil.getInstance().create(LoginActivity.this).dismissDialog();
-//                if (userLoginResultInfoRequestResultInfo != null) {
-//                    UserLoginResultInfo content = userLoginResultInfoRequestResultInfo.getContent();
-//                    if (content != null) {
-//                        //TODO 保存数据
-//                        Log.i("login success");
-//                        Log.i(content.toString());
-//                        //TODO 跳转Main
-//                        EnterActUtils.enterMainActivity(LoginActivity.this);
-//                        finish();
-//                    }
-//                }
-//            }
-//        };
         Subscriber mSubscriber = new Subscriber<String>() {
 
             @Override
@@ -306,7 +288,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
 
             @Override
             public void onNext(String jsonStr) {
-                Log.i("onNext");
+                Log.i(jsonStr);
                 AwesomeDialogUtil.getInstance().create(LoginActivity.this).dismissDialog();
 
                 // 由于服务端的返回数据格式不固定，因此这里采用手动解析
@@ -317,6 +299,17 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                     UserLoginResultInfo resultInfo = (UserLoginResultInfo) datas[1];
                     if (resultInfo != null) {
                         //TODO 保存数据
+                        SharedPreferencesUtil.getInstance().getSharedPreferences(getApplicationContext())
+                                .edit()
+                                .putString("token", resultInfo.getToken())
+                                .putString("uid", resultInfo.getId())
+                                .putInt("loginType", loginType )
+                                .commit();
+
+
+                        GlobalParams.TOKEN = resultInfo.getToken();
+                        GlobalParams.USER_ID = resultInfo.getId();
+                        GlobalParams.mUserLoginResultInfo = resultInfo;
 
                         //TODO 跳转Main
                         EnterActUtils.enterMainActivity(LoginActivity.this);

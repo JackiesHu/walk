@@ -22,8 +22,11 @@ public class NetRequestParams {
     public static final String WALK_USER_ADD_WALK_NUM = "walkman/wmUser/addWalkMoneyAmount";
     /** 获取用户信息 */
     public static final String WALK_USER_GET_INFO = "walkman/wmUser/getUserInformation";
+    /** 查询用户排名情况 */
+    public static final String WALK_USER_GET_RANKS = "walkman/wmUser/getUserRanks";
     /** 用户注册 */
     public static final String WALK_USER_REGISTER = "walkman/wmUser/registe";
+
 
     //*************************** Walk ****************************
     /** 上传步行或者骑行记录 */
@@ -38,6 +41,9 @@ public class NetRequestParams {
     /** 获取历史天气信息 */
     public static final String WALK_GET_HISTORY_WEATHER = "walkman/wmWeather/getHistoryWeather";
 
+    //*************************** mine ****************************
+    /** 我的跑团*/
+    public static final String WALK_MINE_RUN_TEAM = "walkman/wmActivity/getActivityByPublisher";
 
     /** 查询圈子*/
     public static final String WALK_GET_WALK_RECORDS = "walkman/wmWalkRecord/getWalkRecords";

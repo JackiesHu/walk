@@ -41,10 +41,20 @@ public class NetRequestManager{
                 .subscribe(subscriber);
     }
 
-    public Subscription modifyUserInfo(Map<String, String> paramsMap, Subscriber subscriber){
+    //修改用户信息
+    public Subscription modifyUserInfo(Map<String, String> paramsMap, Subscriber subscriber) {
         return RetrofitManager.getInstance()
                 .getNetRequestService()
                 .modifyUserInfo(paramsMap)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
+    //查询用户信息
+    public Subscription getUserInfo(String userId, String token, Subscriber subscriber){
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .getUserInfo(userId,token)
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }
@@ -90,6 +100,15 @@ public class NetRequestManager{
         return RetrofitManager.getInstance()
                 .getNetRequestService()
                 .getHistoryWeather(cityName,date)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
+    //我的跑团
+    public Subscription getMineRunTeam(Map<String,String> paramsMap, Subscriber subscriber){
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .getMineRunTeam(paramsMap)
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }
