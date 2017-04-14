@@ -39,9 +39,13 @@
     <color name="theme_body">#cc22292c</color>
     <color name="theme_body_dark">#cc20272a</color>
 
-
+    <color name="light_black">#464646</color>
+    <color name="drak_gray">#999999</color>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="dark">#9f111111</color>
     <color name="theme_bg">#00ae66</color>
+    <color name="list_bg">#f5f5f5</color>
+    <color name="grey_font">#7b7b7b</color>
+    <color name="blue_font">#3377bb</color>
 </resources>

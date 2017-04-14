@@ -1,23 +1,368 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-        <com.buxingzhe.pedestrian.widget.TitleBarView
-            android:id="@+id/run_title_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
-        </com.buxingzhe.pedestrian.widget.TitleBarView>
-    </android.support.design.widget.AppBarLayout>
-    <com.baidu.mapapi.map.MapView
-        android:id="@+id/walkDetail_map"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true">
+
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
-        android:visibility="visible"
-        />
-</LinearLayout>
+        android:orientation="vertical">
+
+        <!-- map -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <android.support.design.widget.AppBarLayout
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/actionBarSize"
+                android:theme="@style/AppTheme.AppBarOverlay">
+
+                <com.buxingzhe.pedestrian.widget.TitleBarView
+                    android:id="@+id/run_title_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?android:attr/actionBarSize">
+                </com.buxingzhe.pedestrian.widget.TitleBarView>
+            </android.support.design.widget.AppBarLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.baidu.mapapi.map.MapView
+                    android:id="@+id/run_map_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:visibility="visible"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="40dp">
+
+                    <ImageView
+                        android:id="@+id/run_iv_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dp"
+                        android:src="@mipmap/ic_jibu_dingwei_nor"/>
+
+                    <ImageView
+                        android:id="@+id/run_iv_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/ic_jibu_start_nor"/>
+
+                    <TextView
+                        android:id="@+id/run_tv_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:text="开始"
+                        android:textColor="#FFFFFF"
+                        android:textSize="17sp"/>
+
+                    <ImageView
+                        android:id="@+id/run_iv_zoom_zhankai"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="15dp"
+                        android:src="@mipmap/ic_jibu_map_zhankai"/>
+
+                    <ImageView
+                        android:id="@+id/run_iv_zoom_suofang"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="15dp"
+                        android:src="@mipmap/ic_jibu_map_suofang"
+                        android:visibility="gone"/>
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <!-- All View -->
+        <LinearLayout
+            android:id="@+id/run_ll_bottom_all"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="#F2FFFFFF"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#EEEEEE"></View>
+
+            <Chronometer
+                android:id="@+id/run_chronometer"
+                android:layout_width="wrap_content"
+                android:layout_height="78dp"
+                android:layout_gravity="center_horizontal"
+                android:format="00:00:00"
+                android:gravity="center"
+                android:textColor="#00AE66"
+                android:textSize="36sp"
+                android:textStyle="bold"
+                ></Chronometer>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#EEEEEE"></View>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="距离(km)"
+                        android:textColor="#5fc199"
+                        android:textSize="11sp"/>
+
+                    <TextView
+                        android:id="@+id/run_tv_distance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="#00AE66"
+                        android:textSize="24sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0.5dp"
+                    android:layout_height="24dp"
+                    android:background="#EEEEEE"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="步数"
+                        android:textColor="#5fc199"
+                        android:textSize="11sp"/>
+
+                    <TextView
+                        android:id="@+id/run_tv_walk_num"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="#00AE66"
+                        android:textSize="24sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0.5dp"
+                    android:layout_height="24dp"
+                    android:background="#EEEEEE"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="卡路里(千焦)"
+                        android:textColor="#5fc199"
+                        android:textSize="11sp"/>
+
+                    <TextView
+                        android:id="@+id/run_tv_calorie"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="#00AE66"
+                        android:textSize="24sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="45dp"
+                    android:layout_marginLeft="45dp"
+                    android:layout_marginTop="45dp">
+
+                    <ImageView
+                        android:id="@+id/run_iv_run_done"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/ic_jibu_over_nor"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:text="完成"
+                        android:textColor="#FFFFFF"
+                        android:textSize="17sp"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginBottom="45dp"
+                    android:layout_marginRight="45dp"
+                    android:layout_marginTop="45dp">
+
+                    <ImageView
+                        android:id="@+id/run_iv_run_state"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/ic_jibu_jixu_nor"/>
+
+                    <TextView
+                        android:id="@+id/run_tv_run_state"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:text="@string/run_pause"
+                        android:textColor="#FFFFFF"
+                        android:textSize="17sp"/>
+                </RelativeLayout>
+
+            </RelativeLayout>
+        </LinearLayout>
+
+        <!-- Small View -->
+        <LinearLayout
+            android:id="@+id/fun_ll_bottom_small"
+            android:layout_width="match_parent"
+            android:layout_height="78dp"
+            android:background="#F2FFFFFF"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#EEEEEE"></View>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="距离(km)"
+                        android:textColor="#5FC199"
+                        android:textSize="11sp"/>
+
+                    <TextView
+                        android:id="@+id/run_tv_distance_small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="#00AE66"
+                        android:textSize="27sp"
+                        android:textStyle="bold"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="时长"
+                        android:textColor="#5FC199"
+                        android:textSize="11sp"/>
+
+                    <TextView
+                        android:id="@+id/run_tv_time_small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="000000"
+                        android:textColor="#00AE66"
+                        android:textSize="27sp"
+                        android:textStyle="bold"/>
+
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Data View -->
+        <include
+            layout="@layout/fragment_run_done_data"
+            android:visibility="gone"/>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/run_tv_count_down"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:background="#B3000000"
+        android:gravity="center"
+        android:text=""
+        android:textColor="#FFFFFF"
+        android:textSize="180sp"
+        android:visibility="gone"/>
+</RelativeLayout>

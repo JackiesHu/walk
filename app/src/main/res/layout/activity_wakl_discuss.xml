@@ -210,6 +210,19 @@
         android:textColor="@color/dark_back"
         android:background="@null"
         />
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="120dp">
+
+        <com.buxingzhe.pedestrian.widget.FlowLayout
+            android:id="@+id/localTag"
+            android:layout_width="fill_parent"
+            android:layout_height="120dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@null"></com.buxingzhe.pedestrian.widget.FlowLayout>
+    </ScrollView>
     <include android:layout_width="match_parent"
         android:layout_height="1px"
         layout="@layout/item_line_gray"

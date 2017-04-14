@@ -14,20 +14,39 @@
     <RelativeLayout
         android:id="@+id/addTagRL"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:layout_below="@id/tag_title_bar"
+        android:gravity="center_vertical"
         >
+        <ImageView
+            android:layout_marginLeft="12dp"
+            android:id="@+id/addTag_biaoqian"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_biaoqian_add"
+            android:layout_centerVertical="true"
+            />
         <TextView
+            android:layout_toRightOf="@id/addTag_biaoqian"
             android:id="@+id/et_tag"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:hint="请输入新标签"
-            android:layout_margin="10dp"
-            android:paddingLeft="10dp"
-            android:textSize="14sp"
+            android:paddingLeft="5dp"
+            android:textSize="16sp"
             android:focusable="true"
-            android:focusableInTouchMode="true"/>
+            android:focusableInTouchMode="true"
+            android:textColor="@color/dark_back"
+            android:layout_centerVertical="true"
+            />
     </RelativeLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_gray_line"
+        android:layout_marginLeft="15dp"
+        android:layout_below="@id/addTagRL"
+        />
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"

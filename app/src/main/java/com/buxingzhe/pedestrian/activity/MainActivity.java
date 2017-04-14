@@ -7,11 +7,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.User.MeFragment;
 import com.buxingzhe.pedestrian.community.CommunityFragment;
 import com.buxingzhe.pedestrian.found.FoundFragment;
+import com.buxingzhe.pedestrian.listen.OnInteractionData;
 import com.buxingzhe.pedestrian.run.RunFragment;
 import com.buxingzhe.pedestrian.walk.WalkedFragment;
 import com.buxingzhe.pedestrian.widget.MWTTabBar;
@@ -19,7 +21,7 @@ import com.buxingzhe.pedestrian.widget.MWTTabBar;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements  View.OnClickListener {
+public class MainActivity extends BaseActivity implements  View.OnClickListener, OnInteractionData {
     private MWTTabBar vTabbar;
     private MainTabBarAdapter adapter;
 
@@ -29,6 +31,9 @@ public class MainActivity extends BaseActivity implements  View.OnClickListener 
     private List<Fragment> fragments = new ArrayList<Fragment>();
     private MQJMainPagerAdapter pagerAdapter;
     private ImageView vRun;
+
+    private RelativeLayout main_tab;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,10 +46,12 @@ public class MainActivity extends BaseActivity implements  View.OnClickListener 
         mViewPager = (ViewPager) findViewById(R.id.container);
         vTabbar = (MWTTabBar) findViewById(R.id.TabBar);
         vRun = (ImageView) findViewById(R.id.main_run);
+        main_tab = (RelativeLayout) findViewById(R.id.main_tab);
         initTabbar();
         construct();
         pagerAdapter = new MQJMainPagerAdapter(mContext,getSupportFragmentManager(), fragments);
         mViewPager.setAdapter(pagerAdapter);
+        mViewPager.setOffscreenPageLimit(pagerAdapter.getCount());
     }
     private void initTabbar(){
         adapter = new MainTabBarAdapter();
@@ -81,6 +88,8 @@ public class MainActivity extends BaseActivity implements  View.OnClickListener 
         CommunityFragment mCommunityFragment = new CommunityFragment();
         MeFragment mMeFragment = new MeFragment();
 
+        mRunFragment.setOnInteractionData(this);
+
         fragments.add(mWalkFragment);
         fragments.add(mFoundFragment);
         fragments.add(mRunFragment);
@@ -91,12 +100,39 @@ public class MainActivity extends BaseActivity implements  View.OnClickListener 
     @Override
     public void onClick(View view) {
         int id = view.getId();
+
         if (id == 2){
+            main_tab.setVisibility(View.GONE);
+            vRun.setVisibility(View.GONE);
             vRun.setImageResource(R.mipmap.ic_run_press);
         }else {
             vRun.setImageResource(R.mipmap.ic_run_nor);
         }
         adapter.switchView(id);
-        mViewPager.setCurrentItem(id);
+        mViewPager.setCurrentItem(id,false);
+
+    }
+
+    @Override
+    public void onInteraction() {
+        dealWithTab();
+        fragments.set(2,new RunFragment());
+        pagerAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onBackPressed() {
+        dealWithTab();
+
+//        super.onBackPressed();
+
+    }
+
+    private void dealWithTab() {
+        adapter.switchView(0);
+        mViewPager.setCurrentItem(0,false);
+        main_tab.setVisibility(View.VISIBLE);
+        vRun.setVisibility(View.VISIBLE);
+        vRun.setImageResource(R.mipmap.ic_run_nor);
     }
 }

@@ -22,5 +22,6 @@
         android:src="@mipmap/ic_biaoqian_check"
         android:layout_alignParentRight="true"
         android:layout_marginRight="16dp"
+        android:layout_centerVertical="true"
         />
 </RelativeLayout>

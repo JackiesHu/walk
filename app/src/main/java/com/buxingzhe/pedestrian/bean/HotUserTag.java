@@ -7,6 +7,7 @@ public class HotUserTag {
     public Integer count;
     public Long id;
     public String tag;
+    public boolean isSelect;
     public Long updateTime;
     public Long userId;
 }

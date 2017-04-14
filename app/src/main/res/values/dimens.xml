@@ -6,4 +6,35 @@
     <dimen name="appbar_padding_top">8dp</dimen>
     <dimen name="title_height">48dp</dimen>
     <dimen name="heading_height">22dp</dimen>
+
+    <!-- 统一尺度 按照 1dp = 2px -->
+    <dimen name="bxz_36px_tv">18sp</dimen>
+    <dimen name="bxz_32px_tv">16sp</dimen>
+    <dimen name="bxz_30px_tv">15dp</dimen>
+
+    <dimen name="bxz_1px">0.5dp</dimen>
+    <dimen name="bxz_8px">4dp</dimen>
+    <dimen name="bxz_16px">8dp</dimen>
+    <dimen name="bxz_20px">10dp</dimen>
+    <dimen name="bxz_28px">14dp</dimen>
+    <dimen name="bxz_30px">15dp</dimen>
+    <dimen name="bxz_40px">20dp</dimen>
+    <dimen name="bxz_50px">25dp</dimen>
+    <dimen name="bxz_80px">40dp</dimen>
+    <dimen name="bxz_90px">45dp</dimen>
+    <dimen name="bxz_94px">47dp</dimen>
+
+    <dimen name="bxz_530px">265dp</dimen>
+    <dimen name="bxz_84px">42dp</dimen>
+    <dimen name="bxz_24px_tv">12dp</dimen>
+    <dimen name="bxz_72px">36dp</dimen>
+    <dimen name="bxz_14px">7dp</dimen>
+
+
+    <!-- 距离待处理 -->
+    <dimen name="bxz_144px">72dp</dimen>
+    <dimen name="bxz_348px">104dp</dimen>
+    <dimen name="bxz_18px">9dp</dimen>
+    <dimen name="bxz_10px">5dp</dimen>
+
 </resources>

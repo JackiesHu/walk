@@ -8,23 +8,66 @@ import android.view.View;
 import com.buxingzhe.pedestrian.widget.TitleBarLinstener;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
 
+import rx.Subscription;
+
 /**
  * Created by quanjing on 2017/2/23.
  */
 public class BaseFragment extends Fragment implements TitleBarLinstener {
+    protected Subscription mSubscription;
+
     protected Context mContext;
     protected Activity mActivity;
     protected TitleBarView vTitleBar;
     protected void setTitle(String title){
         if (vTitleBar != null){
             vTitleBar.setvTitle(title);
-            onBack();
+//            onBack();
             initTitle();
         }
     }
+
+    protected void setTitleRight(String titleRight){
+        if (vTitleBar != null){
+            vTitleBar.setRight(titleRight);
+            initTitle();
+        }
+    }
+    protected void setTitleLeft(String titleLeft){
+        if (vTitleBar != null){
+            vTitleBar.setLeft(titleLeft);
+            initTitle();
+        }
+    }
+    protected void setTitleLeftOnclick(){
+        if (vTitleBar != null){
+            vTitleBar.setLeftList();
+        }
+    }
+    protected void setTitleRightOnclick(){
+        if (vTitleBar != null){
+            vTitleBar.setRightList();
+        }
+    }
+
     protected void setImgLeftOnclick(View.OnClickListener onclick){
         if (vTitleBar != null){
             vTitleBar.setImgLeftList(onclick);
+        }
+    }
+    protected void setImgLeftOnclick(){
+        if (vTitleBar != null){
+            vTitleBar.setImgLeftList();
+        }
+    }
+    protected void setImgRightOnclick(View.OnClickListener onclick){
+        if (vTitleBar != null){
+            vTitleBar.setImgRightList(onclick);
+        }
+    }
+    protected void setImgRightOnclick(){
+        if (vTitleBar != null){
+            vTitleBar.setImgRightList();
         }
     }
     protected void setTextRightOnclick(View.OnClickListener onclick){
@@ -72,5 +115,23 @@ public class BaseFragment extends Fragment implements TitleBarLinstener {
         if (vTitleBar != null){
             vTitleBar.showLeftImag();
         }
+    }
+    protected void hideRightIco(){
+        if (vTitleBar != null){
+            vTitleBar.hideRightImg();
+        }
+    }
+    protected void showRightIco(){
+        if (vTitleBar != null){
+            vTitleBar.showRightImg();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mSubscription!=null && mSubscription.isUnsubscribed()){
+            mSubscription.unsubscribe();
+        }
+        super.onDestroy();
     }
 }
