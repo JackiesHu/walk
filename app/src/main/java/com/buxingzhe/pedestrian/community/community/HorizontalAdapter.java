@@ -9,6 +9,10 @@ import android.widget.RelativeLayout;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by QJ on 2017/4/13.
@@ -17,21 +21,20 @@ import com.buxingzhe.pedestrian.utils.SystemUtils;
 public class HorizontalAdapter extends BaseAdapter {
     private Context mContext;
     int currentId = 0;
-//    ArrayList<CircleCommentContentData> assets;
+    List<String> views = new ArrayList<>();
 
-    public HorizontalAdapter(Context mContext) {
+    public HorizontalAdapter(Context mContext,List<String> views) {
         this.mContext = mContext;
-//        this.assets = assets;
+        this.views = views;
     }
 
     @Override
     public int getCount() {
-//        if (assets != null) {
-//            return assets.size();
-//        } else {
-//            return 0;
-//        }
-        return 4;
+        if (views != null) {
+            return views.size();
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -63,30 +66,8 @@ public class HorizontalAdapter extends BaseAdapter {
 
         RelativeLayout.LayoutParams imgvwMargin = new RelativeLayout.LayoutParams(width, height);
         imgvwMargin.setMargins(0, 0, SystemUtils.dip2px(mContext, 6), 0);
-//        if (position == 0) {
-//            imgvwMargin.setMargins(0, 0, SystemUtils.dip2px(mContext, 6), 0);
-//        } else if (position == assets.size()) {
-//            imgvwMargin.setMargins(SystemUtils.dip2px(mContext, 6), 0, 0, 0);
-//        } else {
-//            imgvwMargin.setMargins(SystemUtils.dip2px(mContext, 6), 0, SystemUtils.dip2px(mContext, 6), 0);
-//        }
-//        if (position == currentId) {
-//            setBackgroudPaddingt(holdeImage.imageView);
-//        }
         holdeImage.iv_pic.setLayoutParams(imgvwMargin);
-
-//        if (assets.get(position).url.contains("file://")) {
-//            Picasso.with(mContext)
-//                    .load(assets.get(position).url)
-//                    .config(Bitmap.Config.RGB_565)
-//                    .into(holdeImage.imageView);
-//        } else {
-//            String url = ImageLoaderManager.getImageLoaderManager(mContext).smallImageSrc(assets.get(position).url, 160, 160);
-//            ImageLoaderManager.getImageLoaderManager(mContext).setDisplayImage(url, holdeImage.imageView,
-//                    ImageLoaderManager.DEFAULT, ImageLoaderManager.DEFAULT, ImageLoaderManager.PICTURE);
-//        }
-
-        holdeImage.iv_pic.setImageResource(R.mipmap.fengjing1);
+        Picasso.with(mContext).load(views.get(position)).resize(width,height).centerCrop().into(holdeImage.iv_pic);
         return view;
     }
 

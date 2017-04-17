@@ -3,7 +3,9 @@ package com.buxingzhe.pedestrian.community.community;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,97 +14,122 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.buxingzhe.pedestrian.R;
-import com.buxingzhe.pedestrian.bean.AdvCommunityData;
+import com.buxingzhe.pedestrian.activity.BaseAdapter;
+import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
+import com.buxingzhe.pedestrian.utils.SystemUtils;
+import com.buxingzhe.pedestrian.utils.TextParser;
+import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import java.util.Date;
 
 /**
- * Created by quanjing on 2017/2/28.
+ * Created by quanjing on 2017/4/17.
  */
-public class CommActAdapter extends RecyclerView.Adapter<CommActAdapter.CommActHolder>
-{
-    private Context mContext;
+public class CommActAdapter extends BaseAdapter<WalkActivityInfo> {
     private Activity mActivity;
+    private Context mContext;
     private LayoutInflater mLayoutInflater;
-    private ArrayList<AdvCommunityData> datas = new ArrayList<AdvCommunityData>();
-    public CommActAdapter(Context context,Activity mActivity,ArrayList<AdvCommunityData> datas) {
-        this.datas = datas;
+
+    public CommActAdapter(Activity activity, Context context) {
+        this.mActivity = activity;
         this.mContext = context;
-        this.mActivity = mActivity;
         mLayoutInflater = LayoutInflater.from(mContext);
     }
 
     @Override
-    public CommActAdapter.CommActHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mLayoutInflater.inflate(R.layout.activityitem_nowac_item,null);
+    public CommActAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = mLayoutInflater.inflate(R.layout.item_comm_act, null);
         view.setOnClickListener(new myCommAct());
-        return new CommActHolder(view);
+        return new MyViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(CommActAdapter.CommActHolder holder, int position) {
-        //holder.itemView.setTag(datas.get(position));
-        /*if(datas!=null && datas.size()>0){
-            final AdvCommunityData listdata=datas.get(position);
-            if(listdata!=null){
-                //Picasso.with(mContext).load(listdata.logoUrl).into(holder.nowitem_Imageview);
-                TextParser pictexParser=new TextParser();
-                pictexParser.parse(holder.tv_nv_time);
-                TextParser pictextParser=new TextParser();
-                pictextParser.append("已参赛 ", 12, Color.WHITE);
-                pictextParser.append(listdata.imageCount+"", 12, Color.parseColor("#F24E16"));
-                pictextParser.parse(holder.tv_nv_num);
-
-                holder.item_info_TextView.setText(listdata.summary);
-                holder.nowitem_Imageview.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //点击流统计
-                        if (listdata.type == 1) {
-
-                        } else {
-
-                        }
-                    }
-                });
-            }
-        }else{
-            holder.rl_rl.setVisibility(View.GONE);
-        }*/
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        WalkActivityInfo walkActivityInfo = getDataSet().get(position);
+        MyViewHolder myViewHolder = (MyViewHolder) holder;
+        myViewHolder.bind(walkActivityInfo);
     }
-    class myCommAct implements View.OnClickListener{
+
+
+    class myCommAct implements View.OnClickListener {
         @Override
         public void onClick(View view) {
             Intent intent = new Intent();
-            intent.setClass(mContext,CommActInfoActivity.class);
-            EnterActUtils.startAct(mActivity,intent);
+            intent.setClass(mContext, CommActInfoActivity.class);
+            EnterActUtils.startAct(mActivity, intent);
         }
     }
-    @Override
-    public int getItemCount() {
-        if (datas == null)
-            return 0;
-        else
-            return 5;
-    }
-    public static class CommActHolder extends RecyclerView.ViewHolder {
-        RelativeLayout rl_rl;
-        ImageView nowitem_Imageview;
-        TextView item_Time_TextView;
-        TextView item_num_TextView;
-        TextView item_info_TextView;
-        TextView tv_nv_num;
-        TextView tv_nv_time;
 
-        public CommActHolder(View itemView) {
+//    @Override
+//    public int getItemCount() {
+//        if (datas == null)
+//            return 0;
+//        else
+//            return 5;
+//    }
+
+
+    class MyViewHolder extends RecyclerView.ViewHolder {
+        RelativeLayout rl_rl;
+        ImageView iv_banner;
+        TextView tv_title;
+        TextView tv_introduction;
+        TextView item_info_TextView;
+        TextView tv_attenderCount;
+        TextView tv_end_time;
+
+        public MyViewHolder(View itemView) {
             super(itemView);
-            nowitem_Imageview= (ImageView) itemView.findViewById(R.id.nowitem_Imageview);
-            item_Time_TextView = (TextView) itemView.findViewById(R.id.item_Time_TextView);
-            item_num_TextView= (TextView) itemView.findViewById(R.id.item_num_TextView);
-            tv_nv_num= (TextView) itemView.findViewById(R.id.tv_nv_num);
-            tv_nv_time= (TextView) itemView.findViewById(R.id.tv_nv_time);
-            rl_rl= (RelativeLayout) itemView.findViewById(R.id.rl_rl);
+            iv_banner = (ImageView) itemView.findViewById(R.id.iv_banner);
+            tv_title = (TextView) itemView.findViewById(R.id.tv_title);
+            tv_introduction = (TextView) itemView.findViewById(R.id.tv_introduction);
+            tv_attenderCount = (TextView) itemView.findViewById(R.id.tv_attenderCount);
+            tv_end_time = (TextView) itemView.findViewById(R.id.tv_end_time);
+            rl_rl = (RelativeLayout) itemView.findViewById(R.id.rl_rl);
         }
+
+
+        public void bind(WalkActivityInfo walkActivityInfo) {
+            int[] display = SystemUtils.getDisplayWidth(mContext);
+            int width = display[0] - SystemUtils.dip2px(mContext, 40);
+            if (!TextUtils.isEmpty(walkActivityInfo.getBanner())) {
+                Picasso.with(mContext).load(walkActivityInfo.getBanner()).resize(width, SystemUtils.dip2px(mContext, 200.0f)).centerCrop().into(iv_banner);
+            }
+            if (!TextUtils.isEmpty(walkActivityInfo.getTitle())) {
+                tv_title.setText(walkActivityInfo.getTitle());
+            }
+            if (!TextUtils.isEmpty(walkActivityInfo.getIntroduction())) {
+                tv_introduction.setText(walkActivityInfo.getIntroduction());
+            }
+            tv_attenderCount.setText(walkActivityInfo.getAttenderCount() + "人已参加");
+            if (!TextUtils.isEmpty(walkActivityInfo.getIsOutDate())){
+                //活动是否过期，0 没有 1 有
+                if (walkActivityInfo.getIsOutDate().equals("0")){
+                    TextParser textParser=new TextParser();
+                    textParser.append("倒计时", 13, Color.WHITE);
+                    textParser.append(""+residueDate(walkActivityInfo.getEndTimestamp()), 13, mContext.getResources().getColor(R.color.endtime_font));
+                    textParser.append("天", 13, Color.WHITE);
+                    textParser.parse(tv_end_time);
+                }else if (walkActivityInfo.getIsOutDate().equals("1")){
+                    tv_end_time.setText(mContext.getResources().getString(R.string.activity_outdate));
+                    tv_end_time.setTextColor(mContext.getResources().getColor(R.color.outdate_font));
+                }
+            }
+        }
+    }
+
+    /**
+     * 倒计时精确到天
+     *
+     * @param endTimestamp
+     * @return
+     */
+    private long residueDate(long endTimestamp) {
+        Date date = new Date();
+        Long time = date.getTime();
+        long l = endTimestamp - time;
+        long days = l / (1000 * 60 * 60 * 24);
+        return days;
     }
 }

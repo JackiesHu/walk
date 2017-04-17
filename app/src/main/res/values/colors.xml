@@ -24,5 +24,8 @@
     <color name="deep_orange">#fe8417</color>
 
     <color name="transparent_bg">#70000000</color>
+    <color name="introduce_font">#eeeeee</color>
+    <color name="outdate_font">#999999</color>
+    <color name="endtime_font">#fcff00</color>
 </resources>
 

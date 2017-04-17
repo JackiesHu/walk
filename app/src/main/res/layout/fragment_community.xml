@@ -1,73 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <RelativeLayout
         android:id="@+id/community_tabbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/title_height"
-        android:orientation="horizontal"
         android:background="@color/colorPrimaryDark"
-        >
+        android:orientation="horizontal">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-           android:layout_centerInParent="true"
-            >
+            android:layout_centerInParent="true">
+
             <RelativeLayout
                 android:id="@+id/rl_community"
-                android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                >
+                android:layout_weight="1">
 
                 <ImageView
                     android:id="@+id/community_bg1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@mipmap/ic_shequ_bt_bg"
-                    />
+                    android:src="@mipmap/ic_shequ_bt_bg" />
+
                 <TextView
                     android:id="@+id/community_tv1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
                     android:text="社区"
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="16sp"
-                    android:layout_centerInParent="true"
-                    />
+                    android:textSize="16sp" />
             </RelativeLayout>
+
             <RelativeLayout
                 android:id="@+id/rl_circle"
-                android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                >
+                android:layout_weight="1">
+
                 <ImageView
                     android:id="@+id/community_bg2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@mipmap/ic_shequ_bt_bg"
-                    android:visibility="invisible"
-                    />
+                    android:visibility="invisible" />
+
                 <TextView
                     android:id="@+id/community_tv2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
                     android:text="圈子"
                     android:textColor="@color/white"
-                    android:textSize="16sp"
-                    android:layout_centerInParent="true"
-                    />
+                    android:textSize="16sp" />
             </RelativeLayout>
         </LinearLayout>
 
+        <RelativeLayout
+            android:id="@+id/publishRL"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_shequ_add"
+                android:layout_centerInParent="true"/>
+        </RelativeLayout>
     </RelativeLayout>
+
     <android.support.v4.view.ViewPager
-        android:layout_marginTop="5dp"
         android:id="@+id/community_viewPager"
-        android:layout_below="@id/community_tabbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@id/community_tabbar"
+        android:layout_marginTop="5dp" />
 
 </RelativeLayout>

@@ -88,16 +88,6 @@
         android:layout_height="48dp"
         android:layout_marginRight="15dp"
         android:layout_marginLeft="15dp">
-        <TextView
-            android:id="@+id/tv_location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLength="400"
-            android:textSize="12sp"
-            android:textColor="@color/drak_gray"
-            android:singleLine="true"
-            android:text="北京 后海美食街"
-            android:layout_centerVertical="true"/>
         <RelativeLayout
             android:id="@+id/commRL"
             android:layout_width="wrap_content"
@@ -148,6 +138,18 @@
                 android:text="111"
                 />
         </RelativeLayout>
+        <TextView
+            android:id="@+id/tv_location"
+            android:layout_toLeftOf="@id/likeRL"
+            android:layout_alignParentLeft="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLength="400"
+            android:textSize="12sp"
+            android:textColor="@color/drak_gray"
+            android:singleLine="true"
+            android:text="北京 后海美食街"
+            android:layout_centerVertical="true"/>
     </RelativeLayout>
     <TextView
         android:layout_width="match_parent"

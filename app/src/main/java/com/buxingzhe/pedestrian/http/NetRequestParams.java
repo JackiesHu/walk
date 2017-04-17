@@ -47,6 +47,8 @@ public class NetRequestParams {
 
 
     //*************************** common ****************************
+    /** 活动查询*/
+    public static final String WALK_GET_ACTIVITYS = "walkman/wmActivity/getActivities";
     /** 查询圈子*/
     public static final String WALK_GET_WALK_RECORDS = "walkman/wmWalkRecord/getWalkRecords";
 

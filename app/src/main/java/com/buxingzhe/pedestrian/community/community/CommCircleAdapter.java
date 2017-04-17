@@ -2,6 +2,7 @@ package com.buxingzhe.pedestrian.community.community;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,56 +12,45 @@ import android.widget.TextView;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseAdapter;
+import com.buxingzhe.pedestrian.bean.activity.WalkRecordInfo;
+import com.buxingzhe.pedestrian.bean.user.UserBaseInfo;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.buxingzhe.pedestrian.utils.TextParser;
 import com.buxingzhe.pedestrian.widget.CircularImageView;
 import com.buxingzhe.pedestrian.widget.HorizontalListView;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by quanjing on 2017/4/13.
  */
 
-//extends RecyclerView.Adapter<CommCircleAdapter.CommActHolder>
-public class CommCircleAdapter extends BaseAdapter<String> {
-    private Context mContext;
-    private LayoutInflater mLayoutInflater;
-//    private List<WalkRecordInfo> walkRecordInfos = new ArrayList<>();
+public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> {
+    public Context mContext;
+    public LayoutInflater mLayoutInflater;
 
     public CommCircleAdapter(Context context) {
         this.mContext = context;
         mLayoutInflater = LayoutInflater.from(mContext);
     }
 
-//    public CommCircleAdapter(Context context, List<WalkRecordInfo> walkRecordInfos) {
-//        this.mContext = context;
-//        mLayoutInflater = LayoutInflater.from(mContext);
-//        this.walkRecordInfos = walkRecordInfos;
-//    }
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mLayoutInflater.inflate(R.layout.adapter_comm_circle, null);
+        View view = mLayoutInflater.inflate(R.layout.item_comm_circle, null);
         view.setOnClickListener(new myCommAct());
         return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        String str = getDataSet().get(position);
+        WalkRecordInfo walkRecordInfo = getDataSet().get(position);
         MyViewHolder myViewHolder = (MyViewHolder) holder;
-        myViewHolder.horizontalListView.setAdapter(new HorizontalAdapter(mContext));
-        setContentText(myViewHolder.tv_content, "夜景也太美丽了！美食也好好吃!夜景实在是太美了！美食也好好吃夜景也太美丽了！美食也好好吃!夜景实在是太美了！美食也好好吃夜景也太美丽了！美食也好好吃!夜景实在是太美了！美食也好好吃\"\n");
-
-        myViewHolder.bind(str);
+        myViewHolder.bind(walkRecordInfo);
 
     }
 
-
-//    @Override
-//    public void onBindViewHolder(CommCircleAdapter.MyViewHolder holder, int position) {
-//        holder.horizontalListView.setAdapter(new HorizontalAdapter(mContext));
-//        setContentText(holder.tv_content, "夜景也太美丽了！美食也好好吃!夜景实在是太美了！美食也好好吃夜景也太美丽了！美食也好好吃!夜景实在是太美了！美食也好好吃夜景也太美丽了！美食也好好吃!夜景实在是太美了！美食也好好吃\"\n");
-//    }
 
     class myCommAct implements View.OnClickListener {
         @Override
@@ -81,7 +71,7 @@ public class CommCircleAdapter extends BaseAdapter<String> {
 //    }
 
 
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder {
         CircularImageView cirImag_avatar;
         TextView tv_name;
         TextView tv_time;
@@ -109,8 +99,40 @@ public class CommCircleAdapter extends BaseAdapter<String> {
             tv_like_count = (TextView) itemView.findViewById(R.id.tv_like_count);
         }
 
-        public void bind(CharSequence content) {
-            tv_name.setText(content);
+        public void bind(WalkRecordInfo walkRecordInfo) {
+            if (walkRecordInfo.getUser() != null) {
+                UserBaseInfo userBaseInfo = walkRecordInfo.getUser();
+                if (!TextUtils.isEmpty(userBaseInfo.getNickName())) {
+                    tv_name.setText(walkRecordInfo.getUser().getNickName());
+                }
+                if (!TextUtils.isEmpty(userBaseInfo.getAvatarUrl())) {
+                    Picasso.with(mContext).load(userBaseInfo.getAvatarUrl()).resize(SystemUtils.dip2px(mContext, 40.0f), SystemUtils.dip2px(mContext, 40.0f)).centerCrop().into(cirImag_avatar);
+                }
+            }
+            if (!TextUtils.isEmpty(walkRecordInfo.getIntroduction())) {
+                setContentText(tv_content, walkRecordInfo.getIntroduction());
+            }
+            if (!TextUtils.isEmpty(walkRecordInfo.getViews())) {
+                String[] strings = walkRecordInfo.getViews().split(";");
+                List<String> views = new ArrayList<>();
+                for (int i = 0; i < strings.length; i++) {
+                    views.add(strings[i]);
+                }
+                horizontalListView.setAdapter(new HorizontalAdapter(mContext, views));
+            }
+
+            if (!TextUtils.isEmpty(walkRecordInfo.getRoutepicStr())) {
+                int[] display = SystemUtils.getDisplayWidth(mContext);
+                int width = display[0] - SystemUtils.dip2px(mContext, 30);
+                Picasso.with(mContext).load(walkRecordInfo.getRoutepicStr()).resize(width,SystemUtils.dip2px(mContext, 160.0f)).centerCrop().into(iv_route);
+            }
+            if (!TextUtils.isEmpty(walkRecordInfo.getLocation())) {
+                tv_location.setText(walkRecordInfo.getLocation());
+            }
+            tv_time.setText("" + walkRecordInfo.getCreateTime());
+            tv_like_count.setText("" + walkRecordInfo.getLikeCount());
+            tv_comm_count.setText("" + walkRecordInfo.getCommentCount());
+
         }
     }
 
@@ -140,12 +162,4 @@ public class CommCircleAdapter extends BaseAdapter<String> {
         }
     }
 
-
-//    public void setWalkRecordInfos(int index, List<WalkRecordInfo> walkRecordInfos) {
-//        if (index == 1) {
-//            this.walkRecordInfos.clear();
-//        }
-//        this.walkRecordInfos.addAll(walkRecordInfos);
-//        notifyDataSetChanged();
-//    }
 }

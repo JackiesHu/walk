@@ -14,7 +14,7 @@ import com.buxingzhe.pedestrian.R;
 public class LoadMoreAdapterWrapper extends BaseAdapter<String>{
     private BaseAdapter mAdapter;
     private static final int mPageSize = 10;
-    private int mPagePosition = 0;
+    private int mPagePosition = 1;
     private boolean hasMoreData = true;
     private OnLoad mOnLoad;
 
@@ -57,7 +57,8 @@ public class LoadMoreAdapterWrapper extends BaseAdapter<String>{
                 @Override
                 public void onSuccess() {
                     notifyDataSetChanged();
-                    mPagePosition = (mPagePosition + 1) * mPageSize;
+//                    mPagePosition = (mPagePosition + 1) * mPageSize;
+                    mPagePosition = mPagePosition+1;
                     hasMoreData = true;
                 }
 
