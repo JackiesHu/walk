@@ -131,4 +131,13 @@ public class NetRequestManager{
                 .subscribe(subscriber);
     }
 
+    //活动查询
+    public Subscription getActivities(int pageNo,int pageSize,Subscriber subscriber){
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .getActivities(pageNo,pageSize)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
 }

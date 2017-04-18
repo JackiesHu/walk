@@ -41,4 +41,8 @@
     <string name="register_hint_phone">请输入昵称</string>
     <string name="register_login_back">返回登陆</string>
 
+    <!--comm-->
+    <string name="activity_outdate">活动已过期</string>
+    <string name="publish_activity">发布活动</string>
+
 </resources>

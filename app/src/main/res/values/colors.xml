@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary">#00ae66</color>
     <color name="colorPrimaryDark">#00ae66</color>
+    <color name="colorPrimary_press">#068450</color>
     <color name="colorAccent">#FF4081</color>
     <color name="transparent">#00000000</color>
     <!--主题颜色-->
@@ -24,5 +25,8 @@
     <color name="deep_orange">#fe8417</color>
 
     <color name="transparent_bg">#70000000</color>
+    <color name="introduce_font">#eeeeee</color>
+    <color name="outdate_font">#999999</color>
+    <color name="endtime_font">#fcff00</color>
 </resources>
 

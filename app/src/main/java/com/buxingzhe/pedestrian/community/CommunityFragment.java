@@ -3,6 +3,7 @@ package com.buxingzhe.pedestrian.community;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -19,6 +20,8 @@ import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
 import com.buxingzhe.pedestrian.community.community.CommActFragment;
 import com.buxingzhe.pedestrian.community.community.CommCircleFragment;
+import com.buxingzhe.pedestrian.community.community.PublishActActivity;
+import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 
 import java.util.ArrayList;
@@ -29,6 +32,7 @@ import java.util.ArrayList;
 public class CommunityFragment extends BaseFragment implements View.OnClickListener {
     private RelativeLayout vCommunity;
     private RelativeLayout vCircle;
+    private RelativeLayout publishRL;
     private ImageView vbg2,vbg1;
     private TextView vTv1,vTv2;
     private ViewPager vCityViewPager;
@@ -38,16 +42,18 @@ public class CommunityFragment extends BaseFragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_community, null);
+        mActivity = getActivity();
         mContext = getContext();
         findId(view);
         setViewPager();
         onClick();
-
         return view;
     }
+
     private void findId(View view){
         vCommunity = (RelativeLayout) view.findViewById(R.id.rl_community);
         vCircle = (RelativeLayout) view.findViewById(R.id.rl_circle);
+        publishRL = (RelativeLayout) view.findViewById(R.id.publishRL);
         vbg2 = (ImageView)view.findViewById(R.id.community_bg2);
         vbg1 = (ImageView)view.findViewById(R.id.community_bg1);
         vTv2 = (TextView) view.findViewById(R.id.community_tv2);
@@ -57,6 +63,7 @@ public class CommunityFragment extends BaseFragment implements View.OnClickListe
         hideLeftIco();
     };
     private void onClick() {
+        publishRL.setOnClickListener(this);
         vCommunity.setOnClickListener(this);
         vCircle.setOnClickListener(this);
         vCityViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -95,8 +102,17 @@ public class CommunityFragment extends BaseFragment implements View.OnClickListe
             case R.id.rl_circle:
                 changeCircle();
                 break;
+            case R.id.publishRL:
+                enterPublishAct();
+                break;
         }
     }
+
+    private void enterPublishAct() {
+        Intent intent = new Intent(mContext, PublishActActivity.class);
+        EnterActUtils.startAct(mActivity, intent);
+    }
+
     private void setViewPager(){
         FragmentPagerAdapter adapter = new FragmentPagerAdapter(getFragmentManager());
         CommActFragment commActFragment = new CommActFragment();
