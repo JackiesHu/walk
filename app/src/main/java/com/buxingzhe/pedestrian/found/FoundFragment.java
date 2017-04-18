@@ -128,7 +128,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onNext(String s) {
-
+                Log.d("aaa","aaa");
             }
         };
 
