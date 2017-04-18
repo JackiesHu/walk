@@ -9,7 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/title_height"
         android:background="@color/colorPrimaryDark"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -66,7 +69,8 @@
             android:id="@+id/publishRL"
             android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:layout_alignParentRight="true">
+            android:layout_alignParentRight="true"
+            android:background="@drawable/selector_bg">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

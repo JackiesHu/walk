@@ -119,6 +119,11 @@
             android:windowSoftInputMode="adjustUnspecified|stateHidden"
             ></activity>
         <activity
+            android:name=".community.community.PublishActActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden"
+            ></activity>
+        <activity
             android:name="com.pizidea.imagepicker.activity.ImagesGridActivity"
             android:exported="true"
             android:screenOrientation="portrait"

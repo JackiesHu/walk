@@ -43,5 +43,6 @@
 
     <!--comm-->
     <string name="activity_outdate">活动已过期</string>
+    <string name="publish_activity">发布活动</string>
 
 </resources>

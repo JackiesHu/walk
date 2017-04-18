@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary">#00ae66</color>
     <color name="colorPrimaryDark">#00ae66</color>
+    <color name="colorPrimary_press">#068450</color>
     <color name="colorAccent">#FF4081</color>
     <color name="transparent">#00000000</color>
     <!--主题颜色-->
