@@ -18,7 +18,7 @@ import com.buxingzhe.pedestrian.activity.BaseAdapter;
 import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
-import com.buxingzhe.pedestrian.utils.TextParser;
+import com.buxingzhe.pedestrian.widget.TextParser;
 import com.squareup.picasso.Picasso;
 
 import java.util.Date;

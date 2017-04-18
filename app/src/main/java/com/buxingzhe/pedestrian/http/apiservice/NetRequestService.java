@@ -92,5 +92,4 @@ public interface NetRequestService {
     @POST(NetRequestParams.STREETS_NEARBY_FOUND)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getStreets(@FieldMap Map<String, String> runTeamMap);
 
-
 }

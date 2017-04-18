@@ -4,15 +4,18 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
+import com.buxingzhe.pedestrian.utils.PicassManager;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
 import com.pizidea.imagepicker.AndroidImagePicker;
 import com.pizidea.imagepicker.activity.ImagesGridActivity;
@@ -30,6 +33,7 @@ import cn.qqtheme.framework.picker.DatePicker;
 public class PublishActActivity extends BaseActivity implements View.OnClickListener,
         AndroidImagePicker.OnPictureTakeCompleteListener, AndroidImagePicker.OnImagePickCompleteListener {
     private AndroidImagePicker mImagePicker;
+    private String  localUrl;
 
     private ImageView iv_upload_pic;
     private ImageView iv_select_pic;
@@ -77,8 +81,39 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onRightListener(View v) {
         super.onRightListener(v);
+
+        String title = et_title.getText().toString();
+        String startTime = tv_start.getText().toString();
+        String endTime = tv_end.getText().toString();
+        String introduction = et_introduction.getText().toString();
+        if (!checkEmpty(title, startTime, endTime, introduction)) {
+            return;
+        }
+
+        Long startTimestamp = Long.parseLong(startTime);
+        Long endTimestamp = Long.parseLong(endTime);
+
     }
 
+    private boolean checkEmpty(String title, String startTime, String endTime, String introduction) {
+        if (TextUtils.isEmpty(title)) {
+            Toast.makeText(mContext, getString(R.string.activity_input_title), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (TextUtils.isEmpty(startTime)) {
+            Toast.makeText(mContext, getString(R.string.activity_select_start), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (TextUtils.isEmpty(endTime)) {
+            Toast.makeText(mContext, getString(R.string.activity_select_end), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (TextUtils.isEmpty(introduction)) {
+            Toast.makeText(mContext, getString(R.string.activity_input_title), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
 
 
     @Override
@@ -106,10 +141,12 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
      */
     private void isHavePic(boolean isHave) {
         if (isHave) {
+            PicassManager.getInstance().loadLocal(mContext,localUrl,iv_select_pic);
             iv_upload_pic.setVisibility(View.GONE);
             iv_select_pic.setVisibility(View.VISIBLE);
             iv_deletepic.setVisibility(View.VISIBLE);
         } else {
+            localUrl = "";
             iv_upload_pic.setVisibility(View.VISIBLE);
             iv_select_pic.setVisibility(View.GONE);
             iv_deletepic.setVisibility(View.GONE);
@@ -122,7 +159,6 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
 
     /**
      * 时间选择器
-     *
      */
     public void selectStartTime() {
         DatePicker picker = new DatePicker(this);
@@ -168,26 +204,14 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
             @Override
             public void onDatePicked(String year, String month, String day) {
                 String date = formatBirth(year, month, day);
-//                mYear = Integer.parseInt(year);
-//                mMonth = Integer.parseInt(month);
-//                mDay = Integer.parseInt(day);
                 tv_end.setText(date);
             }
         });
         if (mYear > 0) {
             picker.setRangeStart(mYear, mMonth, mDay);
-        }else{
+        } else {
             picker.setSelectedItem(getDates()[0], getDates()[1], getDates()[2]);
         }
-//        if (mYear > 0) {
-//            picker.setSelectedItem(mYear, mMonth, mDay);
-//        } else {
-//            mYear = dates[0];
-//            mMonth = dates[1];
-//            mDay = dates[2];
-//            picker.setSelectedItem(mYear, mMonth, mDay);
-//        }
-
         picker.setCancelText("   取消");
         picker.setSubmitText("确定   ");
         picker.setTextColor(Color.BLACK);
@@ -230,11 +254,22 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onImagePickComplete(List<ImageItem> items) {
-
+        if (items != null && items.size() > 0){
+            ImageItem imageItem = items.get(0);
+            localUrl = imageItem.path;
+            isHavePic(true);
+        }else{
+            isHavePic(false);
+        }
     }
 
     @Override
     public void onPictureTakeComplete(String picturePath) {
-
+        if (!TextUtils.isEmpty(picturePath)){
+            localUrl = picturePath;
+            isHavePic(true);
+        }else{
+            isHavePic(false);
+        }
     }
 }
