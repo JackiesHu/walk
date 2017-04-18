@@ -50,9 +50,12 @@
     <string name="activity_start_time">开始时间</string>
     <string name="activity_end_time">结束时间</string>
     <string name="activity_introduction">活动介绍</string>
+    <string name="activity_select_mainpic">请选择活动主图</string>
     <string name="activity_input_title">请输入活动主题</string>
     <string name="activity_select_start">请选择活动开始时间</string>
     <string name="activity_select_end">请选择活动结束时间</string>
     <string name="activity_input_intro">请详细介绍活动的内容、目的和步行路线</string>
+    <string name="activity_unoutdate">立即参加</string>
+    <string name="activity_over">已结束</string>
 
 </resources>

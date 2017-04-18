@@ -61,7 +61,7 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
 
         iv_upload_pic = (ImageView) findViewById(R.id.iv_upload_pic);
         iv_select_pic = (ImageView) findViewById(R.id.iv_select_pic);
-        iv_deletepic = (ImageView) findViewById(R.id.iv_select_pic);
+        iv_deletepic = (ImageView) findViewById(R.id.iv_deletepic);
         et_title = (EditText) findViewById(R.id.et_title);
         et_introduction = (EditText) findViewById(R.id.et_introduction);
         startTimeRL = (RelativeLayout) findViewById(R.id.startTimeRL);
@@ -96,6 +96,10 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
     }
 
     private boolean checkEmpty(String title, String startTime, String endTime, String introduction) {
+        if (TextUtils.isEmpty(localUrl)) {
+            Toast.makeText(mContext, getString(R.string.activity_select_mainpic), Toast.LENGTH_SHORT).show();
+            return false;
+        }
         if (TextUtils.isEmpty(title)) {
             Toast.makeText(mContext, getString(R.string.activity_input_title), Toast.LENGTH_SHORT).show();
             return false;
