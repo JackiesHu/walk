@@ -87,5 +87,10 @@ public interface NetRequestService {
 //    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> publishActivity(@Field("userId") String userId, @Field("token") String token,
 //                                                                                @Field("title") String title, @Field("Long") String startTimestamp
 //            , @Field("endTimestamp") Long endTimestamp, @Field("introduction") String introduction, @Field("bannerUrl") Data bannerUrl, @Field("publisher") String publisher);
+    //附近街道
+    @FormUrlEncoded
+    @POST(NetRequestParams.STREETS_NEARBY_FOUND)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getStreets(@FieldMap Map<String, String> runTeamMap);
+
 
 }

@@ -25,6 +25,7 @@ public class MainActivity extends BaseActivity implements  View.OnClickListener,
     private MWTTabBar vTabbar;
     private MainTabBarAdapter adapter;
 
+
     private ViewPager mViewPager;
 
     private List<Fragment> fragments = new ArrayList<Fragment>();

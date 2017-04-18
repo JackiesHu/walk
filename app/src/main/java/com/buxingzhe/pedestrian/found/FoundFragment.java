@@ -52,10 +52,15 @@ import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.baiduView.OverlayManager;
 import com.buxingzhe.pedestrian.baiduView.WalkingRouteOverlay;
 import com.buxingzhe.pedestrian.bean.AddressSuggLoca;
+import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import rx.Subscriber;
 
 
 /**
@@ -99,8 +104,37 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         onClick();
         initBaiduMap();
         searchRouteProcess();
+        loadData();
         return view;
     }
+
+    private void loadData() {
+        Map<String,String> paramsMap = new HashMap<>();
+        paramsMap.put("longitude","106");
+        paramsMap.put("latitude","29");
+        paramsMap.put("distance","5000");
+
+        Subscriber mSubscriber = new Subscriber<String>(){
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(String s) {
+
+            }
+        };
+
+        NetRequestManager.getInstance().getStreets(paramsMap, mSubscriber);
+    }
+
     private void onClick() {
         vMunuSearch.setOnClickListener(this);
         mBaidumap.setOnMarkerClickListener(markerClickListener);
