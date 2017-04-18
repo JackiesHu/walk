@@ -51,7 +51,8 @@ public class NetRequestParams {
     public static final String WALK_GET_ACTIVITYS = "walkman/wmActivity/getActivities";
     /** 查询圈子*/
     public static final String WALK_GET_WALK_RECORDS = "walkman/wmWalkRecord/getWalkRecords";
-
+    /** 发布活动*/
+    public static final String WALK_PUBLISH_ACTVITY = "walkman/wmActivity/publishActivity";
 
 
 
