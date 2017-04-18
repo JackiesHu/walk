@@ -71,9 +71,14 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
         iv_deletepic.setOnClickListener(this);
         startTimeRL.setOnClickListener(this);
         endTimeRL.setOnClickListener(this);
-
-//        onRightListener(new View());
     }
+
+
+    @Override
+    public void onRightListener(View v) {
+        super.onRightListener(v);
+    }
+
 
 
     @Override
