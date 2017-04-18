@@ -78,10 +78,17 @@
         </activity>
 
         <!--百度地图-->
+        <!--<meta-data-->
+            <!--android:name="com.baidu.lbsapi.API_KEY"-->
+            <!--android:value="Okn98kzR3SR85ZOWW2OQbOwtugPiExcP"/>-->
+        <!-- nhyHUpEKigoFE7T5a1VYwifg2g8PEPPf-->
+
+        <!--测试-->
+        <!--百度地图-->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="Okn98kzR3SR85ZOWW2OQbOwtugPiExcP"/>
-        <!-- nhyHUpEKigoFE7T5a1VYwifg2g8PEPPf-->
+            android:value="RXovEI50R0jCO6MqtwcqpUtrE3GzhKPP"/>
+
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
