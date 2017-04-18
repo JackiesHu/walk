@@ -43,44 +43,50 @@ public interface NetRequestService {
     //用户注册
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_USER_REGISTER)
-    Observable</* RequestResultInfo<UserLoginResultInfo> */ String>  register(@FieldMap Map<String, String> registerMap);
+    Observable</* RequestResultInfo<UserLoginResultInfo> */ String> register(@FieldMap Map<String, String> registerMap);
 
     //上传步行或者骑行记录
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_UPLOAD_WALK)
-    Observable</* RequestResultInfo<String> */ String>  uploadWalkRecord(@FieldMap Map<String, String> registerMap);
+    Observable</* RequestResultInfo<String> */ String> uploadWalkRecord(@FieldMap Map<String, String> registerMap);
 
     //获取步行或者骑行记录
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_GET_WALK_RECORD)
-    Observable</* RequestResultInfo<WalkRecordResultInfo> */ String>  getWalkRecord(@Field("recordId") String recordId);
+    Observable</* RequestResultInfo<WalkRecordResultInfo> */ String> getWalkRecord(@Field("recordId") String recordId);
 
 
     //获取当天天气 // cityName: 城市名，不包含区，市等字符 不可空
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_GET_CURRENT_WEATHER)
-    Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getCurrentWeather(@Field("cityName") String cityName);
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getCurrentWeather(@Field("cityName") String cityName);
 
     //获取历史天气  //  data: 日期 格式为20170401
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_GET_HISTORY_WEATHER)
-    Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getHistoryWeather(@Field("cityName") String cityName, @Field("date") String date);
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getHistoryWeather(@Field("cityName") String cityName, @Field("date") String date);
 
     //我的跑团
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_MINE_RUN_TEAM)
-    Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getMineRunTeam(@FieldMap Map<String, String> runTeamMap);
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getMineRunTeam(@FieldMap Map<String, String> runTeamMap);
 
     //查询圈子
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_GET_WALK_RECORDS)
-    Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getWalkRecords(@Field("userId") String userId, @Field("pageNo") int pageNo, @Field("pageSize") int pageSize);
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getWalkRecords(@Field("userId") String userId, @Field("pageNo") int pageNo, @Field("pageSize") int pageSize);
 
     //活动查询
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_GET_ACTIVITYS)
-    Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getActivities(@Field("pageNo") int pageNo, @Field("pageSize") int pageSize);
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getActivities(@Field("pageNo") int pageNo, @Field("pageSize") int pageSize);
 
+    //发布活动
+//    @FormUrlEncoded
+//    @POST(NetRequestParams.WALK_PUBLISH_ACTVITY)
+//    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> publishActivity(@Field("userId") String userId, @Field("token") String token,
+//                                                                                @Field("title") String title, @Field("Long") String startTimestamp
+//            , @Field("endTimestamp") Long endTimestamp, @Field("introduction") String introduction, @Field("bannerUrl") Data bannerUrl, @Field("publisher") String publisher);
     //附近街道
     @FormUrlEncoded
     @POST(NetRequestParams.STREETS_NEARBY_FOUND)

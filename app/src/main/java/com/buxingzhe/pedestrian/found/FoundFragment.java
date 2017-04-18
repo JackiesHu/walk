@@ -110,9 +110,9 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
 
     private void loadData() {
         Map<String,String> paramsMap = new HashMap<>();
-        paramsMap.put("longitude","116.400244");
-        paramsMap.put("latitude","39.993175");
-        paramsMap.put("distance","500");
+        paramsMap.put("longitude","106");
+        paramsMap.put("latitude","29");
+        paramsMap.put("distance","5000");
 
         Subscriber mSubscriber = new Subscriber<String>(){
 
