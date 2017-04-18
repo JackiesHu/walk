@@ -140,4 +140,12 @@ public class NetRequestManager{
                 .subscribe(subscriber);
     }
 
+    //查询附近街道
+    public Subscription getStreets(Map<String,String> paramsMap,Subscriber subscriber){
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .getStreets(paramsMap)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
 }

@@ -81,7 +81,10 @@ public interface NetRequestService {
     @POST(NetRequestParams.WALK_GET_ACTIVITYS)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getActivities(@Field("pageNo") int pageNo, @Field("pageSize") int pageSize);
 
-
+    //附近街道
+    @FormUrlEncoded
+    @POST(NetRequestParams.STREETS_NEARBY_FOUND)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getStreets(@FieldMap Map<String, String> runTeamMap);
 
 
 }

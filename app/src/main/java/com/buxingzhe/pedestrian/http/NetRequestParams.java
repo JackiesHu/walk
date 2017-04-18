@@ -52,8 +52,8 @@ public class NetRequestParams {
     /** 查询圈子*/
     public static final String WALK_GET_WALK_RECORDS = "walkman/wmWalkRecord/getWalkRecords";
 
-
-
-
+    //*************************** found ****************************
+    /** 附近街道*/
+    public static final String STREETS_NEARBY_FOUND = "walkman/wmStreet/nearbyStreets";
 
 }
