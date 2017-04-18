@@ -147,7 +147,8 @@
                 android:layout_marginRight="@dimen/bxz_14px"
                 android:text="@string/login_speed_login"
                 android:textColor="#FFFFFF"
-                android:textSize="@dimen/bxz_24px_tv"/>
+                android:textSize="@dimen/bxz_24px_tv"
+                android:id="@+id/textView" />
 
             <View
                 android:layout_width="@dimen/bxz_84px"

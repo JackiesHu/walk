@@ -45,12 +45,11 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_alignBottom="@+id/iv_banner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="11dp"
+        android:layout_alignBottom="@+id/iv_banner"
+        android:layout_centerHorizontal="true">
 
         <TextView
             android:id="@+id/tv_title"
@@ -67,7 +66,7 @@
             android:layout_height="wrap_content"
             android:text="这里是活动介绍一下"
             android:textColor="@color/introduce_font"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="2dp"
             android:textSize="12sp"
             android:singleLine="true"/>
 
