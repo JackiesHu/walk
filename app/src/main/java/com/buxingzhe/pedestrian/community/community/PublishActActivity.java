@@ -1,6 +1,7 @@
 package com.buxingzhe.pedestrian.community.community;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -17,7 +18,10 @@ import com.pizidea.imagepicker.AndroidImagePicker;
 import com.pizidea.imagepicker.activity.ImagesGridActivity;
 import com.pizidea.imagepicker.bean.ImageItem;
 
+import java.util.Calendar;
 import java.util.List;
+
+import cn.qqtheme.framework.picker.DatePicker;
 
 /**
  * Created by mzyr on 2017/4/18.
@@ -67,6 +71,8 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
         iv_deletepic.setOnClickListener(this);
         startTimeRL.setOnClickListener(this);
         endTimeRL.setOnClickListener(this);
+
+//        onRightListener(new View());
     }
 
 
@@ -80,57 +86,130 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
                 isHavePic(false);
                 break;
             case R.id.startTimeRL:
+                selectStartTime();
                 break;
             case R.id.endTimeRL:
+                selectEndTime();
                 break;
         }
     }
 
     /**
      * 是否有选中的照片
+     *
      * @param isHave
      */
     private void isHavePic(boolean isHave) {
-        if (isHave){
+        if (isHave) {
             iv_upload_pic.setVisibility(View.GONE);
             iv_select_pic.setVisibility(View.VISIBLE);
             iv_deletepic.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             iv_upload_pic.setVisibility(View.VISIBLE);
             iv_select_pic.setVisibility(View.GONE);
             iv_deletepic.setVisibility(View.GONE);
         }
     }
 
+    int mYear;
+    int mMonth;
+    int mDay;
 
-//    public void selectDate() {
-//        DatePicker picker = new DatePicker(this);
-//        picker.setAnimationStyle(R.style.Animation_CustomPopup);
-//        int todayYear = MethUserLoginManager.getTodayYear();
-//        picker.setRange(1900, todayYear);//年份范围
-//        picker.setTextSize(16);
-//        picker.setOnDatePickListener(new DatePicker.OnYearMonthDayPickListener() {
-//            @Override
-//            public void onDatePicked(String year, String month, String day) {
-//                String date = MethUserLoginManager.formatBirth(year, month, day);
-//                vUserBirthDay.setText(date);
+    /**
+     * 时间选择器
+     *
+     */
+    public void selectStartTime() {
+        DatePicker picker = new DatePicker(this);
+        picker.setAnimationStyle(R.style.Animation_CustomPopup);
+        int[] dates = getDates();
+        int todayYear = dates[0];
+        picker.setRange(todayYear, 2100);//年份范围
+        picker.setTextSize(16);
+        picker.setOnDatePickListener(new DatePicker.OnYearMonthDayPickListener() {
+            @Override
+            public void onDatePicked(String year, String month, String day) {
+                String date = formatBirth(year, month, day);
+                mYear = Integer.parseInt(year);
+                mMonth = Integer.parseInt(month);
+                mDay = Integer.parseInt(day);
+                tv_start.setText(date);
+            }
+        });
+        if (mYear > 0) {
+            picker.setSelectedItem(mYear, mMonth, mDay);
+        } else {
+            mYear = dates[0];
+            mMonth = dates[1];
+            mDay = dates[2];
+            picker.setSelectedItem(mYear, mMonth, mDay);
+        }
+
+        picker.setCancelText("   取消");
+        picker.setSubmitText("确定   ");
+        picker.setTextColor(Color.BLACK);
+        picker.show();
+    }
+
+
+    public void selectEndTime() {
+        DatePicker picker = new DatePicker(this);
+        picker.setAnimationStyle(R.style.Animation_CustomPopup);
+        int[] dates = getDates();
+        int todayYear = dates[0];
+        picker.setRange(todayYear, 2100);//年份范围
+        picker.setTextSize(16);
+        picker.setOnDatePickListener(new DatePicker.OnYearMonthDayPickListener() {
+            @Override
+            public void onDatePicked(String year, String month, String day) {
+                String date = formatBirth(year, month, day);
 //                mYear = Integer.parseInt(year);
 //                mMonth = Integer.parseInt(month);
 //                mDay = Integer.parseInt(day);
-//            }
-//        });
+                tv_end.setText(date);
+            }
+        });
+        if (mYear > 0) {
+            picker.setRangeStart(mYear, mMonth, mDay);
+        }else{
+            picker.setSelectedItem(getDates()[0], getDates()[1], getDates()[2]);
+        }
 //        if (mYear > 0) {
 //            picker.setSelectedItem(mYear, mMonth, mDay);
 //        } else {
-//            int selectDate = todayYear - 20;
-//            picker.setSelectedItem(selectDate, 6, 15);
+//            mYear = dates[0];
+//            mMonth = dates[1];
+//            mDay = dates[2];
+//            picker.setSelectedItem(mYear, mMonth, mDay);
 //        }
-//
-//        picker.setCancelText("   取消");
-//        picker.setSubmitText("确定   ");
-//        picker.setTextColor(SystemUtils.getByColor(R.color.table_title_black));
-//        picker.show();
-//    }
+
+        picker.setCancelText("   取消");
+        picker.setSubmitText("确定   ");
+        picker.setTextColor(Color.BLACK);
+        picker.show();
+    }
+
+    /**
+     * 获取当前年月日
+     *
+     * @return
+     */
+    public int[] getDates() {
+        long time = System.currentTimeMillis();
+        final Calendar mCalendar = Calendar.getInstance();
+        mCalendar.setTimeInMillis(time);
+        int year = mCalendar.get(Calendar.YEAR);
+        int month = mCalendar.get(Calendar.MONTH) + 1;
+        int date = mCalendar.get(Calendar.DATE);
+
+        int[] dates = new int[]{year, month, date};
+        return dates;
+    }
+
+    public String formatBirth(String year, String month, String day) {
+        String dates = year + "-" + month + "-" + day;
+        return dates;
+    }
 
     private void selectImage() {
         mImagePicker.setOnImagePickCompleteListener(this);
