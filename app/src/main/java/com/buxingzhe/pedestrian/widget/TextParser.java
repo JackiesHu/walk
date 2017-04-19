@@ -1,4 +1,4 @@
-package com.buxingzhe.pedestrian.utils;
+package com.buxingzhe.pedestrian.widget;
 
 /**
  * Created by 姜炳轩 on 2016/6/28.

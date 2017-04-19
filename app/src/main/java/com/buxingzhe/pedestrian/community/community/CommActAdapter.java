@@ -18,7 +18,7 @@ import com.buxingzhe.pedestrian.activity.BaseAdapter;
 import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
-import com.buxingzhe.pedestrian.utils.TextParser;
+import com.buxingzhe.pedestrian.widget.TextParser;
 import com.squareup.picasso.Picasso;
 
 import java.util.Date;
@@ -26,10 +26,12 @@ import java.util.Date;
 /**
  * Created by quanjing on 2017/4/17.
  */
-public class CommActAdapter extends BaseAdapter<WalkActivityInfo> {
+public class CommActAdapter extends BaseAdapter<WalkActivityInfo> implements View.OnClickListener{
     private Activity mActivity;
     private Context mContext;
     private LayoutInflater mLayoutInflater;
+    private OnRecyclerViewItemClickListener mOnItemClickListener = null;
+
 
     public CommActAdapter(Activity activity, Context context) {
         this.mActivity = activity;
@@ -40,34 +42,26 @@ public class CommActAdapter extends BaseAdapter<WalkActivityInfo> {
     @Override
     public CommActAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mLayoutInflater.inflate(R.layout.item_comm_act, null);
-        view.setOnClickListener(new myCommAct());
+        view.setOnClickListener(this);
         return new MyViewHolder(view);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (mOnItemClickListener != null) {
+            //注意这里使用getTag方法获取数据
+            mOnItemClickListener.onItemClick(v,(WalkActivityInfo)v.getTag());
+        }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         WalkActivityInfo walkActivityInfo = getDataSet().get(position);
         MyViewHolder myViewHolder = (MyViewHolder) holder;
+        myViewHolder.itemView.setTag(walkActivityInfo);
         myViewHolder.bind(walkActivityInfo);
     }
 
-
-    class myCommAct implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            Intent intent = new Intent();
-            intent.setClass(mContext, CommActInfoActivity.class);
-            EnterActUtils.startAct(mActivity, intent);
-        }
-    }
-
-//    @Override
-//    public int getItemCount() {
-//        if (datas == null)
-//            return 0;
-//        else
-//            return 5;
-//    }
 
 
     class MyViewHolder extends RecyclerView.ViewHolder {
@@ -132,4 +126,14 @@ public class CommActAdapter extends BaseAdapter<WalkActivityInfo> {
         long days = l / (1000 * 60 * 60 * 24);
         return days;
     }
+
+
+    public static interface OnRecyclerViewItemClickListener {
+        void onItemClick(View view , WalkActivityInfo data);
+    }
+
+    public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
+        this.mOnItemClickListener = listener;
+    }
+
 }

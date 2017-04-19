@@ -9,27 +9,38 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseAdapter;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordInfo;
+import com.buxingzhe.pedestrian.bean.activity.WalkRecordsInfo;
 import com.buxingzhe.pedestrian.bean.user.UserBaseInfo;
+import com.buxingzhe.pedestrian.common.GlobalParams;
+import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
+import com.buxingzhe.pedestrian.utils.JsonParseUtil;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
-import com.buxingzhe.pedestrian.utils.TextParser;
 import com.buxingzhe.pedestrian.widget.CircularImageView;
 import com.buxingzhe.pedestrian.widget.HorizontalListView;
+import com.buxingzhe.pedestrian.widget.TextParser;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import rx.Subscriber;
 
 /**
  * Created by quanjing on 2017/4/13.
  */
 
-public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> {
+public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements View.OnClickListener{
     public Context mContext;
     public LayoutInflater mLayoutInflater;
+    private CommCircleAdapter.OnRecyclerViewItemClickListener mOnItemClickListener = null;
 
     public CommCircleAdapter(Context context) {
         this.mContext = context;
@@ -39,7 +50,7 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mLayoutInflater.inflate(R.layout.item_comm_circle, null);
-        view.setOnClickListener(new myCommAct());
+        view.setOnClickListener(this);
         return new MyViewHolder(view);
     }
 
@@ -47,28 +58,18 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         WalkRecordInfo walkRecordInfo = getDataSet().get(position);
         MyViewHolder myViewHolder = (MyViewHolder) holder;
+        myViewHolder.itemView.setTag(walkRecordInfo);
         myViewHolder.bind(walkRecordInfo);
 
     }
 
-
-    class myCommAct implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-//            Intent intent = new Intent();
-//            intent.setClass(mContext,CommActInfoActivity.class);
-//            EnterActUtils.startAct(mActivity,intent);
+    @Override
+    public void onClick(View view) {
+        if (mOnItemClickListener != null) {
+            //注意这里使用getTag方法获取数据
+            mOnItemClickListener.onItemClick(view,(WalkRecordInfo)view.getTag());
         }
     }
-
-//    @Override
-//    public int getItemCount() {
-//        if (walkRecordInfos == null) {
-//            return 0;
-//        } else {
-//            return walkRecordInfos.size();
-//        }
-//    }
 
 
     class MyViewHolder extends RecyclerView.ViewHolder {
@@ -79,6 +80,7 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> {
         HorizontalListView horizontalListView;
         ImageView iv_route;
         TextView tv_location;
+        ImageView iv_like;
         RelativeLayout commRL;
         RelativeLayout likeRL;
         TextView tv_comm_count;
@@ -93,6 +95,7 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> {
             horizontalListView = (HorizontalListView) itemView.findViewById(R.id.horizontalListView);
             iv_route = (ImageView) itemView.findViewById(R.id.iv_route);
             tv_location = (TextView) itemView.findViewById(R.id.tv_location);
+            iv_like = (ImageView) itemView.findViewById(R.id.iv_like);
             commRL = (RelativeLayout) itemView.findViewById(R.id.commRL);
             likeRL = (RelativeLayout) itemView.findViewById(R.id.likeRL);
             tv_comm_count = (TextView) itemView.findViewById(R.id.tv_comm_count);
@@ -111,6 +114,8 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> {
             }
             if (!TextUtils.isEmpty(walkRecordInfo.getIntroduction())) {
                 setContentText(tv_content, walkRecordInfo.getIntroduction());
+            }else{
+                tv_content.setVisibility(View.GONE);
             }
             if (!TextUtils.isEmpty(walkRecordInfo.getViews())) {
                 String[] strings = walkRecordInfo.getViews().split(";");
@@ -129,10 +134,28 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> {
             if (!TextUtils.isEmpty(walkRecordInfo.getLocation())) {
                 tv_location.setText(walkRecordInfo.getLocation());
             }
-            tv_time.setText("" + walkRecordInfo.getCreateTime());
+            if (!TextUtils.isEmpty(walkRecordInfo.getCreateTime())) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");//小写的mm表示的是分钟
+                try {
+                    Date date = sdf.parse(walkRecordInfo.getCreateTime());
+                    tv_time.setText(date.toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            //该用户是否已点赞该步行记录,0:未点赞，1：已点赞
+            if (walkRecordInfo.getHasLike()==0){
+                likeRL.setTag(walkRecordInfo);
+                likeRL.setOnClickListener(LikeOnClick);
+            }else if (walkRecordInfo.getHasLike()==1){
+                iv_like.setImageResource(R.mipmap.ic_quanzi_zan_pre);
+            }
             tv_like_count.setText("" + walkRecordInfo.getLikeCount());
             tv_comm_count.setText("" + walkRecordInfo.getCommentCount());
 
+
+            commRL.setTag(walkRecordInfo);
+            commRL.setOnClickListener(CommentOnClick);
         }
     }
 
@@ -162,4 +185,72 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> {
         }
     }
 
+    /**
+     * 评论
+     */
+    View.OnClickListener CommentOnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            WalkRecordInfo walkRecordInfo = (WalkRecordInfo) view.getTag();
+            enterWalkRecordCommentActivity();
+        }
+    };
+
+    /**
+     * 点赞
+     */
+    View.OnClickListener LikeOnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            WalkRecordInfo walkRecordInfo = (WalkRecordInfo) view.getTag();
+            walkRecordLike(walkRecordInfo);
+        }
+    };
+
+    /**
+     * 点赞
+     */
+    public void walkRecordLike(final WalkRecordInfo walkRecordInfo){
+        NetRequestManager.getInstance().walkRecordLike(GlobalParams.USER_ID, GlobalParams.TOKEN, walkRecordInfo.getId(), new Subscriber<String>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Toast.makeText(mContext,mContext.getString(R.string.activity_like_fail),Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onNext(String jsonStr) {
+                // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+                Object[] datas = JsonParseUtil.getInstance().parseJsonList(jsonStr, WalkRecordsInfo.class);
+                if ((Integer) datas[0] == 0) {
+                    //判断点赞成功之后，手动更改ui
+                    walkRecordInfo.setHasLike(1);
+                    int likeCount = walkRecordInfo.getLikeCount()+1;
+                    walkRecordInfo.setLikeCount(likeCount);
+                    notifyDataSetChanged();
+                }else{
+                    Toast.makeText(mContext,mContext.getString(R.string.activity_like_fail),Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+
+    private void enterWalkRecordCommentActivity() {
+
+    }
+
+
+
+    public static interface OnRecyclerViewItemClickListener {
+        void onItemClick(View view , WalkRecordInfo data);
+    }
+
+    public void setOnItemClickListener(CommCircleAdapter.OnRecyclerViewItemClickListener listener) {
+        this.mOnItemClickListener = listener;
+    }
 }

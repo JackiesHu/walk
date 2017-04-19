@@ -16,7 +16,9 @@ import com.buxingzhe.pedestrian.activity.BaseFragment;
 import com.buxingzhe.pedestrian.activity.ILoadCallback;
 import com.buxingzhe.pedestrian.activity.LoadMoreAdapterWrapper;
 import com.buxingzhe.pedestrian.activity.OnLoad;
+import com.buxingzhe.pedestrian.bean.activity.WalkRecordInfo;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordsInfo;
+import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
 import com.google.gson.Gson;
@@ -32,6 +34,7 @@ public class CommCircleFragment extends BaseFragment {
     private SwipeRefreshLayout mRefresh;
     private RecyclerView vRecyclerView;
     private BaseAdapter mAdapter;
+    private CommCircleAdapter commCircleAdapter;
     private int currentIndex = 1;
     private final static int pageSize = 10;
     private String userId;
@@ -44,6 +47,7 @@ public class CommCircleFragment extends BaseFragment {
         mContext = getContext();
         initPullRefresh();
         setData();
+        setOnClick();
         return view;
 
 //        SharedPreferences sharedPreferences = SharedPreferencesUtil.getInstance().getSharedPreferences(mContext);
@@ -103,16 +107,13 @@ public class CommCircleFragment extends BaseFragment {
 
 
     private void setData() {
-//        mAdapter = new CommCircleAdapter(mContext);
-
-        //创建被装饰者类实例
-        final CommCircleAdapter adapter = new CommCircleAdapter(mContext);
+        commCircleAdapter = new CommCircleAdapter(mContext);
 
         //创建装饰者实例，并传入被装饰者和回调接口
-        mAdapter = new LoadMoreAdapterWrapper(adapter, new OnLoad() {
+        mAdapter = new LoadMoreAdapterWrapper(commCircleAdapter, new OnLoad() {
             @Override
             public void load(int pagePosition, int pageSize, final ILoadCallback callback) {
-                NetRequestManager.getInstance().getWalkRecords("43ac41862ca14c65a7ede94ab4d438f0", pagePosition, pageSize, new Subscriber<String>() {
+                NetRequestManager.getInstance().getWalkRecords(GlobalParams.USER_ID, pagePosition, pageSize, new Subscriber<String>() {
                     @Override
                     public void onCompleted() {
 
@@ -130,7 +131,7 @@ public class CommCircleFragment extends BaseFragment {
                         if ((Integer) datas[0] == 0) {
                             WalkRecordsInfo walkRecordsInfo = new Gson().fromJson(datas[1].toString(), WalkRecordsInfo.class);
                             if (walkRecordsInfo != null && walkRecordsInfo.getList() != null) {
-                                adapter.appendData(walkRecordsInfo.getList());
+                                commCircleAdapter.appendData(walkRecordsInfo.getList());
                                 callback.onSuccess();
                             }
                         } else {
@@ -144,5 +145,14 @@ public class CommCircleFragment extends BaseFragment {
         LinearLayoutManager linearLayoutManger = new LinearLayoutManager(getContext());
         vRecyclerView.setLayoutManager(linearLayoutManger);//这里用线性显示 类似于listview
         vRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void setOnClick() {
+        commCircleAdapter.setOnItemClickListener(new CommCircleAdapter.OnRecyclerViewItemClickListener() {
+            @Override
+            public void onItemClick(View view, WalkRecordInfo data) {
+
+            }
+        });
     }
 }

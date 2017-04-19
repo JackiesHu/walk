@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,13 +18,14 @@
             android:layout_centerVertical="true"
             />
         <TextView
+            android:id="@+id/tv_name"
             android:layout_toRightOf="@+id/cirImag_avatar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:text="坏小孩"
             android:textSize="16sp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="5dp"
             android:textColor="@color/light_black"
             />
         <LinearLayout
@@ -34,33 +36,36 @@
             android:layout_centerVertical="true"
             >
             <TextView
+                android:id="@+id/tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2017-02-18"
-                android:textSize="16sp"
+                android:text="02-18"
+                android:textSize="12sp"
                 android:textColor="@color/drak_gray"
                 />
-             <com.buxingzhe.pedestrian.widget.MWTStarBar
-                 android:id="@+id/star_bar"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_marginTop="10dp"
-                 >
-             </com.buxingzhe.pedestrian.widget.MWTStarBar>
+            <com.buxingzhe.pedestrian.widget.MWTStarBar
+                android:id="@+id/star_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                >
+            </com.buxingzhe.pedestrian.widget.MWTStarBar>
         </LinearLayout>
     </RelativeLayout>
+
     <TextView
+        android:id="@+id/tv_content"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxLength="400"
         android:textSize="14sp"
         android:lineSpacingExtra="6dp"
-        android:text="夜景也太美丽了！美食也好好吃!夜景实在是太美了！美食也好好吃"
+        android:textColor="@color/grey_font"
         />
     <ImageView
+        android:id="@+id/iv_route"
         android:layout_marginRight="15dp"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="10dp"
@@ -69,4 +74,8 @@
         android:src="@mipmap/fengjing1"
         android:scaleType="fitXY"
         />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/list_bg"/>
 </LinearLayout>

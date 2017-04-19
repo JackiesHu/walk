@@ -146,6 +146,8 @@ public class TitleBarView extends FrameLayout {
             }
         });
     }
+
+
     public void setImgLeftOnclick(OnClickListener onclick){
         vImgLeft.setOnClickListener(onclick);
     }

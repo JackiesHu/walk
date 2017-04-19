@@ -1,5 +1,6 @@
 package com.buxingzhe.pedestrian.community.community;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -17,7 +18,9 @@ import com.buxingzhe.pedestrian.activity.ILoadCallback;
 import com.buxingzhe.pedestrian.activity.LoadMoreAdapterWrapper;
 import com.buxingzhe.pedestrian.activity.OnLoad;
 import com.buxingzhe.pedestrian.bean.activity.WalkActivitiesInfo;
+import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
+import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
 import com.google.gson.Gson;
 
@@ -28,26 +31,31 @@ import rx.Subscriber;
  * Created by jackie on 2017/4/17.
  */
 public class CommActFragment extends BaseFragment {
+    public final static String WALKACTIVITYINFO = "WALKACTIVITYINFO";
     private SwipeRefreshLayout mRefresh;
     private RecyclerView vRecyclerView;
     private BaseAdapter mAdapter;
+    private CommActAdapter commActAdapter;
     private int currentIndex = 1;
     private final static int pageSize = 10;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_comm_acti, null);
-        findView(view);
         mContext = getContext();
-        initPullRefresh();
+        View view = inflater.inflate(R.layout.fragment_comm_acti, null);
+        initView(view);
         setData();
+        initPullRefresh();
+        setOnClick();
         return view;
     }
 
-    private void findView(View view) {
+    private void initView(View view) {
         mRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeLayout);
         vRecyclerView = (RecyclerView) view.findViewById(R.id.walk_list);
+
+//        vRecyclerView.addItemDecoration(new SpaceItemDecoration(SystemUtils.dip2px(mContext,20)));
 
 //        SwipeRefreshProperty.getInstall().setSwipeInfo(mContext, mRefresh);
 //        SwpipeListViewOnScrollListener scrollListener = new SwpipeListViewOnScrollListener(mRefresh);
@@ -55,6 +63,23 @@ public class CommActFragment extends BaseFragment {
         mRefresh.setColorSchemeResources(R.color.red);
 
     }
+
+    private void setOnClick() {
+        commActAdapter.setOnItemClickListener(new CommActAdapter.OnRecyclerViewItemClickListener(){
+            @Override
+            public void onItemClick(View view , WalkActivityInfo data){
+                enterCommActInfoActivity(data);
+            }
+        });
+    }
+
+    private void enterCommActInfoActivity(WalkActivityInfo walkActivityInfo) {
+        Intent intent = new Intent();
+        intent.setClass(mContext, CommActInfoActivity.class);
+        intent.putExtra(WALKACTIVITYINFO,walkActivityInfo);
+        EnterActUtils.startAct(getActivity(), intent);
+    }
+
 
 
     private void initPullRefresh() {
@@ -81,7 +106,8 @@ public class CommActFragment extends BaseFragment {
                                 if ((Integer) datas[0] == 0) {
                                     WalkActivitiesInfo walkActivitiesInfo = new Gson().fromJson(datas[1].toString(), WalkActivitiesInfo.class);
                                     if (walkActivitiesInfo != null && walkActivitiesInfo.getList() != null) {
-                                        new CommActAdapter(getActivity(),mContext).updateData(walkActivitiesInfo.getList());
+//                                        new CommActAdapter(getActivity(),mContext).updateData(walkActivitiesInfo.getList());
+                                        commActAdapter.updateData(walkActivitiesInfo.getList());
                                     }
                                 }
                             }
@@ -99,10 +125,10 @@ public class CommActFragment extends BaseFragment {
 
     private void setData() {
         //创建被装饰者类实例
-        final CommActAdapter adapter = new CommActAdapter(getActivity(),mContext);
+        commActAdapter = new CommActAdapter(getActivity(),mContext);
 
         //创建装饰者实例，并传入被装饰者和回调接口
-        mAdapter = new LoadMoreAdapterWrapper(adapter, new OnLoad() {
+        mAdapter = new LoadMoreAdapterWrapper(commActAdapter, new OnLoad() {
             @Override
             public void load(int pagePosition, int pageSize, final ILoadCallback callback) {
                 NetRequestManager.getInstance().getActivities(pagePosition, pageSize, new Subscriber<String>() {
@@ -123,7 +149,7 @@ public class CommActFragment extends BaseFragment {
                         if ((Integer) datas[0] == 0) {
                             WalkActivitiesInfo walkActivitiesInfo = new Gson().fromJson(datas[1].toString(), WalkActivitiesInfo.class);
                             if (walkActivitiesInfo != null && walkActivitiesInfo.getList() != null) {
-                                adapter.appendData(walkActivitiesInfo.getList());
+                                commActAdapter.appendData(walkActivitiesInfo.getList());
                                 callback.onSuccess();
                             }
                         } else {

@@ -81,6 +81,22 @@ public interface NetRequestService {
     @POST(NetRequestParams.WALK_GET_ACTIVITYS)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getActivities(@Field("pageNo") int pageNo, @Field("pageSize") int pageSize);
 
+    //查询该活动下的记录
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_GET_RECORDSBYACT)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getWalkRecordsByActivity(@Field("userId") String userId, @Field("activity") String activity, @Field("pageNo") int pageNo, @Field("pageSize") int pageSize);
+
+
+    //步行或骑行记录点赞
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_LIKE_RECORD)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> walkRecordLike(@Field("userId") String userId, @Field("token") String token, @Field("walkRecord") String walkRecord);
+
+    //评论步行或骑行记录
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_COMMENT_RECORD)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> walkRecordComment(@Field("userId") String userId, @Field("token") String token, @Field("walkRecord") String walkRecord, @Field("star") String star, @Field("streetStar") Double streetStar, @Field("envirStar") Double envirStar, @Field("safeStar") Double safeStar, @Field("content") String content);
+
     //发布活动
 //    @FormUrlEncoded
 //    @POST(NetRequestParams.WALK_PUBLISH_ACTVITY)
@@ -90,7 +106,6 @@ public interface NetRequestService {
     //附近街道
     @FormUrlEncoded
     @POST(NetRequestParams.STREETS_NEARBY_FOUND)
-    Observable</* RequestResultInfo<WalkWeatherInfo> */ String>  getStreets(@FieldMap Map<String, String> runTeamMap);
-
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getStreets(@FieldMap Map<String, String> runTeamMap);
 
 }

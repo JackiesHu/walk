@@ -59,7 +59,7 @@
                 android:layout_centerVertical="true"
                 android:gravity="center_vertical"
                 android:textColor="@color/white"
-                android:textSize="17sp" />
+                android:textSize="19sp" />
 
             <RelativeLayout
                 android:layout_width="wrap_content"

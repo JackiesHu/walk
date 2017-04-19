@@ -195,7 +195,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
             }
         };
 
-        NetRequestManager.getInstance().getStreets(paramsMap, mSubscriber);
+        NetRequestManager.getInstance().getStreets(paramsMap,mSubscriber);
     }
 
     private void onClick() {
