@@ -2,6 +2,7 @@ package com.buxingzhe.pedestrian.found;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,6 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
@@ -35,7 +38,12 @@ import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.Polyline;
+import com.baidu.mapapi.map.PolylineOptions;
+import com.baidu.mapapi.map.TextOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.inner.GeoPoint;
 import com.baidu.mapapi.search.core.RouteLine;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.route.BikingRouteResult;
@@ -52,9 +60,12 @@ import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.baiduView.OverlayManager;
 import com.buxingzhe.pedestrian.baiduView.WalkingRouteOverlay;
 import com.buxingzhe.pedestrian.bean.AddressSuggLoca;
+import com.buxingzhe.pedestrian.bean.RequestResultInfo;
+import com.buxingzhe.pedestrian.found.bean.Streets;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -92,6 +103,9 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     OverlayManager routeOverlay = null;
     private boolean isCloseTraffic;
     private ImageView vImageTraffic;
+    private FloatBuffer vertexBuffer;
+    private Polyline mPolyline;
+
     public FoundFragment() {
 
     }
@@ -110,9 +124,9 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
 
     private void loadData() {
         Map<String,String> paramsMap = new HashMap<>();
-        paramsMap.put("longitude","106");
-        paramsMap.put("latitude","29");
-        paramsMap.put("distance","5000");
+        paramsMap.put("longitude","106.571009");
+        paramsMap.put("latitude","29.610905");
+        paramsMap.put("distance","1000");
 
         Subscriber mSubscriber = new Subscriber<String>(){
 
@@ -127,8 +141,57 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
             }
 
             @Override
-            public void onNext(String s) {
-                Log.d("aaa","aaa");
+            public void onNext(String jsonStr) {
+                // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+                RequestResultInfo resultInfo = JSON.parseObject(jsonStr, RequestResultInfo.class);
+                if ("0".equals(resultInfo.getCode())) {
+                    Object o = resultInfo.getContent();
+                    List<Streets> streets = JSON.parseArray(o.toString(), Streets.class);
+
+                    // 添加普通折线绘制
+                    for (Streets street : streets){
+                        List<LatLng> points = new ArrayList<>();
+                        List<Streets.GeometryBean.CoordinatesBeanX.CoordinatesBean> coordinates = street.getGeometry().getCoordinates().get(0).getCoordinates();
+                        double ws = street.getProperties().getWs();
+                        for (int i = 0 ; i < coordinates.size();i++) {
+                            Streets.GeometryBean.CoordinatesBeanX.CoordinatesBean bean = coordinates.get(i);
+                            LatLng latLng = new LatLng(bean.getY(),bean.getX());
+                            points.add(latLng);
+                            if (i == 0) {
+                                // 添加文字
+                                OverlayOptions ooText;
+                                if (ws <= 0.3) {
+                                    ooText = new TextOptions().bgColor(Color.RED)
+                                            .fontSize(24).fontColor(Color.WHITE).text(String.valueOf(ws))
+                                            .position(latLng);
+                                } else if (ws <= 0.6) {
+                                    ooText = new TextOptions().bgColor(Color.rgb(241,182,64))
+                                            .fontSize(24).fontColor(Color.WHITE).text(String.valueOf(ws))
+                                            .position(latLng);
+                                } else {
+                                    ooText = new TextOptions().bgColor(Color.rgb(42,202,142))
+                                            .fontSize(24).fontColor(Color.WHITE).text(String.valueOf(ws))
+                                            .position(latLng);
+                                }
+
+                                mBaidumap.addOverlay(ooText);
+                            }
+                        }
+                        OverlayOptions ooPolyline;
+
+                        if (ws <= 0.3) {
+                            ooPolyline = new PolylineOptions().width(5)
+                                    .color(Color.RED).points(points);
+                        }else if (ws <= 0.6){
+                            ooPolyline = new PolylineOptions().width(5)
+                                    .color(Color.rgb(241,182,64)).points(points);
+                        }else{
+                            ooPolyline = new PolylineOptions().width(5)
+                                    .color(Color.rgb(42,202,142)).points(points);
+                        }
+                        mPolyline = (Polyline) mBaidumap.addOverlay(ooPolyline);
+                    }
+                }
             }
         };
 
@@ -260,13 +323,13 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
             }
             if ( result.getRouteLines().size() == 1 ) {
                 // 直接显示
-                route = result.getRouteLines().get(0);
-                WalkingRouteOverlay overlay = new MyWalkingRouteOverlay(mBaidumap);
-                mBaidumap.setOnMarkerClickListener(overlay);
-                routeOverlay = overlay;
-                overlay.setData(result.getRouteLines().get(0));
-                overlay.addToMap();
-                overlay.zoomToSpan();
+//                route = result.getRouteLines().get(0);
+//                WalkingRouteOverlay overlay = new MyWalkingRouteOverlay(mBaidumap);
+//                mBaidumap.setOnMarkerClickListener(overlay);
+//                routeOverlay = overlay;
+//                overlay.setData(result.getRouteLines().get(0));
+//                overlay.addToMap();
+//                overlay.zoomToSpan();
 
             }if (result.getRouteLines().size() > 1 ) {
 

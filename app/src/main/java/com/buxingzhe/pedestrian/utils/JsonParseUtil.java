@@ -78,6 +78,7 @@ public class JsonParseUtil {
         Integer code = -1;
 
         try {
+
             JSONObject rootJson = new JSONObject(jsonStr);
             if (rootJson!=null){
                 if (rootJson.has("code")){
