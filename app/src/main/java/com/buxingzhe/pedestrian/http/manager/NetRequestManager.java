@@ -140,6 +140,33 @@ public class NetRequestManager{
                 .subscribe(subscriber);
     }
 
+    //查询该活动下的记录
+    public Subscription getWalkRecordsByActivity(String userId,String activity,int pageNo, int pageSize, Subscriber subscriber){
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .getWalkRecordsByActivity(userId,activity,pageNo,pageSize)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
+    //步行或骑行记录点赞
+    public Subscription walkRecordLike(String userId,String token,String walkRecord,Subscriber subscriber){
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .walkRecordLike(userId,token,walkRecord)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
+    //评论步行或骑行记录
+    public Subscription walkRecordComment(String userId,String c,String walkRecord,String star,Double streetStar,Double envirStar,Double safeStar,String content,Subscriber subscriber){
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .walkRecordComment(userId,walkRecord,walkRecord,star,streetStar,envirStar,safeStar,content)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
     //查询附近街道
     public Subscription getStreets(Map<String,String> paramsMap,Subscriber subscriber){
         return RetrofitManager.getInstance()

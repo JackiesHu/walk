@@ -51,6 +51,13 @@ public class NetRequestParams {
     public static final String WALK_GET_ACTIVITYS = "walkman/wmActivity/getActivities";
     /** 查询圈子*/
     public static final String WALK_GET_WALK_RECORDS = "walkman/wmWalkRecord/getWalkRecords";
+    /** 查询该活动下的记录*/
+    public static final String WALK_GET_RECORDSBYACT = "walkman/wmWalkRecord/getWalkRecordsByActivity";
+    /** 步行或骑行记录点赞*/
+    public static final String WALK_LIKE_RECORD = "walkman/wmWalkRecordLike/walkRecordLike";
+    /** 评论步行或骑行记录*/
+    public static final String WALK_COMMENT_RECORD = "walkman/wmWalkRecordComment/walkRecordComment";
+
 
     //*************************** found ****************************
     /** 附近街道*/

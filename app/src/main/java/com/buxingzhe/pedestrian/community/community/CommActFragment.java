@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseAdapter;
@@ -23,8 +22,6 @@ import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
-import com.buxingzhe.pedestrian.utils.SystemUtils;
-import com.buxingzhe.pedestrian.widget.SpaceItemDecoration;
 import com.google.gson.Gson;
 
 import rx.Subscriber;
@@ -45,16 +42,16 @@ public class CommActFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_comm_acti, null);
-        findView(view);
         mContext = getContext();
+        View view = inflater.inflate(R.layout.fragment_comm_acti, null);
+        initView(view);
         setData();
         initPullRefresh();
         setOnClick();
         return view;
     }
 
-    private void findView(View view) {
+    private void initView(View view) {
         mRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeLayout);
         vRecyclerView = (RecyclerView) view.findViewById(R.id.walk_list);
 

@@ -25,5 +25,4 @@ public class SharedPreferencesUtil {
     public SharedPreferences getSharedPreferences(Context context){
         return context.getSharedPreferences("buxingzhe", Context.MODE_PRIVATE);
     }
-
 }
