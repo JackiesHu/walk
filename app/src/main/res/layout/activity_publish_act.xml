@@ -96,7 +96,8 @@
             android:hint="@string/activity_input_title"
             android:textColor="@color/tab_layout_standard"
             android:textColorHint="@color/hint_font"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:text="徒步"/>
     </RelativeLayout>
 
     <View
@@ -210,7 +211,8 @@
             android:layout_marginTop="15dp"
             android:text="@string/activity_introduction"
             android:textColor="@color/dark_gray"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            />
 
         <EditText
             android:id="@+id/et_introduction"
@@ -223,7 +225,8 @@
             android:gravity="start"
             android:textColor="@color/tab_layout_standard"
             android:textColorHint="@color/hint_font"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:text="徒步徒步徒步徒步"/>
     </RelativeLayout>
 
     <View

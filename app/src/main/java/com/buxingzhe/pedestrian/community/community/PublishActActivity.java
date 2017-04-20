@@ -2,6 +2,7 @@ package com.buxingzhe.pedestrian.community.community;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -14,6 +15,9 @@ import android.widget.Toast;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
+import com.buxingzhe.pedestrian.common.GlobalParams;
+import com.buxingzhe.pedestrian.http.NetRequestParams;
+import com.buxingzhe.pedestrian.http.imageupload.UploadImage;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.PicassManager;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
@@ -21,8 +25,14 @@ import com.pizidea.imagepicker.AndroidImagePicker;
 import com.pizidea.imagepicker.activity.ImagesGridActivity;
 import com.pizidea.imagepicker.bean.ImageItem;
 
+import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.qqtheme.framework.picker.DatePicker;
 
@@ -44,6 +54,8 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
     private TextView tv_start;
     private TextView tv_end;
     private EditText et_introduction;
+
+    private AsyncTask asyncTask;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,9 +102,27 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
             return;
         }
 
-        Long startTimestamp = Long.parseLong(startTime);
-        Long endTimestamp = Long.parseLong(endTime);
+        Long startTimestamp = null;
+        Long endTimestamp = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date startDate = sdf.parse(startTime);
+            Date endDate = sdf.parse(endTime);
+            startTimestamp = startDate.getTime();
+            endTimestamp = endDate.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
+        Map<String,String> paramsMap = new HashMap<>();
+        paramsMap.put("userId", GlobalParams.USER_ID);
+        paramsMap.put("token", GlobalParams.TOKEN);
+        paramsMap.put("title", title);
+        paramsMap.put("startTimestamp", startTimestamp.toString());
+        paramsMap.put("endTimestamp", endTimestamp.toString());
+        paramsMap.put("introduction", introduction);
+        paramsMap.put("publisher", GlobalParams.USER_ID);
+        initTask(paramsMap);
     }
 
     private boolean checkEmpty(String title, String startTime, String endTime, String introduction) {
@@ -110,10 +140,6 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
         }
         if (TextUtils.isEmpty(endTime)) {
             Toast.makeText(mContext, getString(R.string.activity_select_end), Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (TextUtils.isEmpty(introduction)) {
-            Toast.makeText(mContext, getString(R.string.activity_input_title), Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
@@ -276,4 +302,27 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
             isHavePic(false);
         }
     }
+
+    private void initTask(final Map<String,String> paramsMap){
+        asyncTask = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                String response = UploadImage.uploadFile(new File(localUrl),paramsMap,NetRequestParams.PUBLISHACTIVITY);
+                return response;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                Toast.makeText(PublishActActivity.this, "开始上传", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                Toast.makeText(PublishActActivity.this, (o == null ? "" : o.toString()), Toast.LENGTH_SHORT).show();
+            }
+        };
+    }
 }
+

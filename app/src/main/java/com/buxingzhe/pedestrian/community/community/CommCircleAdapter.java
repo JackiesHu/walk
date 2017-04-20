@@ -17,11 +17,14 @@ import com.buxingzhe.pedestrian.bean.activity.WalkRecordInfo;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordsInfo;
 import com.buxingzhe.pedestrian.bean.user.UserBaseInfo;
 import com.buxingzhe.pedestrian.common.GlobalParams;
+import com.buxingzhe.pedestrian.common.StarBarBean;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
+import com.buxingzhe.pedestrian.utils.PicassManager;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.buxingzhe.pedestrian.widget.CircularImageView;
 import com.buxingzhe.pedestrian.widget.HorizontalListView;
+import com.buxingzhe.pedestrian.widget.MWTStarBar;
 import com.buxingzhe.pedestrian.widget.TextParser;
 import com.squareup.picasso.Picasso;
 
@@ -73,6 +76,7 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements Vi
         CircularImageView cirImag_avatar;
         TextView tv_name;
         TextView tv_time;
+        MWTStarBar starBar;
         TextView tv_content;
         HorizontalListView horizontalListView;
         ImageView iv_route;
@@ -88,6 +92,7 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements Vi
             cirImag_avatar = (CircularImageView) itemView.findViewById(R.id.cirImag_avatar);
             tv_name = (TextView) itemView.findViewById(R.id.tv_name);
             tv_time = (TextView) itemView.findViewById(R.id.tv_time);
+            starBar = (MWTStarBar) itemView.findViewById(R.id.starBar);
             tv_content = (TextView) itemView.findViewById(R.id.tv_content);
             horizontalListView = (HorizontalListView) itemView.findViewById(R.id.horizontalListView);
             iv_route = (ImageView) itemView.findViewById(R.id.iv_route);
@@ -106,7 +111,9 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements Vi
                     tv_name.setText(walkRecordInfo.getUser().getNickName());
                 }
                 if (!TextUtils.isEmpty(userBaseInfo.getAvatarUrl())) {
-                    Picasso.with(mContext).load(userBaseInfo.getAvatarUrl()).resize(SystemUtils.dip2px(mContext, 40.0f), SystemUtils.dip2px(mContext, 40.0f)).centerCrop().into(cirImag_avatar);
+                    PicassManager.getInstance().load(mContext,userBaseInfo.getAvatarUrl(),cirImag_avatar);
+                    cirImag_avatar.setBorderWidth(SystemUtils.dip2px(mContext, 1));
+                    cirImag_avatar.setBorderColor(R.color.tab_layout_standard);
                 }
             }
             if (!TextUtils.isEmpty(walkRecordInfo.getIntroduction())) {
@@ -133,9 +140,26 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements Vi
             }
             if (!TextUtils.isEmpty(walkRecordInfo.getCreateTime())) {
                 Long t = Long.parseLong(walkRecordInfo.getCreateTime());
-                String date = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm").format(new java.util.Date(t * 1000));
+                String date = new java.text.SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date(t * 1000));
                 tv_time.setText(date);
             }
+            //星级
+            List<StarBarBean> starBarBeens = new ArrayList<StarBarBean>();
+            StarBarBean starBaarBean;
+            int starNum = walkRecordInfo.getStar();
+            for (int i = 0; i < 5; i++) {
+                if (i < starNum) {
+                    starBaarBean = new StarBarBean(R.mipmap.ic_pingjia_star_yello);
+                } else {
+                    starBaarBean = new StarBarBean(R.mipmap.ic_pingjia_star_grey);
+                }
+                starBaarBean.height = SystemUtils.dip2px(mContext,12);
+                starBaarBean.width = SystemUtils.dip2px(mContext,12);
+                starBaarBean.dividerHeight = SystemUtils.dip2px(mContext,6);
+                starBarBeens.add(starBaarBean);
+            }
+            starBar.setStarBarBeanList(starBarBeens);
+
             //该用户是否已点赞该步行记录,0:未点赞，1：已点赞
             if (walkRecordInfo.getHasLike() == 0) {
                 likeRL.setTag(walkRecordInfo);

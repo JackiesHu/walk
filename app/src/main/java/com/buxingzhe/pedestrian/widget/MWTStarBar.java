@@ -9,7 +9,6 @@ import android.widget.LinearLayout;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.common.StarBarBean;
-import com.buxingzhe.pedestrian.utils.SystemUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +45,7 @@ public class MWTStarBar extends LinearLayout {
         mContext = context;
         this.removeAllViews();
         if (starBarBeanList == null){
-            starBarBeanList = new ArrayList<StarBarBean>();
+            starBarBeanList = new ArrayList<>();
             StarBarBean starBarBean = new StarBarBean(R.mipmap.ic_pingzhi_star_yello);
             starBarBeanList.add(starBarBean);
         }
@@ -65,7 +64,7 @@ public class MWTStarBar extends LinearLayout {
             });
             StarBarBean starBarBean = starBarBeanList.get(i);
             LayoutParams params;
-            if (starBarBean.height <0 || starBarBean.width < 0){
+            if (starBarBean.height >0 || starBarBean.width > 0){
                  params = new LayoutParams(starBarBean.width,starBarBean.height);
             }else {
                 params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -77,7 +76,8 @@ public class MWTStarBar extends LinearLayout {
                 }else {
                     dividerHeight = dividerSize;
                 }
-                params.setMargins(0,0, SystemUtils.dip2px(mContext,dividerHeight),0);
+                //SystemUtils.dip2px(mContext,dividerHeight)
+                params.setMargins(0,0, dividerHeight,0);
             }else {
                 params.setMargins(0,0, 0,0);
             }

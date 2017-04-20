@@ -15,13 +15,17 @@ import com.buxingzhe.pedestrian.activity.BaseAdapter;
 import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordByActivity;
 import com.buxingzhe.pedestrian.bean.user.UserBaseInfo;
+import com.buxingzhe.pedestrian.common.StarBarBean;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.buxingzhe.pedestrian.widget.CircularImageView;
+import com.buxingzhe.pedestrian.widget.MWTStarBar;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -115,6 +119,7 @@ public class CommActInfoAdapter extends BaseAdapter<WalkRecordByActivity> implem
         CircularImageView cirImag_avatar;
         TextView tv_name;
         TextView tv_time;
+        MWTStarBar starBar;
         TextView tv_content;
         ImageView iv_route;
 
@@ -123,6 +128,7 @@ public class CommActInfoAdapter extends BaseAdapter<WalkRecordByActivity> implem
             cirImag_avatar = (CircularImageView) itemView.findViewById(R.id.cirImag_avatar);
             tv_name = (TextView) itemView.findViewById(R.id.tv_name);
             tv_time = (TextView) itemView.findViewById(R.id.tv_time);
+            starBar = (MWTStarBar) itemView.findViewById(R.id.starBar);
             tv_content = (TextView) itemView.findViewById(R.id.tv_content);
             iv_route = (ImageView) itemView.findViewById(R.id.iv_route);
         }
@@ -158,6 +164,23 @@ public class CommActInfoAdapter extends BaseAdapter<WalkRecordByActivity> implem
                     e.printStackTrace();
                 }
             }
+
+            //星级
+            List<StarBarBean> starBarBeens = new ArrayList<StarBarBean>();
+            StarBarBean starBaarBean;
+            int starNum = walkRecordByActivity.getStar();
+            for (int i = 0; i < 5; i++) {
+                if (i < starNum) {
+                    starBaarBean = new StarBarBean(R.mipmap.ic_pingjia_star_yello);
+                } else {
+                    starBaarBean = new StarBarBean(R.mipmap.ic_pingjia_star_grey);
+                }
+                starBaarBean.height = SystemUtils.dip2px(mContext,12);
+                starBaarBean.width = SystemUtils.dip2px(mContext,12);
+                starBaarBean.dividerHeight = SystemUtils.dip2px(mContext,6);
+                starBarBeens.add(starBaarBean);
+            }
+            starBar.setStarBarBeanList(starBarBeens);
         }
     }
 

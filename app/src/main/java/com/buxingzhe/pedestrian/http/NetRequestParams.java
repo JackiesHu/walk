@@ -57,6 +57,8 @@ public class NetRequestParams {
     public static final String WALK_LIKE_RECORD = "walkman/wmWalkRecordLike/walkRecordLike";
     /** 评论步行或骑行记录*/
     public static final String WALK_COMMENT_RECORD = "walkman/wmWalkRecordComment/walkRecordComment";
+    /** 发布活动*/
+    public static final String PUBLISHACTIVITY = "walkman/wmActivity/publishActivity";
 
 
     //*************************** found ****************************
