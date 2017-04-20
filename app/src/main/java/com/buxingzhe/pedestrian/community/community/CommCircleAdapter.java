@@ -25,10 +25,7 @@ import com.buxingzhe.pedestrian.widget.HorizontalListView;
 import com.buxingzhe.pedestrian.widget.TextParser;
 import com.squareup.picasso.Picasso;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import rx.Subscriber;
@@ -37,7 +34,7 @@ import rx.Subscriber;
  * Created by quanjing on 2017/4/13.
  */
 
-public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements View.OnClickListener{
+public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements View.OnClickListener {
     public Context mContext;
     public LayoutInflater mLayoutInflater;
     private CommCircleAdapter.OnRecyclerViewItemClickListener mOnItemClickListener = null;
@@ -67,7 +64,7 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements Vi
     public void onClick(View view) {
         if (mOnItemClickListener != null) {
             //注意这里使用getTag方法获取数据
-            mOnItemClickListener.onItemClick(view,(WalkRecordInfo)view.getTag());
+            mOnItemClickListener.onItemClick(view, (WalkRecordInfo) view.getTag());
         }
     }
 
@@ -114,7 +111,7 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements Vi
             }
             if (!TextUtils.isEmpty(walkRecordInfo.getIntroduction())) {
                 setContentText(tv_content, walkRecordInfo.getIntroduction());
-            }else{
+            } else {
                 tv_content.setVisibility(View.GONE);
             }
             if (!TextUtils.isEmpty(walkRecordInfo.getViews())) {
@@ -129,25 +126,21 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements Vi
             if (!TextUtils.isEmpty(walkRecordInfo.getRoutepicStr())) {
                 int[] display = SystemUtils.getDisplayWidth(mContext);
                 int width = display[0] - SystemUtils.dip2px(mContext, 30);
-                Picasso.with(mContext).load(walkRecordInfo.getRoutepicStr()).resize(width,SystemUtils.dip2px(mContext, 160.0f)).centerCrop().into(iv_route);
+                Picasso.with(mContext).load(walkRecordInfo.getRoutepicStr()).resize(width, SystemUtils.dip2px(mContext, 160.0f)).centerCrop().into(iv_route);
             }
             if (!TextUtils.isEmpty(walkRecordInfo.getLocation())) {
                 tv_location.setText(walkRecordInfo.getLocation());
             }
             if (!TextUtils.isEmpty(walkRecordInfo.getCreateTime())) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");//小写的mm表示的是分钟
-                try {
-                    Date date = sdf.parse(walkRecordInfo.getCreateTime());
-                    tv_time.setText(date.toString());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                Long t = Long.parseLong(walkRecordInfo.getCreateTime());
+                String date = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm").format(new java.util.Date(t * 1000));
+                tv_time.setText(date);
             }
             //该用户是否已点赞该步行记录,0:未点赞，1：已点赞
-            if (walkRecordInfo.getHasLike()==0){
+            if (walkRecordInfo.getHasLike() == 0) {
                 likeRL.setTag(walkRecordInfo);
                 likeRL.setOnClickListener(LikeOnClick);
-            }else if (walkRecordInfo.getHasLike()==1){
+            } else if (walkRecordInfo.getHasLike() == 1) {
                 iv_like.setImageResource(R.mipmap.ic_quanzi_zan_pre);
             }
             tv_like_count.setText("" + walkRecordInfo.getLikeCount());
@@ -158,6 +151,7 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements Vi
             commRL.setOnClickListener(CommentOnClick);
         }
     }
+
 
     /**
      * 只显示三行，超过三行显示“全文”按钮
@@ -210,7 +204,7 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements Vi
     /**
      * 点赞
      */
-    public void walkRecordLike(final WalkRecordInfo walkRecordInfo){
+    public void walkRecordLike(final WalkRecordInfo walkRecordInfo) {
         NetRequestManager.getInstance().walkRecordLike(GlobalParams.USER_ID, GlobalParams.TOKEN, walkRecordInfo.getId(), new Subscriber<String>() {
             @Override
             public void onCompleted() {
@@ -219,7 +213,7 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements Vi
 
             @Override
             public void onError(Throwable e) {
-                Toast.makeText(mContext,mContext.getString(R.string.activity_like_fail),Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext, mContext.getString(R.string.activity_like_fail), Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -229,11 +223,11 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements Vi
                 if ((Integer) datas[0] == 0) {
                     //判断点赞成功之后，手动更改ui
                     walkRecordInfo.setHasLike(1);
-                    int likeCount = walkRecordInfo.getLikeCount()+1;
+                    int likeCount = walkRecordInfo.getLikeCount() + 1;
                     walkRecordInfo.setLikeCount(likeCount);
                     notifyDataSetChanged();
-                }else{
-                    Toast.makeText(mContext,mContext.getString(R.string.activity_like_fail),Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(mContext, mContext.getString(R.string.activity_like_fail), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -245,9 +239,8 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements Vi
     }
 
 
-
     public static interface OnRecyclerViewItemClickListener {
-        void onItemClick(View view , WalkRecordInfo data);
+        void onItemClick(View view, WalkRecordInfo data);
     }
 
     public void setOnItemClickListener(CommCircleAdapter.OnRecyclerViewItemClickListener listener) {

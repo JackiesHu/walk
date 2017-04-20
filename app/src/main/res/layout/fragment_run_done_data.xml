@@ -36,7 +36,7 @@
                 android:gravity="bottom">
 
                 <TextView
-                    android:id="@+id/run_tv_data_walk_num"
+                    android:id="@+id/tv_stepCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
@@ -82,7 +82,7 @@
                 android:gravity="bottom">
 
                 <TextView
-                    android:id="@+id/run_tv_data_distance"
+                    android:id="@+id/tv_distance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
@@ -127,13 +127,19 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
-                    android:id="@+id/run_tv_data_time"
+                    android:id="@+id/tv_duration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
                     android:textColor="#464646"
                     android:textSize="21sp"
                     android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="分钟"
+                    android:textColor="#464646"
+                    android:textSize="12sp"/>
             </LinearLayout>
 
         </LinearLayout>
@@ -173,6 +179,7 @@
                 android:gravity="bottom">
 
                 <TextView
+                    android:id="@+id/tv_altitudeAsend"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0.00"
@@ -218,6 +225,7 @@
                 android:gravity="bottom">
 
                 <TextView
+                    android:id="@+id/tv_altitudeHigh"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0.00"
@@ -263,6 +271,7 @@
                 android:gravity="bottom">
 
                 <TextView
+                    android:id="@+id/tv_altitudeLow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0.00"
@@ -324,6 +333,7 @@
                 android:gravity="bottom">
 
                 <TextView
+                    android:id="@+id/tv_calorie"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0.00"
@@ -370,6 +380,7 @@
                 android:gravity="bottom">
 
                 <TextView
+                    android:id="@+id/tv_fat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0.00"
@@ -417,6 +428,7 @@
                 android:gravity="bottom">
 
                 <TextView
+                    android:id="@+id/tv_nutrition"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0.00"

@@ -1,9 +1,11 @@
 package com.buxingzhe.pedestrian.bean.user;
 
+import java.io.Serializable;
+
 /**
  * 基本用户信息
  */
-public class UserBaseInfo {
+public class UserBaseInfo implements Serializable{
     private String id;// userID
     private String avatarUrl;//头像
     private String nickName;//昵称

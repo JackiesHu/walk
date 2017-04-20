@@ -1,5 +1,6 @@
 package com.buxingzhe.pedestrian.community.community;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -20,6 +21,7 @@ import com.buxingzhe.pedestrian.bean.activity.WalkRecordInfo;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordsInfo;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
+import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
 import com.google.gson.Gson;
 
@@ -31,6 +33,7 @@ import rx.Subscriber;
  */
 
 public class CommCircleFragment extends BaseFragment {
+    public final static String WALKRECORDINFO = "WALKRECORDINFO";
     private SwipeRefreshLayout mRefresh;
     private RecyclerView vRecyclerView;
     private BaseAdapter mAdapter;
@@ -151,8 +154,14 @@ public class CommCircleFragment extends BaseFragment {
         commCircleAdapter.setOnItemClickListener(new CommCircleAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View view, WalkRecordInfo data) {
-
+                enterWalkRecordDetailActivity(data);
             }
         });
+    }
+
+    private void enterWalkRecordDetailActivity(WalkRecordInfo data){
+        Intent intent = new Intent(getActivity(),WalkRecordDetailActivity.class);
+        intent.putExtra(WALKRECORDINFO,data);
+        EnterActUtils.startAct(getActivity(),intent);
     }
 }

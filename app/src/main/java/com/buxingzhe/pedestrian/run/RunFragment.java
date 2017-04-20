@@ -65,7 +65,13 @@ public class RunFragment extends MapFragment implements View.OnClickListener, Ch
 
     // 底部Data View
     private LinearLayout mLLBottomData, mLLBottomDataPic;
-    private TextView mTVBottomDataTime, mTVBottomDataDistance, mTVBottomDataWalkNum;// 时长／里程／步数
+    private TextView tv_duration, tv_distance, tv_stepCount;// 时长／里程／步数
+    private TextView tv_altitudeAsend;
+    private TextView tv_altitudeHigh;
+    private TextView tv_altitudeLow;
+    private TextView tv_calorie;
+    private TextView tv_fat;
+    private TextView tv_nutrition;
 
     // 底部All View
     private LinearLayout mLLBottomAllView;
@@ -155,9 +161,15 @@ public class RunFragment extends MapFragment implements View.OnClickListener, Ch
         // 底部Data View
         mLLBottomDataPic = (LinearLayout) view.findViewById(R.id.run_ll_bottom_data_pic);
         mLLBottomData = (LinearLayout) view.findViewById(R.id.run_ll_bottom_data);
-        mTVBottomDataTime = (TextView) view.findViewById(R.id.run_tv_data_time);
-        mTVBottomDataDistance = (TextView) view.findViewById(R.id.run_tv_data_distance);
-        mTVBottomDataWalkNum = (TextView) view.findViewById(R.id.run_tv_data_walk_num);
+        tv_duration = (TextView) view.findViewById(R.id.tv_duration);
+        tv_distance = (TextView) view.findViewById(R.id.tv_distance);
+        tv_stepCount = (TextView) view.findViewById(R.id.tv_stepCount);
+        tv_altitudeAsend = (TextView) view.findViewById(R.id.tv_altitudeAsend);
+        tv_altitudeHigh = (TextView) view.findViewById(R.id.tv_altitudeHigh);
+        tv_altitudeLow = (TextView) view.findViewById(R.id.tv_altitudeLow);
+        tv_calorie = (TextView) view.findViewById(R.id.tv_calorie);
+        tv_fat = (TextView) view.findViewById(R.id.tv_fat);
+        tv_nutrition = (TextView) view.findViewById(R.id.tv_nutrition);
 
         // 底部All View
         mLLBottomAllView = (LinearLayout) view.findViewById(R.id.run_ll_bottom_all);
@@ -349,7 +361,7 @@ public class RunFragment extends MapFragment implements View.OnClickListener, Ch
      * 设置底部 Data View 的数据
      */
     private void setBottomData() {
-        mTVBottomDataTime.setText(formatSeconds());
+        tv_duration.setText(formatSeconds());
     }
 
     /**

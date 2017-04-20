@@ -126,6 +126,11 @@
             android:windowSoftInputMode="adjustUnspecified|stateHidden"
             ></activity>
         <activity
+            android:name=".community.community.WalkRecordDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden"
+            ></activity>
+        <activity
             android:name=".community.community.WalkRecordCommentActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustUnspecified|stateHidden"
