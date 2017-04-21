@@ -34,7 +34,7 @@
     <!-- login -->
     <string name="login_hint_phone">请输入您的手机号</string>
     <string name="login_hint_pwd">请输入密码</string>
-    <string name="login_btn_login">登陆</string>
+    <string name="login_btn_login">登录</string>
     <string name="login_register">快速注册</string>
     <string name="login_speed_login">快捷登陆</string>
     <string name="login_btn_register">注册</string>

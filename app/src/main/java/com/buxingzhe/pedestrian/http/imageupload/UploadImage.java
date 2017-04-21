@@ -109,6 +109,11 @@ public class UploadImage {
                 byte[] end_data = (PREFIX + BOUNDARY + PREFIX + LINE_END).getBytes();
                 dos.write(end_data);
                 dos.flush();
+
+
+                outputSteam.close();
+                dos.close();
+
                 /**
                  * 获取响应码 200=成功
                  * 当响应成功，获取响应的流
