@@ -104,34 +104,17 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
         EnterActUtils.startAct(mActivity, intent);
 
     }
-    /*private LinearLayout setTagView(String tag) {
-        LayoutInflater mInflater = LayoutInflater.from(this);
-        LinearLayout view = (LinearLayout) mInflater.inflate(R.layout.item_recogntion_color_tag, vFlowLayout, false);
 
-        TextView tagContent = (TextView) view.findViewById(R.id.TagContent);
-        ImageView tagDelete = (ImageView) view.findViewById(R.id.TagDelete);
-        upTagBackgroud(tagContent, tagDelete);
-
-        if (!TextUtils.isEmpty(tag)) {
-            tagContent.setText(tag);
-            tagDelete.setTag(tag);
-            tagDelete.setOnClickListener(onTagDeleteClick);
-        }
-        for (int i = 0; i < hotSelectTags.size(); i++) {
-            vFlowLayout.addView(view);
-        }
-        return view;
-    }*/
     class OnStarClick implements MWTStarOnclick{
         MWTStarBar mwtStarBar;
 
-        public OnStarClick(MWTStarBar mwtStarBar) {
+        OnStarClick(MWTStarBar mwtStarBar) {
             this.mwtStarBar = mwtStarBar;
         }
 
         @Override
         public void upStarIco(int selectSize) {
-            List<StarBarBean> starbars = new ArrayList<StarBarBean>();
+            List<StarBarBean> starbars = new ArrayList<>();
             for (int i =0;i<5;i++){
                 StarBarBean starBaarBean = new StarBarBean(R.mipmap.ic_pingjia_star_grey);
                 starBaarBean.dividerHeight = SystemUtils.dip2px(mContext,5);

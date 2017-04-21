@@ -1,5 +1,7 @@
 package com.buxingzhe.pedestrian.http.apiservice;
 
+import com.buxingzhe.pedestrian.bean.RequestResultInfo;
+import com.buxingzhe.pedestrian.found.bean.Streets;
 import com.buxingzhe.pedestrian.http.NetRequestParams;
 
 import java.util.Map;
@@ -108,4 +110,7 @@ public interface NetRequestService {
     @POST(NetRequestParams.STREETS_NEARBY_FOUND)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getStreets(@FieldMap Map<String, String> runTeamMap);
 
+    @FormUrlEncoded
+    @POST(NetRequestParams.REMARK_POINTS_NEARBY_FOUND)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getNearByPoints(@FieldMap Map<String, String> paramsMap);
 }

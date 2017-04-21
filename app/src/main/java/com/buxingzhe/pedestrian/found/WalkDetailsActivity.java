@@ -37,8 +37,9 @@ import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.baiduView.WalkingRouteOverlay;
-import com.buxingzhe.pedestrian.bean.AddressSuggLoca;
 import com.buxingzhe.pedestrian.common.StarBarBean;
+import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
+import com.buxingzhe.pedestrian.utils.PicassManager;
 import com.buxingzhe.pedestrian.widget.MWTStarBar;
 
 import java.util.ArrayList;
@@ -49,15 +50,17 @@ import java.util.List;
  */
 
 public class WalkDetailsActivity extends BaseActivity implements View.OnClickListener{
-    TextView vAddressName,vAddresscost,vAddressDetail,vAddressDepict;
+    TextView vAddressName,vAddresscost,vAddressDetail,vAddressDepict,tv_star;
     MWTStarBar vStressStar,vEnviromentStar,vSafetyStar,vWalkUserDisStar;
     RecyclerView vRecyPcdepict;
     ImageView vDiscuss,vWalkBack;
-    private AddressSuggLoca suggLoca;
+    private RemarkPoint remarkPoint;
     private MapView vMapView;
     private BaiduMap mBaidumap = null;
     private RoutePlanSearch mSearch;
     private RouteLine route = null;
+    private LatLng myLocation;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,11 +72,26 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
         initMapView();
         setPcdepict();
         setClick();
+        setData();
+        loadComments();
     }
+
+    private void loadComments() {
+
+    }
+
+    private void setData() {
+        vAddressName.setText(remarkPoint.getTitle());
+//        vAddresscost.setText(remarkPoint.get);
+        vAddressDepict.setText(remarkPoint.getIntroduction());
+        tv_star.setText(remarkPoint.getBrief());
+    }
+
     private void findId() {
         vAddressName = (TextView)findViewById(R.id.walk_add_name);
         vAddresscost = (TextView) findViewById(R.id.walkde_cost);
         vAddressDetail = (TextView) findViewById(R.id.walkde_addr_detail);
+        tv_star = (TextView) findViewById(R.id.tv_star);
         vStressStar = (MWTStarBar) findViewById(R.id.walkde_stress_star);
         vEnviromentStar = (MWTStarBar) findViewById(R.id.walkde_environment_star);
         vWalkUserDisStar = (MWTStarBar)findViewById(R.id.walkUserDis_starBar);
@@ -84,21 +102,31 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
         vWalkBack =  (ImageView) findViewById(R.id.walk_de_back);
         vMapView = (MapView)findViewById(R.id.walkDetail_map);
         mBaidumap = vMapView.getMap();
-        List<StarBarBean> starbars = new ArrayList<StarBarBean>();
-        for (int i =0;i<5;i++){
+        List<StarBarBean> starbars = new ArrayList<>();
+        for (int i =0;i<remarkPoint.getStreetStar();i++){
             StarBarBean starBaarBean = new StarBarBean(R.mipmap.ic_xq_star_big_yello);
             starbars.add(starBaarBean);
         }
         vStressStar.setStarBarBeanList(starbars);
+        starbars = new ArrayList<>();
+        for (int i =0;i<remarkPoint.getEnvirStar();i++){
+            StarBarBean starBaarBean = new StarBarBean(R.mipmap.ic_xq_star_big_yello);
+            starbars.add(starBaarBean);
+        }
         vEnviromentStar.setStarBarBeanList(starbars);
+        starbars = new ArrayList<>();
+        for (int i =0;i<remarkPoint.getSafeStar();i++){
+            StarBarBean starBaarBean = new StarBarBean(R.mipmap.ic_xq_star_big_yello);
+            starbars.add(starBaarBean);
+        }
         vSafetyStar.setStarBarBeanList(starbars);
 
-        List<StarBarBean> userStarbars = new ArrayList<StarBarBean>();
-        for (int i =0;i<5;i++){
-            StarBarBean starBaarBean = new StarBarBean(R.mipmap.ic_pingzhi_star_yello);
-            userStarbars.add(starBaarBean);
-        }
-        vWalkUserDisStar.setStarBarBeanList(userStarbars);
+//        List<StarBarBean> userStarbars = new ArrayList<StarBarBean>();
+//        for (int i =0;i<5;i++){
+//            StarBarBean starBaarBean = new StarBarBean(R.mipmap.ic_pingzhi_star_yello);
+//            userStarbars.add(starBaarBean);
+//        }
+//        vWalkUserDisStar.setStarBarBeanList(userStarbars);
     }
 
     private void setClick() {
@@ -114,11 +142,8 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
         searchRouteProcess();
     }
     private void getExtr() {
-        Object object =  getIntent().getSerializableExtra("loactionData");
-        if (object != null){
-            suggLoca = (AddressSuggLoca) getIntent().getSerializableExtra("loactionData");
-        }
-
+        remarkPoint = getIntent().getParcelableExtra("locationData");
+        myLocation = getIntent().getParcelableExtra("myLocation");
     }
     /**
      * 发起路线规划搜索
@@ -130,8 +155,8 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
         // 重置浏览节点的路线数据
         route = null;
         // 设置起终点信息，对于tranist search 来说，城市名无意义
-        PlanNode stNode = PlanNode.withLocation(new LatLng(39.993175,116.400244)) ;
-        PlanNode enNode = PlanNode.withLocation(new LatLng(39.942821, 116.369199)) ;
+        PlanNode stNode = PlanNode.withLocation(myLocation) ;
+        PlanNode enNode = PlanNode.withLocation(new LatLng(remarkPoint.getLatitude(),remarkPoint.getLongitude())) ;
 
         mSearch.walkingSearch((new WalkingRoutePlanOption())
                 .from(stNode).to(enNode));
@@ -143,9 +168,16 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
         vRecyPcdepict.setLayoutManager(linearLayoutManger);//这里用线性显示 类似于listview
 //        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));//这里用线性宫格显示 类似于grid view
 //        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));//这里用线性宫格显示 类似于瀑布流
-        vRecyPcdepict.setAdapter(new RecyPcdepictAdapter());
+        String[] split = remarkPoint.getViews().split(";");
+        vRecyPcdepict.setAdapter(new RecyPcdepictAdapter(split));
     }
     class RecyPcdepictAdapter  extends RecyclerView.Adapter<RecyPcdepictAdapter.RecyPcdepictViewHolder>{
+        private String[] split;
+
+        public RecyPcdepictAdapter(String[] split) {
+            this.split = split;
+        }
+
         @Override
         public RecyPcdepictAdapter.RecyPcdepictViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater mLayoutInflater = LayoutInflater.from(mContext);
@@ -155,23 +187,24 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
 
         @Override
         public void onBindViewHolder(RecyPcdepictAdapter.RecyPcdepictViewHolder holder, int position) {
-
+            PicassManager.getInstance().load(mContext, split[position], holder.vMIvPic);
         }
         @Override
         public int getItemCount() {
-            return 6;
+            return split.length;
         }
-       public class RecyPcdepictViewHolder extends RecyclerView.ViewHolder {
+        public class RecyPcdepictViewHolder extends RecyclerView.ViewHolder {
            ImageView vMIvPic;
            RecyPcdepictViewHolder(View view) {
-                super(view);
-                vMIvPic = (ImageView) view.findViewById(R.id.pic_depict);
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.d("NormalTextViewHolder", "onClick--> position = " + getPosition());
-                    }
-                });
+               super(view);
+               vMIvPic = (ImageView) view.findViewById(R.id.pic_depict);
+
+               view.setOnClickListener(new View.OnClickListener() {
+                   @Override
+                   public void onClick(View v) {
+                       Log.d("NormalTextViewHolder", "onClick--> position = " + getPosition());
+                   }
+               });
             }
         }
     }

@@ -29,7 +29,6 @@
                     android:id="@+id/walk_add_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="洪崖洞美食街"
                     android:textSize="18sp"
                     android:textColor="@color/dark_back"
                     />
@@ -43,10 +42,11 @@
                     android:layout_marginLeft="10dp"
                     />
                 <TextView
+                    android:id="@+id/tv_star"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="AAAA"
                     android:textSize="14sp"
+                    android:text="AAAA"
                     android:textColor="@color/red"
                     android:layout_marginLeft="10dp"
                     />
@@ -174,7 +174,6 @@
                 android:id="@+id/walkde_addr_depict"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="   地点介骄傲龙卷风放假啊解放路分级基金啊法减肥减肥了就发啦来点实际大家风范拉拉大家安安啦发了拉阿基拉阿里"
                 android:layout_marginLeft="10dp"
                 android:textColor="@color/dark_gray"
                 android:textSize="14sp"
