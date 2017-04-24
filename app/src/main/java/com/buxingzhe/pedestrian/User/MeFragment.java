@@ -1,5 +1,6 @@
 package com.buxingzhe.pedestrian.User;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -19,6 +20,7 @@ import com.buxingzhe.pedestrian.activity.BaseFragment;
 import com.buxingzhe.pedestrian.bean.user.UserLoginResultInfo;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
+import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.squareup.picasso.Picasso;
@@ -144,6 +146,9 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
                     Log.i(datas[1].toString());
 
                     UserLoginResultInfo resultInfo = (UserLoginResultInfo) datas[1];
+                    UserInfo userInfo = new UserInfo();
+                    userInfo.formatUser(resultInfo);
+                    userInfo.saveUserInfo(mContext,userInfo);
                     if (resultInfo != null) {
                         String userAvatar = (!TextUtils.isEmpty(resultInfo.getAvatarUrl())) ? resultInfo.getAvatarUrl() : "";
                         if (!TextUtils.isEmpty(userAvatar)) {
@@ -179,7 +184,8 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.user_iv_avatar://头像
-
+                Intent intent = new Intent(getActivity(),UserInfoActivity.class);
+                EnterActUtils.startForResultAct(getActivity(),intent,1);
                 break;
             case R.id.user_rl_walk://我的步行
 

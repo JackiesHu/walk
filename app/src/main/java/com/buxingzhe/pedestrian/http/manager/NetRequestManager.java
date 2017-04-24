@@ -184,5 +184,4 @@ public class NetRequestManager{
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }
-
 }

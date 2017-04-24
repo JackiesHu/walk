@@ -298,8 +298,9 @@ public class MapFragment extends BaseFragment {
 
         // // 从GPS获取最近的定位信息，缓存数据
         provider = LocationManager.GPS_PROVIDER;
-        Location location;
-        location = locationManager.getLastKnownLocation(provider);
+        Location location = null;
+        try {
+            location = locationManager.getLastKnownLocation(provider);
         if (location != null && location.getLatitude() != 0
                 && location.getLongitude() != 0) {
             // handler.sendEmptyMessage(FROM_GPS);
@@ -308,7 +309,6 @@ public class MapFragment extends BaseFragment {
             Location2BDLocation(location, curGPSLocation);
             mBDLocation = curGPSLocation;
         }
-
         // 绑定监听，有4个参数
         // 参数1，设备：有GPS_PROVIDER和NETWORK_PROVIDER两种
         // 参数2，位置信息更新周期，单位毫秒
@@ -354,6 +354,9 @@ public class MapFragment extends BaseFragment {
                                 + getLoaderManager() + ")");
                     }
                 });
+        }catch (SecurityException e){
+            e.printStackTrace();
+        }
     }
 
 

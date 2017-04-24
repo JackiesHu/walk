@@ -32,5 +32,8 @@
     <color name="grey_line">#e5e5e5</color>
     <color name="hint_font">#cccccc</color>
     <color name="intro_font">#7b7b7b</color>
+    <color name="btn_personal_click_pressed">#eeecec</color>
+    <!-- 头像背景色 -->
+    <color name="app_head_bg">#f2f2f2</color>
 </resources>
 
