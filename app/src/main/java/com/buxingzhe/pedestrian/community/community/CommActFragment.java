@@ -10,7 +10,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.buxingzhe.lib.util.Log;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseAdapter;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
@@ -48,6 +50,7 @@ public class CommActFragment extends BaseFragment {
         setData();
         initPullRefresh();
         setOnClick();
+        Log.e("log");
         return view;
     }
 
