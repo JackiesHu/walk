@@ -1,5 +1,6 @@
 package com.buxingzhe.pedestrian.community.community;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -38,11 +39,13 @@ import rx.Subscriber;
  */
 
 public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements View.OnClickListener {
+    public Activity mActivity;
     public Context mContext;
     public LayoutInflater mLayoutInflater;
     private CommCircleAdapter.OnRecyclerViewItemClickListener mOnItemClickListener = null;
 
-    public CommCircleAdapter(Context context) {
+    public CommCircleAdapter(Activity activity,Context context) {
+        this.mActivity = activity;
         this.mContext = context;
         mLayoutInflater = LayoutInflater.from(mContext);
     }
@@ -111,7 +114,7 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements Vi
                     tv_name.setText(walkRecordInfo.getUser().getNickName());
                 }
                 if (!TextUtils.isEmpty(userBaseInfo.getAvatarUrl())) {
-                    PicassManager.getInstance().load(mContext,userBaseInfo.getAvatarUrl(),cirImag_avatar);
+                    PicassManager.getInstance().load(mContext, userBaseInfo.getAvatarUrl(), cirImag_avatar);
                     cirImag_avatar.setBorderWidth(SystemUtils.dip2px(mContext, 1));
                     cirImag_avatar.setBorderColor(R.color.tab_layout_standard);
                 }
@@ -153,9 +156,9 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements Vi
                 } else {
                     starBaarBean = new StarBarBean(R.mipmap.ic_pingjia_star_grey);
                 }
-                starBaarBean.height = SystemUtils.dip2px(mContext,12);
-                starBaarBean.width = SystemUtils.dip2px(mContext,12);
-                starBaarBean.dividerHeight = SystemUtils.dip2px(mContext,6);
+                starBaarBean.height = SystemUtils.dip2px(mContext, 12);
+                starBaarBean.width = SystemUtils.dip2px(mContext, 12);
+                starBaarBean.dividerHeight = SystemUtils.dip2px(mContext, 6);
                 starBarBeens.add(starBaarBean);
             }
             starBar.setStarBarBeanList(starBarBeens);
@@ -261,6 +264,7 @@ public class CommCircleAdapter extends BaseAdapter<WalkRecordInfo> implements Vi
     private void enterWalkRecordCommentActivity() {
 
     }
+
 
 
     public static interface OnRecyclerViewItemClickListener {

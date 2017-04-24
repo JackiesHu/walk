@@ -47,6 +47,7 @@ public class CommCircleFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_comm_acti, null);
         findView(view);
+        mActivity = getActivity();
         mContext = getContext();
         initPullRefresh();
         setData();
@@ -93,7 +94,7 @@ public class CommCircleFragment extends BaseFragment {
                                 if ((Integer) datas[0] == 0) {
                                     WalkRecordsInfo walkRecordsInfo = new Gson().fromJson(datas[1].toString(), WalkRecordsInfo.class);
                                     if (walkRecordsInfo != null && walkRecordsInfo.getList() != null) {
-                                        new CommCircleAdapter(mContext).updateData(walkRecordsInfo.getList());
+                                        new CommCircleAdapter(mActivity,mContext).updateData(walkRecordsInfo.getList());
                                     }
                                 }
                             }
@@ -110,7 +111,7 @@ public class CommCircleFragment extends BaseFragment {
 
 
     private void setData() {
-        commCircleAdapter = new CommCircleAdapter(mContext);
+        commCircleAdapter = new CommCircleAdapter(mActivity,mContext);
 
         //创建装饰者实例，并传入被装饰者和回调接口
         mAdapter = new LoadMoreAdapterWrapper(commCircleAdapter, new OnLoad() {

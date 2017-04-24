@@ -12,6 +12,11 @@ import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordInfo;
 import com.buxingzhe.pedestrian.utils.PicassManager;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
+import com.umeng.socialize.UMShareListener;
+import com.umeng.socialize.bean.SHARE_MEDIA;
+import com.umeng.socialize.shareboard.SnsPlatform;
+import com.umeng.socialize.utils.ShareBoardlistener;
+import com.walk.umengshare.UmengShareUtils;
 
 import java.text.DecimalFormat;
 
@@ -68,6 +73,12 @@ public class WalkRecordDetailActivity extends BaseActivity implements View.OnCli
 
 
     @Override
+    public void onRightImageListener(View v) {
+        super.onRightImageListener(v);
+        share();
+    }
+
+    @Override
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
@@ -75,7 +86,7 @@ public class WalkRecordDetailActivity extends BaseActivity implements View.OnCli
     }
 
     private void setData() {
-        walkRecordInfo = (WalkRecordInfo) getIntent().getSerializableExtra(CommCircleFragment.WALKRECORDINFO);
+        walkRecordInfo = (WalkRecordInfo) getIntent().getParcelableExtra(CommCircleFragment.WALKRECORDINFO);
         if (walkRecordInfo == null) {
             return;
         }
@@ -107,5 +118,35 @@ public class WalkRecordDetailActivity extends BaseActivity implements View.OnCli
         if (!TextUtils.isEmpty(walkRecordInfo.getNutrition())) {
             tv_nutrition.setText(walkRecordInfo.getNutrition());
         }
+    }
+
+
+    public void share() {
+        UmengShareUtils.getInstall(mActivity).shareImageInfo("来自fdsfdsfde分享", "content", "https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/holiday/habo/res/doodle/11.png", new ShareBoardlistener() {
+            @Override
+            public void onclick(SnsPlatform snsPlatform, SHARE_MEDIA share_media) {
+
+            }
+        }, new UMShareListener() {
+            @Override
+            public void onStart(SHARE_MEDIA share_media) {
+
+            }
+
+            @Override
+            public void onResult(SHARE_MEDIA share_media) {
+
+            }
+
+            @Override
+            public void onError(SHARE_MEDIA share_media, Throwable throwable) {
+
+            }
+
+            @Override
+            public void onCancel(SHARE_MEDIA share_media) {
+
+            }
+        });
     }
 }
