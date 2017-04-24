@@ -50,6 +50,7 @@ public class CommActFragment extends BaseFragment {
         setData();
         initPullRefresh();
         setOnClick();
+        Log.e("");
         return view;
     }
 
