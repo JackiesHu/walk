@@ -184,4 +184,22 @@ public class NetRequestManager{
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }
+
+    //获取标记点评价
+    public Subscription getPointComments(Map<String, String> paramsMap, Subscriber subscriber) {
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .getPointComments(paramsMap)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
+    //获取标记点评价
+    public Subscription pointComment(Map<String, String> paramsMap, Subscriber subscriber) {
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .pointComment(paramsMap)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
 }

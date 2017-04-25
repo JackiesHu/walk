@@ -64,6 +64,11 @@ public class NetRequestParams {
     //*************************** found ****************************
     /** 附近街道*/
     public static final String STREETS_NEARBY_FOUND = "walkman/wmStreet/nearbyStreets";
+    /** 附近标记点*/
     public static final String REMARK_POINTS_NEARBY_FOUND = "walkman/wmRemarkPoint/nearby";
+    /** 获取标记点评论*/
+    public static final String REMARK_POINTS_COMMENT_FOUND = "walkman/wmRemarkPointComment/getRemarkPointComments";
+    /** 评论标记点*/
+    public static final String ADD_POINT_COMMENT = "walkman/wmRemarkPointComment/addRemarkPointComment";
 
 }

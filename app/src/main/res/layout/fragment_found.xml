@@ -42,32 +42,6 @@
             android:clickable="true" />
 
         <LinearLayout
-            android:id="@+id/linear_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/tv_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="点击这里标记"
-                android:background="@drawable/bg_corn_white"
-                android:padding="@dimen/bxz_10px"
-                android:textColor="@color/grey_font"/>
-
-            <ImageView
-                android:id="@+id/iv_center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_map_pin_green"
-                android:contentDescription="@string/action_settings"/>
-
-        </LinearLayout>
-
-        <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/traffic"
             android:layout_width="wrap_content"
