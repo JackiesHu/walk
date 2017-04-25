@@ -146,6 +146,7 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
                     Log.i(datas[1].toString());
 
                     UserLoginResultInfo resultInfo = (UserLoginResultInfo) datas[1];
+                    //保存用户数据到share里
                     UserInfo userInfo = new UserInfo();
                     userInfo.formatUser(resultInfo);
                     userInfo.saveUserInfo(mContext,userInfo);
