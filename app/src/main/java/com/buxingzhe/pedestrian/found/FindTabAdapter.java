@@ -3,6 +3,7 @@ package com.buxingzhe.pedestrian.found;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.view.ViewGroup;
 
 import java.util.List;
@@ -31,10 +32,10 @@ public class FindTabAdapter extends FragmentPagerAdapter {
     }
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        /*FragmentManager manager = ((Fragment) object).getFragmentManager();
+        FragmentManager manager = ((WalkCategoryFragment) object).getFragmentManager();
         FragmentTransaction trans = manager.beginTransaction();
-        trans.remove((android.app.Fragment) object);
-        trans.commitAllowingStateLoss();*/
+        trans.remove((WalkCategoryFragment) object);
+        trans.commitAllowingStateLoss();
         super.destroyItem(container, position, object);
     }
     //此方法用来显示tab上的名字

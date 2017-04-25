@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -22,7 +23,6 @@ import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.core.RouteLine;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.route.BikingRouteResult;
 import com.baidu.mapapi.search.route.DrivingRouteResult;
@@ -37,13 +37,23 @@ import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.baiduView.WalkingRouteOverlay;
+import com.buxingzhe.pedestrian.bean.RequestResultInfo;
+import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.StarBarBean;
+import com.buxingzhe.pedestrian.found.adapter.PointCommentAdapter;
+import com.buxingzhe.pedestrian.found.bean.PointComment;
 import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
+import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.PicassManager;
 import com.buxingzhe.pedestrian.widget.MWTStarBar;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import rx.Subscriber;
 
 /**
  * Created by jackie on 2017/2/11.
@@ -51,14 +61,14 @@ import java.util.List;
 
 public class WalkDetailsActivity extends BaseActivity implements View.OnClickListener{
     TextView vAddressName,vAddresscost,vAddressDetail,vAddressDepict,tv_star;
-    MWTStarBar vStressStar,vEnviromentStar,vSafetyStar,vWalkUserDisStar;
+    MWTStarBar vStressStar,vEnviromentStar,vSafetyStar;
     RecyclerView vRecyPcdepict;
     ImageView vDiscuss,vWalkBack;
     private RemarkPoint remarkPoint;
     private MapView vMapView;
+    private RecyclerView recycle_point_comments;
     private BaiduMap mBaidumap = null;
     private RoutePlanSearch mSearch;
-    private RouteLine route = null;
     private LatLng myLocation;
 
     @Override
@@ -70,21 +80,80 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
         getExtr();
         findId();
         initMapView();
-        setPcdepict();
         setClick();
-        setData();
-        loadComments();
+        if (remarkPoint != null) {
+            setPcdepict();
+            setData();
+            loadComments();
+        }
     }
 
     private void loadComments() {
+        Map<String,String> paramsMap = new HashMap<>();
+        paramsMap.put("remarkPoint",remarkPoint.getId());
+        paramsMap.put("token", GlobalParams.TOKEN);
+        paramsMap.put("userId",GlobalParams.USER_ID);
 
+        Subscriber mSubscriber = new Subscriber<String>(){
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(final String jsonStr) {
+                // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+                RequestResultInfo resultInfo = JSON.parseObject(jsonStr, RequestResultInfo.class);
+                if ("0".equals(resultInfo.getCode())) {
+                    Object o = resultInfo.getContent();
+                    if (o != null){
+                        PointComment pointComment = JSON.parseObject(o.toString(), PointComment.class);
+                        if (pointComment.getList() != null) {
+                            LinearLayoutManager manager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+                            recycle_point_comments.setLayoutManager(manager);
+                            PointCommentAdapter adapter = new PointCommentAdapter(mContext, pointComment.getList(), R.layout.item_walkdetail_discuss);
+                            recycle_point_comments.setAdapter(adapter);
+                        }
+                    }
+                }
+
+            }
+        };
+
+        NetRequestManager.getInstance().getPointComments(paramsMap,mSubscriber);
     }
 
     private void setData() {
-        vAddressName.setText(remarkPoint.getTitle());
+        if (remarkPoint != null) {
+            vAddressName.setText(remarkPoint.getTitle());
 //        vAddresscost.setText(remarkPoint.get);
-        vAddressDepict.setText(remarkPoint.getIntroduction());
-        tv_star.setText(remarkPoint.getBrief());
+            vAddressDepict.setText(remarkPoint.getIntroduction());
+            tv_star.setText(remarkPoint.getBrief());
+            List<StarBarBean> starbars = new ArrayList<>();
+            for (int i = 0; i < remarkPoint.getStreetStar(); i++) {
+                StarBarBean starBaarBean = new StarBarBean(R.mipmap.ic_xq_star_big_yello);
+                starbars.add(starBaarBean);
+            }
+            vStressStar.setStarBarBeanList(starbars);
+            starbars = new ArrayList<>();
+            for (int i = 0; i < remarkPoint.getEnvirStar(); i++) {
+                StarBarBean starBaarBean = new StarBarBean(R.mipmap.ic_xq_star_big_yello);
+                starbars.add(starBaarBean);
+            }
+            vEnviromentStar.setStarBarBeanList(starbars);
+            starbars = new ArrayList<>();
+            for (int i = 0; i < remarkPoint.getSafeStar(); i++) {
+                StarBarBean starBaarBean = new StarBarBean(R.mipmap.ic_xq_star_big_yello);
+                starbars.add(starBaarBean);
+            }
+            vSafetyStar.setStarBarBeanList(starbars);
+        }
     }
 
     private void findId() {
@@ -94,39 +163,17 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
         tv_star = (TextView) findViewById(R.id.tv_star);
         vStressStar = (MWTStarBar) findViewById(R.id.walkde_stress_star);
         vEnviromentStar = (MWTStarBar) findViewById(R.id.walkde_environment_star);
-        vWalkUserDisStar = (MWTStarBar)findViewById(R.id.walkUserDis_starBar);
         vSafetyStar = (MWTStarBar) findViewById(R.id.walkde_safety_star);
         vAddressDepict = (TextView) findViewById(R.id.walkde_addr_depict);
         vRecyPcdepict = (RecyclerView) findViewById(R.id.walkde_pc_depict);
         vDiscuss = (ImageView) findViewById(R.id.iv_discuss);
         vWalkBack =  (ImageView) findViewById(R.id.walk_de_back);
         vMapView = (MapView)findViewById(R.id.walkDetail_map);
+        recycle_point_comments = (RecyclerView) findViewById(R.id.recycle_point_comments);
         mBaidumap = vMapView.getMap();
-        List<StarBarBean> starbars = new ArrayList<>();
-        for (int i =0;i<remarkPoint.getStreetStar();i++){
-            StarBarBean starBaarBean = new StarBarBean(R.mipmap.ic_xq_star_big_yello);
-            starbars.add(starBaarBean);
-        }
-        vStressStar.setStarBarBeanList(starbars);
-        starbars = new ArrayList<>();
-        for (int i =0;i<remarkPoint.getEnvirStar();i++){
-            StarBarBean starBaarBean = new StarBarBean(R.mipmap.ic_xq_star_big_yello);
-            starbars.add(starBaarBean);
-        }
-        vEnviromentStar.setStarBarBeanList(starbars);
-        starbars = new ArrayList<>();
-        for (int i =0;i<remarkPoint.getSafeStar();i++){
-            StarBarBean starBaarBean = new StarBarBean(R.mipmap.ic_xq_star_big_yello);
-            starbars.add(starBaarBean);
-        }
-        vSafetyStar.setStarBarBeanList(starbars);
 
-//        List<StarBarBean> userStarbars = new ArrayList<StarBarBean>();
-//        for (int i =0;i<5;i++){
-//            StarBarBean starBaarBean = new StarBarBean(R.mipmap.ic_pingzhi_star_yello);
-//            userStarbars.add(starBaarBean);
-//        }
-//        vWalkUserDisStar.setStarBarBeanList(userStarbars);
+
+
     }
 
     private void setClick() {
@@ -153,13 +200,14 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
         mSearch = RoutePlanSearch.newInstance();
         mSearch.setOnGetRoutePlanResultListener(myGetRoutePlan);
         // 重置浏览节点的路线数据
-        route = null;
         // 设置起终点信息，对于tranist search 来说，城市名无意义
         PlanNode stNode = PlanNode.withLocation(myLocation) ;
-        PlanNode enNode = PlanNode.withLocation(new LatLng(remarkPoint.getLatitude(),remarkPoint.getLongitude())) ;
+        if (remarkPoint != null) {
+            PlanNode enNode = PlanNode.withLocation(new LatLng(remarkPoint.getLatitude(), remarkPoint.getLongitude()));
 
-        mSearch.walkingSearch((new WalkingRoutePlanOption())
+            mSearch.walkingSearch((new WalkingRoutePlanOption())
                 .from(stNode).to(enNode));
+        }
 
     }
     private void setPcdepict(){
@@ -168,8 +216,10 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
         vRecyPcdepict.setLayoutManager(linearLayoutManger);//这里用线性显示 类似于listview
 //        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));//这里用线性宫格显示 类似于grid view
 //        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));//这里用线性宫格显示 类似于瀑布流
-        String[] split = remarkPoint.getViews().split(";");
-        vRecyPcdepict.setAdapter(new RecyPcdepictAdapter(split));
+        if (remarkPoint != null) {
+            String[] split = remarkPoint.getViews().split(";");
+            vRecyPcdepict.setAdapter(new RecyPcdepictAdapter(split));
+        }
     }
     class RecyPcdepictAdapter  extends RecyclerView.Adapter<RecyPcdepictAdapter.RecyPcdepictViewHolder>{
         private String[] split;
@@ -213,7 +263,8 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.iv_discuss:
-                Intent intent = new Intent(mContext,WalkDetialsDiscussActivity.class);
+                Intent intent = new Intent(mContext,PointCommentActivity.class);
+                intent.putExtra("locationData",remarkPoint);
                 startActivity(intent);
                 break;
             case R.id.walk_de_back:
@@ -234,7 +285,6 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
             }
             if ( result.getRouteLines().size() == 1 ) {
                 // 直接显示
-                route = result.getRouteLines().get(0);
                 WalkingRouteOverlay overlay = new MyWalkingRouteOverlay(mBaidumap);
                 mBaidumap.setOnMarkerClickListener(overlay);
                 overlay.setData(result.getRouteLines().get(0));

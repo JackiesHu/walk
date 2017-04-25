@@ -16,10 +16,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.baidu.location.BDLocation;
@@ -30,6 +32,7 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.InfoWindow;
+import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
@@ -38,6 +41,7 @@ import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.TextOptions;
@@ -71,9 +75,9 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     private MapView vMapView;
     private BaiduMap mBaidumap = null;
     // 初始化全局 bitmap 信息，不用时及时 recycle
-    BitmapDescriptor bdnor = BitmapDescriptorFactory
-            .fromResource(R.mipmap.ic_map_tuijian_nor);
+    BitmapDescriptor bdnor = BitmapDescriptorFactory.fromResource(R.mipmap.ic_map_tuijian_nor);
     BitmapDescriptor bdPre = BitmapDescriptorFactory.fromResource(R.mipmap.ic_map_tuijian_pre);
+    BitmapDescriptor click = BitmapDescriptorFactory.fromResource(R.mipmap.ic_map_pin_green);
     private ImageView vImageViewPin;
     private LocationClient mLocClient;
     boolean isFirstLoc = true; // 是否首次定位
@@ -84,9 +88,13 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
 
     private boolean isCloseTraffic;
     private ImageView vImageTraffic;
-    private LinearLayout linear_title;
     private List<RemarkPoint> remarkPoints;
     private LatLng ll;
+    private PopupWindow popupWindow;
+    private Marker marker;
+
+    List<Marker> overlays = new ArrayList<>();
+    List<Marker> lines = new ArrayList<>();
 
     public FoundFragment() {
 
@@ -124,7 +132,6 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onNext(final String jsonStr) {
-                mBaidumap.clear();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -155,7 +162,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
             }
 
             @Override
-            public void onMapStatusChangeFinish(MapStatus arg0) {
+            public void onMapStatusChangeFinish(MapStatus status) {
                 // 获取屏幕中心点在地图上对应的坐标
                 LatLng centerLatLng = mBaidumap
                         .getProjection()
@@ -200,8 +207,11 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                             Object o = resultInfo.getContent();
                             if (o != null){
                                 List<Streets> streets = JSON.parseArray(o.toString(), Streets.class);
-                                mBaidumap.clear();
                                 // 添加普通折线绘制
+                                for (Marker marker : lines){
+                                    marker.remove();
+                                }
+                                lines.clear();
                                 for (Streets street : streets) {
                                     List<LatLng> points = new ArrayList<>();
                                     List<Streets.GeometryBean.CoordinatesBeanX.CoordinatesBean> coordinates = street.getGeometry().getCoordinates().get(0).getCoordinates();
@@ -227,7 +237,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                                                         .position(latLng);
                                             }
 
-                                            mBaidumap.addOverlay(ooText);
+                                            lines.add((Marker) mBaidumap.addOverlay(ooText));
                                         }
                                     }
                                     OverlayOptions ooPolyline;
@@ -242,7 +252,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                                         ooPolyline = new PolylineOptions().width(8)
                                                 .color(Color.rgb(42, 202, 142)).points(points);
                                     }
-                                    mBaidumap.addOverlay(ooPolyline);
+                                    lines.add((Marker) mBaidumap.addOverlay(ooPolyline));
                                 }
                             }
                         }
@@ -268,7 +278,6 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         vMunuSearch.setOnClickListener(this);
         mBaidumap.setOnMarkerClickListener(markerClickListener);
         vTraffic.setOnClickListener(this);
-        linear_title.setOnClickListener(this);
     }
 
     public void findViewId(View view) {
@@ -277,7 +286,6 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         vMapView = (MapView) view.findViewById(R.id.map);
         vTraffic = (LinearLayout)view.findViewById(R.id.traffic);
         vImageTraffic = (ImageView) view.findViewById(R.id.iv_traffic);
-        linear_title = (LinearLayout) view.findViewById(R.id.linear_title);
         mBaidumap = vMapView.getMap();
         toolbar.setTitle("发现");
 
@@ -288,18 +296,57 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     private void initBaiduMap(){
         MapStatusUpdate u = MapStatusUpdateFactory.zoomTo(20);
         mBaidumap.animateMapStatus(u);
+        mBaidumap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
+
+            @Override
+            public void onMapClick(LatLng latLng) {
+                showMarker(latLng);
+            }
+
+            @Override
+            public boolean onMapPoiClick(MapPoi mapPoi) {
+
+                return false;
+            }
+
+        });
         initLocation();
         setTraffic();
     }
+
+    private void showMarker(LatLng latLng) {
+        if (marker == null){
+            MarkerOptions clickMarker = new MarkerOptions().icon(click)
+                    .zIndex(9).draggable(false).flat(true);
+            clickMarker.position(latLng);
+
+            marker = (Marker) mBaidumap.addOverlay(clickMarker);
+        }
+        //创建InfoWindow展示的view
+        TextView button = new TextView(mContext);
+        button.setText("点击这里标记");
+        button.setBackgroundColor(Color.WHITE);
+        button.setPadding(20,20,20,20);
+        //创建InfoWindow , 传入 view， 地理坐标， y 轴偏移量
+        InfoWindow mInfoWindow = new InfoWindow(button, latLng, -click.getBitmap().getHeight());
+        //显示InfoWindow
+        mBaidumap.showInfoWindow(mInfoWindow);
+        marker.setPosition(latLng);
+    }
+
     public void initOverlay(List<RemarkPoint> suggLocas) {
             Bundle bundle;
+        for (Marker marker : overlays){
+            marker.remove();
+        }
+        overlays.clear();
         for (RemarkPoint location : suggLocas){
             LatLng llA = new LatLng(location.getLatitude(), location.getLongitude());
             bundle = new Bundle();
             bundle.putParcelable("data",location);
             MarkerOptions ooA = new MarkerOptions().position(llA).icon(bdnor)
                     .zIndex(9).draggable(false).extraInfo(bundle);
-            mBaidumap.addOverlay(ooA);
+            overlays.add((Marker) mBaidumap.addOverlay(ooA));
         }
     }
 
@@ -344,17 +391,21 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     BaiduMap.OnMarkerClickListener markerClickListener = new BaiduMap.OnMarkerClickListener() {
         @Override
         public boolean onMarkerClick(Marker marker) {
-            RemarkPoint remarkPoint = marker.getExtraInfo().getParcelable("data");
-            int height = marker.getIcon().getBitmap().getHeight();
-            ImageView view = createView();
-            InfoWindow mInfoWindow = new InfoWindow(view, new LatLng(remarkPoint.getLatitude(),remarkPoint.getLongitude()), -height+20);
-            mBaidumap.showInfoWindow(mInfoWindow);
-            marker.setIcon(bdPre);
-            if (prevMarker != null){
-                prevMarker.setIcon(bdnor);
+            if (marker.isFlat()){
+                showPop();
+            }else {
+                RemarkPoint remarkPoint = marker.getExtraInfo().getParcelable("data");
+                int height = marker.getIcon().getBitmap().getHeight();
+                ImageView view = createView();
+                InfoWindow mInfoWindow = new InfoWindow(view, new LatLng(remarkPoint.getLatitude(), remarkPoint.getLongitude()), -height + 20);
+                mBaidumap.showInfoWindow(mInfoWindow);
+                marker.setIcon(bdPre);
+                if (prevMarker != null) {
+                    prevMarker.setIcon(bdnor);
+                }
+                prevMarker = marker;
+                goWalkDetail(remarkPoint);
             }
-            prevMarker = marker;
-            goWalkDetail(remarkPoint);
             return false;
         }
     };
@@ -386,6 +437,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                 MapStatus.Builder builder = new MapStatus.Builder();
                 builder.target(ll).zoom(18.0f);
                 mBaidumap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+                showMarker(new LatLng(location.getLatitude(),location.getLongitude()));
             }
         }
 
@@ -416,19 +468,41 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                 isCloseTraffic = !isCloseTraffic;
                 setTraffic();
                 break;
-            case R.id.linear_title:
-                showPop();
-                break;
         }
     }
 
     private void showPop() {
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.found_comment_pop,null);
-        PopupWindow popupWindow = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,true);
-        popupWindow.setBackgroundDrawable(new ColorDrawable());
+        if (popupWindow == null) {
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View view = inflater.inflate(R.layout.found_comment_pop, null);
+            popupWindow = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+            popupWindow.setBackgroundDrawable(new ColorDrawable());
+            LinearLayout linear_recommend = (LinearLayout) view.findViewById(R.id.linear_recommend);
+            LinearLayout linear_tucao = (LinearLayout) view.findViewById(R.id.linear_tucao);
+            LinearLayout linear_cancel = (LinearLayout) view.findViewById(R.id.linear_cancel);
 
-        popupWindow.showAtLocation(view, Gravity.BOTTOM,0,0);
+            linear_recommend.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, WalkDetialsDiscussActivity.class);
+                    EnterActUtils.startAct(getActivity(), intent);
+                }
+            });
+            linear_tucao.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, WalkDetialsDiscussActivity.class);
+                    EnterActUtils.startAct(getActivity(), intent);
+                }
+            });
+            linear_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popupWindow.dismiss();
+                }
+            });
+        }
+        popupWindow.showAtLocation(popupWindow.getContentView(), Gravity.BOTTOM,0,0);
     }
 
     @Override
@@ -452,6 +526,9 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         mBaidumap.setMyLocationEnabled(false);
         vMapView.onDestroy();
         vMapView = null;
+        click.recycle();
+        bdPre.recycle();
+        bdnor.recycle();
     }
 
 }

@@ -63,8 +63,7 @@ public class BaseActivity extends AppCompatActivity implements TitleBarLinstener
 
     }
     private void initTitle(){
-        mContext = this;
-        mActivity =this;
+
         if (vTitleBar != null){
             vTitleBar.hideStatusbar();
         }
@@ -87,7 +86,8 @@ public class BaseActivity extends AppCompatActivity implements TitleBarLinstener
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mContext = this;
+        mActivity =this;
     }
 
     @Override

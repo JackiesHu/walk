@@ -9,6 +9,19 @@
         <item name="android:actionBarSize">@dimen/title_height</item>
     </style>
 
+    <!-- 因android自带的Widget.RatingBar.Small不能访问，这里予以重写 -->
+    <style name="App.Widget.RatingBar.Small" parent="@android:style/Widget.RatingBar">
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:progressDrawable">@drawable/rattingbar_small</item>
+        <item name="android:indeterminateDrawable">@drawable/rattingbar_small</item>
+        <item name="android:minHeight">14dp</item>
+        <item name="android:maxHeight">14dp</item>
+        <item name="android:thumb">@null</item>
+        <item name="android:isIndicator">true</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
     <style name="progress_dialog" parent="@android:style/Theme.Dialog">
         <item name="android:windowFrame">@null</item> <!--Dialog的windowFrame框为无 -->
         <item name="android:windowIsFloating">true</item><!-- 是否漂现在activity上 -->

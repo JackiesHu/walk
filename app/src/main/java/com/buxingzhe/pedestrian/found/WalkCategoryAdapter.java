@@ -57,6 +57,7 @@ public class WalkCategoryAdapter extends RecyclerView.Adapter<WalkCategoryAdapte
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext,WalkDetailsActivity.class);
+
                 mActivity.startActivity(intent);
             }
         });

@@ -3,16 +3,27 @@ package com.buxingzhe.pedestrian.found;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.bean.HotUserTag;
+import com.buxingzhe.pedestrian.bean.RequestResultInfo;
+import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.StarBarBean;
+import com.buxingzhe.pedestrian.found.adapter.PointCommentAdapter;
 import com.buxingzhe.pedestrian.found.bean.HotTagBean;
+import com.buxingzhe.pedestrian.found.bean.PointComment;
+import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
 import com.buxingzhe.pedestrian.found.tag.TagAddActivity;
+import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.buxingzhe.pedestrian.widget.FlowLayout;
@@ -24,7 +35,11 @@ import com.pizidea.imagepicker.activity.ImagesGridActivity;
 import com.pizidea.imagepicker.bean.ImageItem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import rx.Subscriber;
 
 /**·
  * Created by jackie on 2017/2/12.
@@ -36,15 +51,24 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
     private AndroidImagePicker mImagePicker;
     private MWTStarBar vStressStar,vEnviromentStar,vSafetyStar;
     private TextView vAddTag;
-    private FlowLayout vFlowLayout;
+    private TextView tv_address;
+    private EditText et_content;
     private List<HotUserTag> hotSelectTags;
+    private RemarkPoint remarkPoint;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wakl_discuss);
+        getExt();
         findId();
+        setData();
         setOnclick();
         mImagePicker = AndroidImagePicker.getInstance();
+    }
+
+    private void setData() {
+//        tv_address.setText(remarkPoint.getTitle());
     }
 
     private void setOnclick() {
@@ -60,18 +84,61 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
         vEnviromentStar = (MWTStarBar) findViewById(R.id.walkde_environment_star);
         vSafetyStar = (MWTStarBar) findViewById(R.id.walkde_safety_star);
 
-        vFlowLayout = (FlowLayout) findViewById(R.id.localTag);
-
         vAddTag =(TextView)findViewById(R.id.tag_add);
+        tv_address =(TextView)findViewById(R.id.tv_address);
+        et_content = (EditText) findViewById(R.id.et_content);
         setTitle("评论");
+        setRightTitle("完成");
+        setTextRightOnclick(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Map<String,String> paramsMap = new HashMap<>();
+                paramsMap.put("userId",GlobalParams.USER_ID);
+                paramsMap.put("token", GlobalParams.TOKEN);
+//                paramsMap.put("remarkPoint",remarkPoint.getId());
+                paramsMap.put("streetStar",String.valueOf(vStressStar.getStarSize()));
+                paramsMap.put("envirStar",String.valueOf(vEnviromentStar.getStarSize()));
+                paramsMap.put("safeStar",String.valueOf(vSafetyStar.getStarSize()));
+                paramsMap.put("content",et_content.getText().toString());
+
+                Subscriber mSubscriber = new Subscriber<String>(){
+
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(final String jsonStr) {
+                        // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+                        RequestResultInfo resultInfo = JSON.parseObject(jsonStr, RequestResultInfo.class);
+                        if ("0".equals(resultInfo.getCode())) {
+                            Object o = resultInfo.getContent();
+                            if (o != null){
+                                PointComment pointComment = JSON.parseObject(o.toString(), PointComment.class);
+                                if (pointComment.getList() != null) {
+
+                                }
+                            }
+                        }
+
+                    }
+                };
+
+                NetRequestManager.getInstance().getPointComments(paramsMap,mSubscriber);
+            }
+        });
         initStar();
     }
     private void initStar(){
-        List<StarBarBean> starbars = new ArrayList<StarBarBean>();
+        List<StarBarBean> starbars = new ArrayList<>();
         for (int i =0;i<5;i++){
             StarBarBean starBaarBean = new StarBarBean(R.mipmap.ic_pingjia_star_grey);
-            starBaarBean.height = SystemUtils.dip2px(mContext,88);
-            starBaarBean.width = SystemUtils.dip2px(mContext,88);
             starBaarBean.dividerHeight = SystemUtils.dip2px(mContext,5);
             starbars.add(starBaarBean);
         }
@@ -103,6 +170,10 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
         intent.setClass(this, ImagesGridActivity.class);
         EnterActUtils.startAct(mActivity, intent);
 
+    }
+
+    public void getExt() {
+        remarkPoint = getIntent().getParcelableExtra("locationData");
     }
 
     class OnStarClick implements MWTStarOnclick{
@@ -141,11 +212,18 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case 1:
-               Object o = data.getSerializableExtra("data");
-                if (o != null){
-                    HotTagBean tagBean = (HotTagBean) data.getSerializableExtra("data");
-                    List<HotUserTag> hotSelectTags = tagBean.hotSelectTags;
-
+                if (resultCode == RESULT_OK) {
+                    HotTagBean tagBean = data.getParcelableExtra("data");
+                    if (tagBean != null) {
+                        List<HotUserTag> hotSelectTags = tagBean.hotSelectTags;
+                        StringBuilder sb = new StringBuilder();
+                        for (HotUserTag tag : hotSelectTags) {
+                            sb.append(tag.tag);
+                            sb.append(",");
+                        }
+                        sb.deleteCharAt(sb.length()-1);
+                        vAddTag.setText(sb.toString());
+                    }
                 }
                 break;
         }
