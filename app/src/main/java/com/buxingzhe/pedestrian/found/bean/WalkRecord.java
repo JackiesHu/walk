@@ -61,7 +61,7 @@ public class WalkRecord extends RemarkPoint implements Parcelable{
     private String type;
     private String routepicStr;
     private String title;
-    private int star;
+    private String star;
     private int streetStar;
     private int safeStar;
     private int envirStar;
@@ -94,7 +94,7 @@ public class WalkRecord extends RemarkPoint implements Parcelable{
         type = in.readString();
         routepicStr = in.readString();
         title = in.readString();
-        star = in.readInt();
+        star = in.readString();
         streetStar = in.readInt();
         safeStar = in.readInt();
         envirStar = in.readInt();
@@ -268,11 +268,11 @@ public class WalkRecord extends RemarkPoint implements Parcelable{
         this.title = title;
     }
 
-    public int getStar() {
+    public String getStar() {
         return star;
     }
 
-    public void setStar(int star) {
+    public void setStar(String star) {
         this.star = star;
     }
 
@@ -358,7 +358,7 @@ public class WalkRecord extends RemarkPoint implements Parcelable{
         dest.writeString(type);
         dest.writeString(routepicStr);
         dest.writeString(title);
-        dest.writeInt(star);
+        dest.writeString(star);
         dest.writeInt(streetStar);
         dest.writeInt(safeStar);
         dest.writeInt(envirStar);

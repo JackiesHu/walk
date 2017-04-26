@@ -41,6 +41,7 @@ import com.buxingzhe.pedestrian.bean.RequestResultInfo;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.StarBarBean;
 import com.buxingzhe.pedestrian.found.adapter.PointCommentAdapter;
+import com.buxingzhe.pedestrian.found.bean.Comment;
 import com.buxingzhe.pedestrian.found.bean.PageContent;
 import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
 import com.buxingzhe.pedestrian.found.bean.WalkRecord;
@@ -115,9 +116,10 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
                     if (o != null){
                         PageContent pointComment = JSON.parseObject(o.toString(), PageContent.class);
                         if (pointComment.getList() != null) {
+                            List<Comment> comments = JSON.parseArray(pointComment.getList().toString(), Comment.class);
                             LinearLayoutManager manager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
                             recycle_point_comments.setLayoutManager(manager);
-                            PointCommentAdapter adapter = new PointCommentAdapter(mContext, pointComment.getList(), R.layout.item_walkdetail_discuss);
+                            PointCommentAdapter adapter = new PointCommentAdapter(mContext, comments, R.layout.item_walkdetail_discuss);
                             recycle_point_comments.setAdapter(adapter);
                         }
                     }
