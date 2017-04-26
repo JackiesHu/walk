@@ -32,7 +32,10 @@ public interface NetRequestService {
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_USER_MODIFY_USER_INFO)
     Observable</* RequestResultInfo<UserModifyInfo> */ String> modifyUserInfo(@FieldMap Map<String, String> modifyInfoMap);
-
+    //修改用户信息
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_USER_MODIFY_USER_INFO)
+    Observable</* RequestResultInfo<UserModifyInfo> */ String> modifyUserInfo2(@FieldMap Map<String, String> modifyInfoMap);
     //增加用户步票，（社交网络分享步行记录后调用）
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_USER_ADD_WALK_NUM)

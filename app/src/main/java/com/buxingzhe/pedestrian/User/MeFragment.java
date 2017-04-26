@@ -122,24 +122,16 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
     }
 
     private void setData() {
-
-
         NetRequestManager.getInstance().getUserInfo(GlobalParams.USER_ID, GlobalParams.TOKEN, new Subscriber<String>() {
             @Override
             public void onCompleted() {
-
             }
-
             @Override
             public void onError(Throwable e) {
-
             }
-
             @Override
             public void onNext(String jsonStr) {
-
                 Log.i(jsonStr);
-
                 // 由于服务端的返回数据格式不固定，因此这里采用手动解析
                 Object[] datas = JsonParseUtil.getInstance().parseJson(jsonStr, UserLoginResultInfo.class);
                 if ((Integer) datas[0] == 0) {
@@ -151,15 +143,15 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
                     userInfo.formatUser(resultInfo);
                     userInfo.saveUserInfo(mContext,userInfo);
                     if (resultInfo != null) {
-                        String userAvatar = (!TextUtils.isEmpty(resultInfo.getAvatarUrl())) ? resultInfo.getAvatarUrl() : "";
+                        String userAvatar = (!TextUtils.isEmpty(userInfo.getAvatar())) ? userInfo.getAvatar() : "";
                         if (!TextUtils.isEmpty(userAvatar)) {
                             Picasso.with(getActivity()).load(userAvatar).resize(SystemUtils.dip2px(getActivity(),67.0f),SystemUtils.dip2px(getActivity(),67.0f)).centerCrop().into(mUserAvatar);
                         }
 
-                        mUserName.setText(resultInfo.getNickName());
-                        mUserGender.setText(resultInfo.getGender());
-                        mUserHeight.setText(resultInfo.getHeight());
-                        mUserWeight.setText(resultInfo.getWeight());
+                        mUserName.setText(userInfo.getNickName());
+                        mUserGender.setText(userInfo.getGender());
+                        mUserHeight.setText(userInfo.getHeight());
+                        mUserWeight.setText(userInfo.getWeight());
                         mUserStepTicket.setText(resultInfo.getWalkMoney());
                         mUserPoints.setText(resultInfo.getScore());
                     }

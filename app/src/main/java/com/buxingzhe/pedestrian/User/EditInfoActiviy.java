@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
 import android.view.View;
 import android.widget.EditText;
@@ -12,8 +13,20 @@ import android.widget.TextView;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
-import com.buxingzhe.pedestrian.bean.user.User;
+import com.buxingzhe.pedestrian.common.GlobalParams;
+import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
+import com.buxingzhe.pedestrian.utils.ProgressUtils;
+import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import rx.Subscriber;
 
 import static android.text.InputType.TYPE_TEXT_VARIATION_NORMAL;
 
@@ -24,7 +37,7 @@ import static android.text.InputType.TYPE_TEXT_VARIATION_NORMAL;
 public class EditInfoActiviy extends BaseActivity implements View.OnClickListener {
     private EditText et_editInfo_content;
     private RadioButton rbtn_editSex_m, rbtn_editSex_f;
-    private User user = new User();
+    private UserInfo user;
     private String sex;
 
     @Override
@@ -32,7 +45,10 @@ public class EditInfoActiviy extends BaseActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editinfo);
         findViewById(R.id.title_bar);
+        user = new UserInfo();
+        user = user.getUserInfo(this);
         initView();
+
     }
     private void initView() {
         vTitleBar = (TitleBarView) findViewById(R.id.title_bar);
@@ -61,15 +77,16 @@ public class EditInfoActiviy extends BaseActivity implements View.OnClickListene
                 digits = "";
                 maxLength = 100;
                 tv_editInfo_unit.setVisibility(View.GONE);
-                et_editInfo_content.setText(user.getNickname());
+                if (!TextUtils.isEmpty(user.getNickName()))
+                et_editInfo_content.setText(user.getNickName());
                 break;
             case R.id.ll_userSex:
 
                 title = "性别";
                 findViewById(R.id.ll_edit_info).setVisibility(View.GONE);
                 findViewById(R.id.ll_edit_sex).setVisibility(View.VISIBLE);
-                sex = user.getSex();
-                if (sex != null && sex.equals("f")){
+                sex = user.getGender();
+                if (sex != null && sex.equals("1")){
                     rbtn_editSex_m.setChecked(false);
                     rbtn_editSex_f.setChecked(true);
                 }else {
@@ -84,7 +101,7 @@ public class EditInfoActiviy extends BaseActivity implements View.OnClickListene
                 maxLength = 3;
                 inputType = InputType.TYPE_CLASS_NUMBER;
                 tv_editInfo_unit.setText("岁");
-                et_editInfo_content.setText(user.getAge());
+                et_editInfo_content.setText(SystemUtils.getAge(new Date(user.getCreateTimestamp()) ));
                 break;
             case R.id.ll_userHeight:
 
@@ -137,7 +154,74 @@ public class EditInfoActiviy extends BaseActivity implements View.OnClickListene
     }
 
     @Override
-    public void onClick(View view) {
+    public void onRightListener(View v) {
+        super.onRightListener(v);
+        String content = et_editInfo_content.getText().toString().trim();
+        if (content.length() < 1) {
+            ProgressUtils.showDialog(this, "请输入信息！", 2);
+            return;
+        }
+        Map<String, String> params = new HashMap<>();
+        switch (getIntent().getIntExtra(IntentKey.EDIT_TAG, R.id.ll_userName)) {
+            case R.id.ll_userName:
+                user.setNickName(content);
+                params.put("nickName ", content);
+                break;
+            case R.id.ll_userSex:
+                user.setGender(sex);
+                params.put("gender ", sex);
+                break;
+            case R.id.ll_userAge:
 
+                break;
+            case R.id.ll_userHeight:
+                user.setHeight(content);
+                params.put("height ", user.getHeight());
+                break;
+            case R.id.ll_userWeight:
+
+                user.setWeight(content);
+                params.put("field", "weight");
+                params.put("value", user.getWeight());
+                break;
+        }
+        user.saveUserInfo(this,user);
+        params.put("userId", GlobalParams.USER_ID );
+        params.put("userId", GlobalParams.TOKEN);
+        NetRequestManager.getInstance().modifyUserInfo(params, new Subscriber<String>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(String str) {
+                try {
+                    JSONObject jsonObject = new JSONObject(str);
+                    int code = (int) jsonObject.get("code");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                finish();
+            }
+        });
+    }
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.ll_edit_sex_m) {
+            rbtn_editSex_m.setChecked(true);
+            rbtn_editSex_f.setChecked(false);
+            sex = "1";
+        } else if (view.getId() == R.id.ll_edit_sex_f) {
+
+            rbtn_editSex_m.setChecked(false);
+            rbtn_editSex_f.setChecked(true);
+            sex = "2";
+        }
     }
 }

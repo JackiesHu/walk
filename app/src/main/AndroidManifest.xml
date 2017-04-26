@@ -40,7 +40,6 @@
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
     <uses-permission android:name="android.permission.READ_LOGS" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
     <application
         android:name=".application.PDApplication"
         android:allowBackup="true"

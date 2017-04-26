@@ -57,7 +57,6 @@
             android:layout_height="60dp"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:background="@color/app_head_bg"
             android:contentDescription="@string/app_name"
              />
 
@@ -167,7 +166,9 @@
         android:background="@drawable/btn_personal_click_selector"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="12dp"
+        android:visibility="gone"
+        >
 
         <TextView
             android:layout_width="wrap_content"
