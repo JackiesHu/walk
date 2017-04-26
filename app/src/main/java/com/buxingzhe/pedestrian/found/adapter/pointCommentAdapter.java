@@ -7,7 +7,6 @@ import android.widget.TextView;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.common.StarBarBean;
 import com.buxingzhe.pedestrian.found.bean.Comment;
-import com.buxingzhe.pedestrian.found.bean.PageContent;
 import com.buxingzhe.pedestrian.utils.PicassManager;
 import com.buxingzhe.pedestrian.widget.MWTStarBar;
 
@@ -19,9 +18,9 @@ import java.util.List;
  * Created by hasee on 2017/4/24.
  */
 
-public class PointCommentAdapter extends RecycleBaseAdapter<Comment> {
+public class pointCommentAdapter extends RecycleBaseAdapter<Comment> {
 
-    public PointCommentAdapter(Context context, List<Comment> list, int resId) {
+    public pointCommentAdapter(Context context, List<Comment> list, int resId) {
         super(context, list, resId);
     }
 
