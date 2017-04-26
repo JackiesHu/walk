@@ -1,6 +1,8 @@
 package com.buxingzhe.pedestrian.community.community;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,15 +19,17 @@ import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.NetRequestParams;
-import com.buxingzhe.pedestrian.http.imageupload.UploadImage;
+import com.buxingzhe.pedestrian.http.imageupload.UploadImage_a;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.PicassManager;
+import com.buxingzhe.pedestrian.utils.PictureUtil;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
 import com.pizidea.imagepicker.AndroidImagePicker;
 import com.pizidea.imagepicker.activity.ImagesGridActivity;
 import com.pizidea.imagepicker.bean.ImageItem;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -42,8 +46,11 @@ import cn.qqtheme.framework.picker.DatePicker;
 
 public class PublishActActivity extends BaseActivity implements View.OnClickListener,
         AndroidImagePicker.OnPictureTakeCompleteListener, AndroidImagePicker.OnImagePickCompleteListener {
+    private final static int UPLOAD_FAIL = 0;
+    private final static int UPLOAD_SUCCESS = 1;
+
     private AndroidImagePicker mImagePicker;
-    private String  localUrl;
+    private String localUrl;
 
     private ImageView iv_upload_pic;
     private ImageView iv_select_pic;
@@ -114,7 +121,7 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
             e.printStackTrace();
         }
 
-        Map<String,String> paramsMap = new HashMap<>();
+        Map<String, String> paramsMap = new HashMap<>();
         paramsMap.put("userId", GlobalParams.USER_ID);
         paramsMap.put("token", GlobalParams.TOKEN);
         paramsMap.put("title", title);
@@ -171,7 +178,7 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
      */
     private void isHavePic(boolean isHave) {
         if (isHave) {
-            PicassManager.getInstance().loadLocal(mContext,localUrl,iv_select_pic);
+            PicassManager.getInstance().loadLocal(mContext, localUrl, iv_select_pic);
             iv_upload_pic.setVisibility(View.GONE);
             iv_select_pic.setVisibility(View.VISIBLE);
             iv_deletepic.setVisibility(View.VISIBLE);
@@ -284,45 +291,103 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onImagePickComplete(List<ImageItem> items) {
-        if (items != null && items.size() > 0){
+        if (items != null && items.size() > 0) {
             ImageItem imageItem = items.get(0);
             localUrl = imageItem.path;
             isHavePic(true);
-        }else{
+        } else {
             isHavePic(false);
         }
     }
 
     @Override
     public void onPictureTakeComplete(String picturePath) {
-        if (!TextUtils.isEmpty(picturePath)){
+        if (!TextUtils.isEmpty(picturePath)) {
             localUrl = picturePath;
             isHavePic(true);
-        }else{
+        } else {
             isHavePic(false);
         }
     }
 
-    private void initTask(final Map<String,String> paramsMap){
-        asyncTask = new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object[] params) {
-                String response = UploadImage.uploadFile(new File(localUrl),paramsMap,NetRequestParams.PUBLISHACTIVITY);
-                return response;
-            }
 
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                Toast.makeText(PublishActActivity.this, "开始上传", Toast.LENGTH_SHORT).show();
-            }
+    private void initTask(final Map<String, String> paramsMap) {
 
+        new Thread(new Runnable() {
             @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
-                Toast.makeText(PublishActActivity.this, (o == null ? "" : o.toString()), Toast.LENGTH_SHORT).show();
+            public void run() {
+//                String response = UploadImage.uploadFile(new File(compressPic()), paramsMap, NetRequestParams.WALK_SERVER_HOST + NetRequestParams.PUBLISHACTIVITY);
+                File[] files = new File[]{new File(localUrl)};
+//                String response = new UploadImage_a().post(NetRequestParams.WALK_SERVER_HOST + NetRequestParams.PUBLISHACTIVITY, paramsMap, files);
+//                if (true){
+//                    handler.sendEmptyMessage(UPLOAD_FAIL);
+//                }else{
+//                    handler.sendEmptyMessage(UPLOAD_SUCCESS);
+//                }
+
+                String response = new UploadImage_a().post(NetRequestParams.WALK_SERVER_HOST + NetRequestParams.PUBLISHACTIVITY, paramsMap, files);
+                System.out.println("返回结果：" + response);
             }
-        };
+        }).start();
+
+//        asyncTask = new AsyncTask() {
+//            @Override
+//            protected Object doInBackground(Object[] params) {
+//                String response = UploadImage.uploadFile(new File(localUrl),paramsMap,NetRequestParams.PUBLISHACTIVITY);
+//                return response;
+//            }
+//
+//            @Override
+//            protected void onPreExecute() {
+//                super.onPreExecute();
+//                Toast.makeText(PublishActActivity.this, "开始上传", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            protected void onPostExecute(Object o) {
+//                super.onPostExecute(o);
+//                Toast.makeText(PublishActActivity.this, (o == null ? "" : o.toString()), Toast.LENGTH_SHORT).show();
+//            }
+//        };
+//
+//        asyncTask.execute("");
+    }
+
+
+    private String compressPic() {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(localUrl, options);
+
+        int degree = 0; //图片拍摄角度
+        //获取图片的旋转角度，有些系统把拍照的图片旋转了，有的没有旋转
+        degree = PictureUtil.readPictureDegree(localUrl);
+
+        int startIndex = localUrl.lastIndexOf(".");
+        if (startIndex <= 0) {
+            return "";
+        }
+        int endIndex = localUrl.length();
+        String format = localUrl.substring(startIndex, endIndex);
+
+        //压缩图片
+        String tempPath = localUrl;
+        if (options.outWidth > 720 || options.outHeight > 720 || format.equals(".webp")) {
+            try {
+                Bitmap bitmap = PictureUtil.getZoomImage(localUrl, degree);
+                tempPath = PictureUtil.createTempFile(bitmap);
+                if (TextUtils.isEmpty(tempPath)) {
+                    tempPath = localUrl;
+                }
+            } catch (IOException e) {
+                tempPath = localUrl;
+                e.printStackTrace();
+            }
+        } else {
+            tempPath = localUrl;
+        }
+        return tempPath;
     }
 }
+
 

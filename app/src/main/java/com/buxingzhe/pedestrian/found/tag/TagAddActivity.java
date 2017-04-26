@@ -95,9 +95,9 @@ public class TagAddActivity extends BaseActivity implements View.OnClickListener
 
     private void addTag() {
         Intent intent = new Intent();
-        List<HotUserTag> hotSelectTags = new ArrayList<>();
+        ArrayList<HotUserTag> hotSelectTags = new ArrayList<>();
         if (addTagAdapter != null){
-            List<HotUserTag> hotUserTags = addTagAdapter.getHotUserTags();
+            ArrayList<HotUserTag> hotUserTags = addTagAdapter.getHotUserTags();
             for (int i=0;i<hotUserTags.size();i++){
                HotUserTag tag = hotUserTags.get(i);
                if (tag.isSelect){
@@ -154,13 +154,15 @@ public class TagAddActivity extends BaseActivity implements View.OnClickListener
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case 1:
-                String tag = data.getStringExtra("createTag");
-                if (!TextUtils.isEmpty(tag)){
-                    HotUserTag hotUserTags = new HotUserTag();
-                    hotUserTags.tag = tag;
-                    if (addTagAdapter != null){
-                        addTagAdapter.getHotUserTags().add(0, hotUserTags);
-                        addTagAdapter.notifyDataSetChanged();
+                if (resultCode == RESULT_OK) {
+                    String tag = data.getStringExtra("createTag");
+                    if (!TextUtils.isEmpty(tag)) {
+                        HotUserTag hotUserTags = new HotUserTag();
+                        hotUserTags.tag = tag;
+                        if (addTagAdapter != null) {
+                            addTagAdapter.getHotUserTags().add(0, hotUserTags);
+                            addTagAdapter.notifyDataSetChanged();
+                        }
                     }
                 }
             break;

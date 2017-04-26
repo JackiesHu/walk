@@ -1,12 +1,15 @@
 package com.buxingzhe.pedestrian.bean.activity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 /**
  * Created by QJ on 2017/4/17.
  */
 
-public class PublisherBean implements Serializable{
+public class PublisherBean implements Parcelable{
     /**
      * id : e2f835b965e34b2fb8d6cbc22378f55a
      * nickName : Apoptoxin
@@ -39,5 +42,15 @@ public class PublisherBean implements Serializable{
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+
     }
 }

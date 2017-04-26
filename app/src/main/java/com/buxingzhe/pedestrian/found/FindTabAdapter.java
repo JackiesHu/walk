@@ -1,9 +1,9 @@
 package com.buxingzhe.pedestrian.found;
 
-import android.app.FragmentTransaction;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.view.ViewGroup;
 
 import java.util.List;
@@ -32,9 +32,9 @@ public class FindTabAdapter extends FragmentPagerAdapter {
     }
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        android.app.FragmentManager manager = ((android.app.Fragment) object).getFragmentManager();
+        FragmentManager manager = ((WalkCategoryFragment) object).getFragmentManager();
         FragmentTransaction trans = manager.beginTransaction();
-        trans.remove((android.app.Fragment) object);
+        trans.remove((WalkCategoryFragment) object);
         trans.commitAllowingStateLoss();
         super.destroyItem(container, position, object);
     }

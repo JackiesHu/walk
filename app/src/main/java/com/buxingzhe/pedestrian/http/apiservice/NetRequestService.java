@@ -1,8 +1,11 @@
 package com.buxingzhe.pedestrian.http.apiservice;
 
+import com.buxingzhe.pedestrian.bean.RequestResultInfo;
+import com.buxingzhe.pedestrian.found.bean.Streets;
 import com.buxingzhe.pedestrian.http.NetRequestParams;
 
 import java.util.Map;
+import java.util.function.DoubleUnaryOperator;
 
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
@@ -108,4 +111,15 @@ public interface NetRequestService {
     @POST(NetRequestParams.STREETS_NEARBY_FOUND)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getStreets(@FieldMap Map<String, String> runTeamMap);
 
+    @FormUrlEncoded
+    @POST(NetRequestParams.REMARK_POINTS_NEARBY_FOUND)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getNearByPoints(@FieldMap Map<String, String> paramsMap);
+
+    @FormUrlEncoded
+    @POST(NetRequestParams.REMARK_POINTS_COMMENT_FOUND)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getPointComments(@FieldMap Map<String, String> paramsMap);
+
+    @FormUrlEncoded
+    @POST(NetRequestParams.ADD_POINT_COMMENT)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> pointComment(Map<String, String> paramsMap);
 }

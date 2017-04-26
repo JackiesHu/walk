@@ -60,7 +60,7 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_commact_info);
         mContext = this;
-        walkActivityInfo = (WalkActivityInfo) getIntent().getSerializableExtra(CommActFragment.WALKACTIVITYINFO);
+        walkActivityInfo = (WalkActivityInfo) getIntent().getParcelableExtra(CommActFragment.WALKACTIVITYINFO);
         initView();
         setData();
         initPullRefresh();

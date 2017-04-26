@@ -89,6 +89,11 @@ public class MWTStarBar extends LinearLayout {
             addView(imageView);
         }
     }
+
+    public int getStarSize(){
+        return starBarBeanList.size();
+    }
+
     public void refreshView(){
         invalidate();
     }

@@ -299,13 +299,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                     UserLoginResultInfo resultInfo = (UserLoginResultInfo) datas[1];
                     if (resultInfo != null) {
                         //TODO 保存数据
-                        SharedPreferencesUtil.getInstance().getSharedPreferences(getApplicationContext())
-                                .edit()
-                                .putString("token", resultInfo.getToken())
-                                .putString("uid", resultInfo.getId())
-                                .putInt("loginType", loginType )
-                                .commit();
-
+                        UserInfo userInfo = new UserInfo();
+                        userInfo.formatUser(resultInfo);
+                        userInfo.saveUserInfo(mContext,userInfo);
 
                         GlobalParams.TOKEN = resultInfo.getToken();
                         GlobalParams.USER_ID = resultInfo.getId();

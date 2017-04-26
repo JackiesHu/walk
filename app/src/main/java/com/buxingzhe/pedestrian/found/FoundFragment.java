@@ -3,33 +3,36 @@ package com.buxingzhe.pedestrian.found;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
-import com.baidu.mapapi.bikenavi.BikeNavigateHelper;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.InfoWindow;
+import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
@@ -38,34 +41,19 @@ import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
-import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.TextOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.model.inner.GeoPoint;
-import com.baidu.mapapi.search.core.RouteLine;
-import com.baidu.mapapi.search.core.SearchResult;
-import com.baidu.mapapi.search.route.BikingRouteResult;
-import com.baidu.mapapi.search.route.DrivingRouteResult;
-import com.baidu.mapapi.search.route.IndoorRouteResult;
-import com.baidu.mapapi.search.route.MassTransitRouteResult;
-import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
-import com.baidu.mapapi.search.route.PlanNode;
-import com.baidu.mapapi.search.route.RoutePlanSearch;
-import com.baidu.mapapi.search.route.TransitRouteResult;
-import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
-import com.baidu.mapapi.search.route.WalkingRouteResult;
+import com.baidu.mapapi.utils.CoordinateConverter;
 import com.buxingzhe.pedestrian.R;
-import com.buxingzhe.pedestrian.baiduView.OverlayManager;
-import com.buxingzhe.pedestrian.baiduView.WalkingRouteOverlay;
-import com.buxingzhe.pedestrian.bean.AddressSuggLoca;
 import com.buxingzhe.pedestrian.bean.RequestResultInfo;
+import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
 import com.buxingzhe.pedestrian.found.bean.Streets;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,37 +62,39 @@ import java.util.Map;
 import rx.Subscriber;
 
 
+
 /**
  * Created by quanjing on 2017/2/5.
+ *
  */
 public class FoundFragment extends Fragment implements View.OnClickListener {
 
     private Context mContext;
     private Toolbar toolbar;
     private RelativeLayout vMunuSearch;
-    private BikeNavigateHelper mNaviHelper;
     private MapView vMapView;
     private BaiduMap mBaidumap = null;
     // 初始化全局 bitmap 信息，不用时及时 recycle
-    BitmapDescriptor bdnor = BitmapDescriptorFactory
-            .fromResource(R.mipmap.ic_map_tuijian_nor);
+    BitmapDescriptor bdnor = BitmapDescriptorFactory.fromResource(R.mipmap.ic_map_tuijian_nor);
     BitmapDescriptor bdPre = BitmapDescriptorFactory.fromResource(R.mipmap.ic_map_tuijian_pre);
+    BitmapDescriptor click = BitmapDescriptorFactory.fromResource(R.mipmap.ic_map_pin_green);
     private ImageView vImageViewPin;
     private LocationClient mLocClient;
     boolean isFirstLoc = true; // 是否首次定位
     public MyLocationListenner myListener = new MyLocationListenner();
     private MyLocationConfiguration.LocationMode mCurrentMode;
     private Marker prevMarker;
-    private RouteLine route = null;
     private LinearLayout vTraffic;
 
-    // 搜索相关
-    RoutePlanSearch mSearch = null;
-    OverlayManager routeOverlay = null;
     private boolean isCloseTraffic;
     private ImageView vImageTraffic;
-    private FloatBuffer vertexBuffer;
-    private Polyline mPolyline;
+    private List<RemarkPoint> remarkPoints;
+    private LatLng ll;
+    private PopupWindow popupWindow;
+    private Marker marker;
+
+    List<Marker> overlays = new ArrayList<>();
+    List<Marker> lines = new ArrayList<>();
 
     public FoundFragment() {
 
@@ -112,20 +102,86 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_found, null);
+        View view = inflater.inflate(R.layout.fragment_found, container,false);
         mContext = getContext();
         findViewId(view);
         onClick();
         initBaiduMap();
-        searchRouteProcess();
-        loadData();
+//        searchRouteProcess();
+        initCenterLat();
         return view;
     }
 
-    private void loadData() {
+    private void loadNearByPoint(LatLng latLng) {
         Map<String,String> paramsMap = new HashMap<>();
-        paramsMap.put("longitude","106.571009");
-        paramsMap.put("latitude","29.610905");
+        paramsMap.put("longitude",String.valueOf(latLng.longitude));
+        paramsMap.put("latitude",String.valueOf(latLng.latitude));
+        paramsMap.put("distance","5000");
+
+        Subscriber mSubscriber = new Subscriber<String>(){
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(final String jsonStr) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+                        RequestResultInfo resultInfo = JSON.parseObject(jsonStr, RequestResultInfo.class);
+                        if ("0".equals(resultInfo.getCode())) {
+                            Object o = resultInfo.getContent();
+                            if (o != null) {
+                                remarkPoints = JSON.parseArray(o.toString(), RemarkPoint.class);
+                                initOverlay(remarkPoints);
+                            }
+                        }
+                    }
+                }).start();
+            }
+        };
+
+        NetRequestManager.getInstance().getNearByPoints(paramsMap,mSubscriber);
+    }
+
+    private void initCenterLat() {
+        // 地图拖拽监听
+        mBaidumap.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
+
+            @Override
+            public void onMapStatusChangeStart(MapStatus arg0) {
+
+            }
+
+            @Override
+            public void onMapStatusChangeFinish(MapStatus status) {
+                // 获取屏幕中心点在地图上对应的坐标
+                LatLng centerLatLng = mBaidumap
+                        .getProjection()
+                        .fromScreenLocation(new Point(getResources().getDisplayMetrics().widthPixels / 2,vMapView.getHeight()/2));
+                loadStreets(centerLatLng);
+                loadNearByPoint(centerLatLng);
+            }
+
+            @Override
+            public void onMapStatusChange(MapStatus arg0) {
+
+            }
+        });
+    }
+
+    private void loadStreets(LatLng latLng) {
+        Map<String,String> paramsMap = new HashMap<>();
+        paramsMap.put("longitude",String.valueOf(latLng.longitude));
+        paramsMap.put("latitude",String.valueOf(latLng.latitude));
         paramsMap.put("distance","1000");
 
         Subscriber mSubscriber = new Subscriber<String>(){
@@ -141,61 +197,81 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
             }
 
             @Override
-            public void onNext(String jsonStr) {
+            public void onNext(final String jsonStr) {
                 // 由于服务端的返回数据格式不固定，因此这里采用手动解析
-                RequestResultInfo resultInfo = JSON.parseObject(jsonStr, RequestResultInfo.class);
-                if ("0".equals(resultInfo.getCode())) {
-                    Object o = resultInfo.getContent();
-                    List<Streets> streets = JSON.parseArray(o.toString(), Streets.class);
-
-                    // 添加普通折线绘制
-                    for (Streets street : streets){
-                        List<LatLng> points = new ArrayList<>();
-                        List<Streets.GeometryBean.CoordinatesBeanX.CoordinatesBean> coordinates = street.getGeometry().getCoordinates().get(0).getCoordinates();
-                        double ws = street.getProperties().getWs();
-                        for (int i = 0 ; i < coordinates.size();i++) {
-                            Streets.GeometryBean.CoordinatesBeanX.CoordinatesBean bean = coordinates.get(i);
-                            LatLng latLng = new LatLng(bean.getY(),bean.getX());
-                            points.add(latLng);
-                            if (i == 0) {
-                                // 添加文字
-                                OverlayOptions ooText;
-                                if (ws <= 0.3) {
-                                    ooText = new TextOptions().bgColor(Color.RED)
-                                            .fontSize(24).fontColor(Color.WHITE).text(String.valueOf(ws))
-                                            .position(latLng);
-                                } else if (ws <= 0.6) {
-                                    ooText = new TextOptions().bgColor(Color.rgb(241,182,64))
-                                            .fontSize(24).fontColor(Color.WHITE).text(String.valueOf(ws))
-                                            .position(latLng);
-                                } else {
-                                    ooText = new TextOptions().bgColor(Color.rgb(42,202,142))
-                                            .fontSize(24).fontColor(Color.WHITE).text(String.valueOf(ws))
-                                            .position(latLng);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        RequestResultInfo resultInfo = JSON.parseObject(jsonStr, RequestResultInfo.class);
+                        if ("0".equals(resultInfo.getCode())) {
+                            Object o = resultInfo.getContent();
+                            if (o != null){
+                                List<Streets> streets = JSON.parseArray(o.toString(), Streets.class);
+                                // 添加普通折线绘制
+                                for (Marker marker : lines){
+                                    marker.remove();
                                 }
+                                lines.clear();
+                                for (Streets street : streets) {
+                                    List<LatLng> points = new ArrayList<>();
+                                    List<Streets.GeometryBean.CoordinatesBeanX.CoordinatesBean> coordinates = street.getGeometry().getCoordinates().get(0).getCoordinates();
+                                    double ws = street.getProperties().getWs();
+                                    for (int i = 0; i < coordinates.size(); i++) {
+                                        Streets.GeometryBean.CoordinatesBeanX.CoordinatesBean bean = coordinates.get(i);
+                                        LatLng latLng = turnToBaidu(new LatLng(bean.getY(), bean.getX()));
+                                        points.add(latLng);
+                                        if (i == 0) {
+                                            // 添加文字
+                                            OverlayOptions ooText;
+                                            if (ws <= 0.3) {
+                                                ooText = new TextOptions().bgColor(Color.RED)
+                                                        .fontSize(30).fontColor(Color.WHITE).text(String.valueOf(ws))
+                                                        .position(latLng);
+                                            } else if (ws <= 0.6) {
+                                                ooText = new TextOptions().bgColor(Color.rgb(241, 182, 64))
+                                                        .fontSize(30).fontColor(Color.WHITE).text(String.valueOf(ws))
+                                                        .position(latLng);
+                                            } else {
+                                                ooText = new TextOptions().bgColor(Color.rgb(42, 202, 142))
+                                                        .fontSize(30).fontColor(Color.WHITE).text(String.valueOf(ws))
+                                                        .position(latLng);
+                                            }
 
-                                mBaidumap.addOverlay(ooText);
+                                            lines.add((Marker) mBaidumap.addOverlay(ooText));
+                                        }
+                                    }
+                                    OverlayOptions ooPolyline;
+
+                                    if (ws <= 0.3) {
+                                        ooPolyline = new PolylineOptions().width(8)
+                                                .color(Color.RED).points(points);
+                                    } else if (ws <= 0.6) {
+                                        ooPolyline = new PolylineOptions().width(8)
+                                                .color(Color.rgb(241, 182, 64)).points(points);
+                                    } else {
+                                        ooPolyline = new PolylineOptions().width(8)
+                                                .color(Color.rgb(42, 202, 142)).points(points);
+                                    }
+                                    lines.add((Marker) mBaidumap.addOverlay(ooPolyline));
+                                }
                             }
                         }
-                        OverlayOptions ooPolyline;
-
-                        if (ws <= 0.3) {
-                            ooPolyline = new PolylineOptions().width(5)
-                                    .color(Color.RED).points(points);
-                        }else if (ws <= 0.6){
-                            ooPolyline = new PolylineOptions().width(5)
-                                    .color(Color.rgb(241,182,64)).points(points);
-                        }else{
-                            ooPolyline = new PolylineOptions().width(5)
-                                    .color(Color.rgb(42,202,142)).points(points);
-                        }
-                        mPolyline = (Polyline) mBaidumap.addOverlay(ooPolyline);
                     }
-                }
+                }).start();
+
             }
         };
 
         NetRequestManager.getInstance().getStreets(paramsMap,mSubscriber);
+    }
+
+    private LatLng turnToBaidu(LatLng sourceLatLng) {
+        // 将GPS设备采集的原始GPS坐标转换成百度坐标
+        CoordinateConverter converter  = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.GPS);
+        // sourceLatLng待转换坐标
+        converter.coord(sourceLatLng);
+        return converter.convert();
     }
 
     private void onClick() {
@@ -216,37 +292,61 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         setHasOptionsMenu(true);// 标题的文字需在setSupportActionBar之前，不然会无效
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     }
-    /**
-     * 发起路线规划搜索
-     */
-    public void searchRouteProcess() {
-        // 初始化搜索模块，注册事件监听
-        mSearch = RoutePlanSearch.newInstance();
-        mSearch.setOnGetRoutePlanResultListener(myGetRoutePlan);
-        // 重置浏览节点的路线数据
-        route = null;
-        // 设置起终点信息，对于tranist search 来说，城市名无意义
-        PlanNode stNode = PlanNode.withLocation(new LatLng(39.993175,116.400244)) ;
-        PlanNode enNode = PlanNode.withLocation(new LatLng(39.942821,116.369199)) ;
 
-        mSearch.walkingSearch((new WalkingRoutePlanOption())
-                .from(stNode).to(enNode));
-
-    }
     private void initBaiduMap(){
         MapStatusUpdate u = MapStatusUpdateFactory.zoomTo(20);
         mBaidumap.animateMapStatus(u);
+        mBaidumap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
+
+            @Override
+            public void onMapClick(LatLng latLng) {
+                showMarker(latLng);
+            }
+
+            @Override
+            public boolean onMapPoiClick(MapPoi mapPoi) {
+
+                return false;
+            }
+
+        });
         initLocation();
-        initOverlay();
         setTraffic();
     }
-    public void initOverlay() {
-        List<AddressSuggLoca> suggLocas = createSuggData();
-        for (AddressSuggLoca location : suggLocas){
-            LatLng llA = new LatLng(location.lat, location.lng);
+
+    private void showMarker(LatLng latLng) {
+        if (marker == null){
+            MarkerOptions clickMarker = new MarkerOptions().icon(click)
+                    .zIndex(9).draggable(false).flat(true);
+            clickMarker.position(latLng);
+
+            marker = (Marker) mBaidumap.addOverlay(clickMarker);
+        }
+        //创建InfoWindow展示的view
+        TextView button = new TextView(mContext);
+        button.setText("点击这里标记");
+        button.setBackgroundColor(Color.WHITE);
+        button.setPadding(20,20,20,20);
+        //创建InfoWindow , 传入 view， 地理坐标， y 轴偏移量
+        InfoWindow mInfoWindow = new InfoWindow(button, latLng, -click.getBitmap().getHeight());
+        //显示InfoWindow
+        mBaidumap.showInfoWindow(mInfoWindow);
+        marker.setPosition(latLng);
+    }
+
+    public void initOverlay(List<RemarkPoint> suggLocas) {
+            Bundle bundle;
+        for (Marker marker : overlays){
+            marker.remove();
+        }
+        overlays.clear();
+        for (RemarkPoint location : suggLocas){
+            LatLng llA = new LatLng(location.getLatitude(), location.getLongitude());
+            bundle = new Bundle();
+            bundle.putParcelable("data",location);
             MarkerOptions ooA = new MarkerOptions().position(llA).icon(bdnor)
-                    .zIndex(9).draggable(false);
-            mBaidumap.addOverlay(ooA);
+                    .zIndex(9).draggable(false).extraInfo(bundle);
+            overlays.add((Marker) mBaidumap.addOverlay(ooA));
         }
     }
 
@@ -291,97 +391,25 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     BaiduMap.OnMarkerClickListener markerClickListener = new BaiduMap.OnMarkerClickListener() {
         @Override
         public boolean onMarkerClick(Marker marker) {
-            LatLng ll = marker.getPosition();
-            int height = marker.getIcon().getBitmap().getHeight();
-            ImageView view = createView();
-            InfoWindow mInfoWindow = new InfoWindow(view, ll, -height+20);
-            mBaidumap.showInfoWindow(mInfoWindow);
-            marker.setIcon(bdPre);
-            if (prevMarker != null){
-                prevMarker.setIcon(bdnor);
+            if (marker.isFlat()){
+                showPop();
+            }else {
+                RemarkPoint remarkPoint = marker.getExtraInfo().getParcelable("data");
+                int height = marker.getIcon().getBitmap().getHeight();
+                ImageView view = createView();
+                InfoWindow mInfoWindow = new InfoWindow(view, new LatLng(remarkPoint.getLatitude(), remarkPoint.getLongitude()), -height + 20);
+                mBaidumap.showInfoWindow(mInfoWindow);
+                marker.setIcon(bdPre);
+                if (prevMarker != null) {
+                    prevMarker.setIcon(bdnor);
+                }
+                prevMarker = marker;
+                goWalkDetail(remarkPoint);
             }
-            prevMarker = marker;
-            double lat = ll.latitude;
-            double lng =  ll.longitude;
-            AddressSuggLoca addressSuggLoca = new AddressSuggLoca();
-            addressSuggLoca.lat = lat;
-            addressSuggLoca.lng = lng;
-            goWalkDetail(addressSuggLoca);
             return false;
         }
     };
-    OnGetRoutePlanResultListener myGetRoutePlan = new OnGetRoutePlanResultListener() {
-        @Override
-        public void onGetWalkingRouteResult(WalkingRouteResult result) {
-            if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-                Toast.makeText(mContext, "抱歉，未找到结果", Toast.LENGTH_SHORT).show();
-            }
-            if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
-                // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
-                // result.getSuggestAddrInfo()
-                return;
-            }
-            if ( result.getRouteLines().size() == 1 ) {
-                // 直接显示
-//                route = result.getRouteLines().get(0);
-//                WalkingRouteOverlay overlay = new MyWalkingRouteOverlay(mBaidumap);
-//                mBaidumap.setOnMarkerClickListener(overlay);
-//                routeOverlay = overlay;
-//                overlay.setData(result.getRouteLines().get(0));
-//                overlay.addToMap();
-//                overlay.zoomToSpan();
 
-            }if (result.getRouteLines().size() > 1 ) {
-
-
-            }else {
-                Log.d("route result", "结果数<0");
-                return;
-            }
-        }
-        @Override
-        public void onGetTransitRouteResult(TransitRouteResult transitRouteResult) {
-
-        }
-        @Override
-        public void onGetMassTransitRouteResult(MassTransitRouteResult massTransitRouteResult) {
-
-        }
-        @Override
-        public void onGetDrivingRouteResult(DrivingRouteResult drivingRouteResult) {
-
-        }
-        @Override
-        public void onGetIndoorRouteResult(IndoorRouteResult indoorRouteResult) {
-
-        }
-        @Override
-        public void onGetBikingRouteResult(BikingRouteResult bikingRouteResult) {
-
-        }
-    };
-    private class MyWalkingRouteOverlay extends WalkingRouteOverlay {
-
-        public MyWalkingRouteOverlay(BaiduMap baiduMap) {
-            super(baiduMap);
-        }
-
-        @Override
-        public BitmapDescriptor getStartMarker() {
-           /* if (useDefaultIcon) {*/
-                return BitmapDescriptorFactory.fromResource(R.mipmap.ic_luxian_now);
-            /*}
-            return null;*/
-        }
-
-        @Override
-        public BitmapDescriptor getTerminalMarker() {
-           /* if (useDefaultIcon) {*/
-                return BitmapDescriptorFactory.fromResource(R.mipmap.ic_luxian_start);
-            /*}
-            return null;*/
-        }
-    }
     /**
      * 定位SDK监听函数
      */
@@ -402,53 +430,27 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                         .longitude(location.getLongitude()).build();
                 mBaidumap.setMyLocationData(locData);
 
-                LatLng ll = new LatLng(location.getLatitude(),
+                ll = new LatLng(location.getLatitude(),
                         location.getLongitude());
+                loadStreets(ll);
+                loadNearByPoint(ll);
                 MapStatus.Builder builder = new MapStatus.Builder();
                 builder.target(ll).zoom(18.0f);
                 mBaidumap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+                showMarker(new LatLng(location.getLatitude(),location.getLongitude()));
             }
         }
 
         public void onReceivePoi(BDLocation poiLocation) {
         }
     }
-    private void goWalkDetail(AddressSuggLoca suggLoca){
-        Intent intent = new Intent(getActivity(),WalkDetailsActivity.class);
-        intent.putExtra("loactionData",suggLoca);
+    private void goWalkDetail(RemarkPoint suggLoca){
+        Intent intent = new Intent(mContext,WalkDetailsActivity.class);
+        intent.putExtra("locationData",suggLoca);
+        intent.putExtra("myLocation",ll);
         EnterActUtils.startAct(getActivity(),intent);
     }
-    private List<AddressSuggLoca> createSuggData(){
-        List<AddressSuggLoca> vAddres = new ArrayList<AddressSuggLoca>();
 
-            AddressSuggLoca location1 = new AddressSuggLoca();
-            location1.lat = 39.993175;
-            location1.lng = 116.400244;
-            vAddres.add(location1);
-            AddressSuggLoca location2 = new AddressSuggLoca();
-            location2.lat = 39.942821;
-            location2.lng = 116.369199;
-            vAddres.add(location2);
-            AddressSuggLoca location3 = new AddressSuggLoca();
-            location3.lat = 39.919723;
-            location3.lng = 116.425541;
-            vAddres.add(location3);
-            AddressSuggLoca location4 = new AddressSuggLoca();
-            location4.lat = 39.906965;
-            location4.lng = 116.371394;
-            vAddres.add(location4);
-
-            AddressSuggLoca location5 = new AddressSuggLoca();
-            location5.lat = 40.906965;
-            location5.lng = 116.501394;
-            vAddres.add(location5);
-
-            AddressSuggLoca location6 = new AddressSuggLoca();
-            location6.lat = 39.706965;
-            location6.lng = 116.401394;
-            vAddres.add(location6);
-        return vAddres;
-    }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
@@ -468,6 +470,41 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                 break;
         }
     }
+
+    private void showPop() {
+        if (popupWindow == null) {
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View view = inflater.inflate(R.layout.found_comment_pop, null);
+            popupWindow = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+            popupWindow.setBackgroundDrawable(new ColorDrawable());
+            LinearLayout linear_recommend = (LinearLayout) view.findViewById(R.id.linear_recommend);
+            LinearLayout linear_tucao = (LinearLayout) view.findViewById(R.id.linear_tucao);
+            LinearLayout linear_cancel = (LinearLayout) view.findViewById(R.id.linear_cancel);
+
+            linear_recommend.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, WalkDetialsDiscussActivity.class);
+                    EnterActUtils.startAct(getActivity(), intent);
+                }
+            });
+            linear_tucao.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, WalkDetialsDiscussActivity.class);
+                    EnterActUtils.startAct(getActivity(), intent);
+                }
+            });
+            linear_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popupWindow.dismiss();
+                }
+            });
+        }
+        popupWindow.showAtLocation(popupWindow.getContentView(), Gravity.BOTTOM,0,0);
+    }
+
     @Override
     public void onPause() {
         // MapView的生命周期与Activity同步，当activity挂起时需调用MapView.onPause()
@@ -489,6 +526,9 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         mBaidumap.setMyLocationEnabled(false);
         vMapView.onDestroy();
         vMapView = null;
+        click.recycle();
+        bdPre.recycle();
+        bdnor.recycle();
     }
 
 }

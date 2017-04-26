@@ -1,12 +1,13 @@
 package com.buxingzhe.pedestrian.bean.activity;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by QJ on 2017/4/13.
  */
 
-public class WalkActivityInfo implements Serializable{
+public class WalkActivityInfo implements Parcelable{
     /**
      * id : 8d26be4c2ea24ce797c52164f0778687
      * createTime : 1489579837
@@ -32,6 +33,31 @@ public class WalkActivityInfo implements Serializable{
     private int endTimestamp;
     private String banner;
     private int createTimestamp;
+
+    protected WalkActivityInfo(Parcel in) {
+        id = in.readString();
+        createTime = in.readString();
+        title = in.readString();
+        introduction = in.readString();
+        isOutDate = in.readString();
+        attenderCount = in.readInt();
+        startTimeStamp = in.readInt();
+        endTimestamp = in.readInt();
+        banner = in.readString();
+        createTimestamp = in.readInt();
+    }
+
+    public static final Creator<WalkActivityInfo> CREATOR = new Creator<WalkActivityInfo>() {
+        @Override
+        public WalkActivityInfo createFromParcel(Parcel in) {
+            return new WalkActivityInfo(in);
+        }
+
+        @Override
+        public WalkActivityInfo[] newArray(int size) {
+            return new WalkActivityInfo[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -119,5 +145,24 @@ public class WalkActivityInfo implements Serializable{
 
     public void setCreateTimestamp(int createTimestamp) {
         this.createTimestamp = createTimestamp;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(createTime);
+        parcel.writeString(title);
+        parcel.writeString(introduction);
+        parcel.writeString(isOutDate);
+        parcel.writeInt(attenderCount);
+        parcel.writeInt(startTimeStamp);
+        parcel.writeInt(endTimestamp);
+        parcel.writeString(banner);
+        parcel.writeInt(createTimestamp);
     }
 }

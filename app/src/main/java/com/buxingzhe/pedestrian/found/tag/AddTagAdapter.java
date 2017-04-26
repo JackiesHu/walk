@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class AddTagAdapter extends BaseAdapter{
     private Context mContext;
-    private List<HotUserTag> hotUserTags = new ArrayList<>();
+    private ArrayList<HotUserTag> hotUserTags = new ArrayList<>();
 
     public AddTagAdapter(Context mContext){
         this.mContext = mContext;
@@ -98,7 +98,7 @@ public class AddTagAdapter extends BaseAdapter{
         notifyDataSetChanged();
     }
 
-    public List<HotUserTag> getHotUserTags() {
+    public ArrayList<HotUserTag> getHotUserTags() {
         return hotUserTags;
     }
 }

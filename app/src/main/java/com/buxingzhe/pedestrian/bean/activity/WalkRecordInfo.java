@@ -1,14 +1,15 @@
 package com.buxingzhe.pedestrian.bean.activity;
 
-import com.buxingzhe.pedestrian.bean.user.UserBaseInfo;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import java.io.Serializable;
+import com.buxingzhe.pedestrian.bean.user.UserBaseInfo;
 
 /**
  * Created by QJ on 2017/4/14.
  */
 
-public class WalkRecordInfo implements Serializable {
+public class WalkRecordInfo implements Parcelable {
     /**
      * id : 439b419a722444b98ec49dbf43d78024
      * createTime : 1491443919
@@ -79,6 +80,50 @@ public class WalkRecordInfo implements Serializable {
     private String views;
     private String title;
     private String tags;
+
+    protected WalkRecordInfo(Parcel in) {
+        id = in.readString();
+        createTime = in.readString();
+        user = in.readParcelable(UserBaseInfo.class.getClassLoader());
+        stepCount = in.readInt();
+        distance = in.readInt();
+        duration = in.readString();
+        altitudeAsend = in.readString();
+        altitudeHigh = in.readString();
+        altitudeLow = in.readString();
+        calorie = in.readString();
+        fat = in.readString();
+        nutrition = in.readString();
+        introduction = in.readString();
+        type = in.readString();
+        star = in.readInt();
+        streetStar = in.readInt();
+        envirStar = in.readInt();
+        safeStar = in.readInt();
+        state = in.readString();
+        likeCount = in.readInt();
+        commentCount = in.readInt();
+        hasLike = in.readInt();
+        path = in.readString();
+        location = in.readString();
+        routepicStr = in.readString();
+        activity = in.readString();
+        views = in.readString();
+        title = in.readString();
+        tags = in.readString();
+    }
+
+    public static final Creator<WalkRecordInfo> CREATOR = new Creator<WalkRecordInfo>() {
+        @Override
+        public WalkRecordInfo createFromParcel(Parcel in) {
+            return new WalkRecordInfo(in);
+        }
+
+        @Override
+        public WalkRecordInfo[] newArray(int size) {
+            return new WalkRecordInfo[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -310,5 +355,43 @@ public class WalkRecordInfo implements Serializable {
 
     public void setTags(String tags) {
         this.tags = tags;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(createTime);
+        parcel.writeParcelable(user, i);
+        parcel.writeInt(stepCount);
+        parcel.writeInt(distance);
+        parcel.writeString(duration);
+        parcel.writeString(altitudeAsend);
+        parcel.writeString(altitudeHigh);
+        parcel.writeString(altitudeLow);
+        parcel.writeString(calorie);
+        parcel.writeString(fat);
+        parcel.writeString(nutrition);
+        parcel.writeString(introduction);
+        parcel.writeString(type);
+        parcel.writeInt(star);
+        parcel.writeInt(streetStar);
+        parcel.writeInt(envirStar);
+        parcel.writeInt(safeStar);
+        parcel.writeString(state);
+        parcel.writeInt(likeCount);
+        parcel.writeInt(commentCount);
+        parcel.writeInt(hasLike);
+        parcel.writeString(path);
+        parcel.writeString(location);
+        parcel.writeString(routepicStr);
+        parcel.writeString(activity);
+        parcel.writeString(views);
+        parcel.writeString(title);
+        parcel.writeString(tags);
     }
 }

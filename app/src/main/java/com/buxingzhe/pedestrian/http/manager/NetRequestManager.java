@@ -176,4 +176,30 @@ public class NetRequestManager{
                 .subscribe(subscriber);
     }
 
+    //查询附近标记点
+    public Subscription getNearByPoints(Map<String, String> paramsMap, Subscriber subscriber) {
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .getNearByPoints(paramsMap)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
+    //获取标记点评价
+    public Subscription getPointComments(Map<String, String> paramsMap, Subscriber subscriber) {
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .getPointComments(paramsMap)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
+    //获取标记点评价
+    public Subscription pointComment(Map<String, String> paramsMap, Subscriber subscriber) {
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .pointComment(paramsMap)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
 }
