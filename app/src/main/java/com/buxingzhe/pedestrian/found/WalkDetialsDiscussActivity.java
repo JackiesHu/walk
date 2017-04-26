@@ -3,13 +3,11 @@ package com.buxingzhe.pedestrian.found;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.buxingzhe.pedestrian.R;
@@ -18,15 +16,12 @@ import com.buxingzhe.pedestrian.bean.HotUserTag;
 import com.buxingzhe.pedestrian.bean.RequestResultInfo;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.StarBarBean;
-import com.buxingzhe.pedestrian.found.adapter.PointCommentAdapter;
 import com.buxingzhe.pedestrian.found.bean.HotTagBean;
-import com.buxingzhe.pedestrian.found.bean.PointComment;
 import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
 import com.buxingzhe.pedestrian.found.tag.TagAddActivity;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
-import com.buxingzhe.pedestrian.widget.FlowLayout;
 import com.buxingzhe.pedestrian.widget.MWTStarBar;
 import com.buxingzhe.pedestrian.widget.MWTStarOnclick;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
@@ -55,6 +50,7 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
     private EditText et_content;
     private List<HotUserTag> hotSelectTags;
     private RemarkPoint remarkPoint;
+    private int type;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,7 +64,7 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
     }
 
     private void setData() {
-//        tv_address.setText(remarkPoint.getTitle());
+        tv_address.setText(remarkPoint.getTitle());
     }
 
     private void setOnclick() {
@@ -87,54 +83,59 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
         vAddTag =(TextView)findViewById(R.id.tag_add);
         tv_address =(TextView)findViewById(R.id.tv_address);
         et_content = (EditText) findViewById(R.id.et_content);
-        setTitle("评论");
+        if (type == 0) {
+            setTitle("推荐");
+        }else {
+            setTitle("吐槽");
+        }
         setRightTitle("完成");
-        setTextRightOnclick(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Map<String,String> paramsMap = new HashMap<>();
-                paramsMap.put("userId",GlobalParams.USER_ID);
-                paramsMap.put("token", GlobalParams.TOKEN);
-//                paramsMap.put("remarkPoint",remarkPoint.getId());
-                paramsMap.put("streetStar",String.valueOf(vStressStar.getStarSize()));
-                paramsMap.put("envirStar",String.valueOf(vEnviromentStar.getStarSize()));
-                paramsMap.put("safeStar",String.valueOf(vSafetyStar.getStarSize()));
-                paramsMap.put("content",et_content.getText().toString());
-
-                Subscriber mSubscriber = new Subscriber<String>(){
-
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(final String jsonStr) {
-                        // 由于服务端的返回数据格式不固定，因此这里采用手动解析
-                        RequestResultInfo resultInfo = JSON.parseObject(jsonStr, RequestResultInfo.class);
-                        if ("0".equals(resultInfo.getCode())) {
-                            Object o = resultInfo.getContent();
-                            if (o != null){
-                                PointComment pointComment = JSON.parseObject(o.toString(), PointComment.class);
-                                if (pointComment.getList() != null) {
-
-                                }
-                            }
-                        }
-
-                    }
-                };
-
-                NetRequestManager.getInstance().getPointComments(paramsMap,mSubscriber);
-            }
-        });
         initStar();
     }
+
+    @Override
+    public void onRightListener(View v) {
+        Map<String,String> paramsMap = new HashMap<>();
+        paramsMap.put("title",remarkPoint.getTitle());
+        paramsMap.put("type",String.valueOf(type));
+        paramsMap.put("userId",GlobalParams.USER_ID);
+        paramsMap.put("token", GlobalParams.TOKEN);
+        paramsMap.put("streetStar",String.valueOf(vStressStar.getStarSize()));
+        paramsMap.put("envirStar",String.valueOf(vEnviromentStar.getStarSize()));
+        paramsMap.put("safeStar",String.valueOf(vSafetyStar.getStarSize()));
+        paramsMap.put("longitude",String.valueOf(remarkPoint.getLongitude()));
+        paramsMap.put("latitude",String.valueOf(remarkPoint.getLatitude()));
+        paramsMap.put("viewUrls",et_content.getText().toString());
+//                paramsMap.put("brief",et_content.getText().toString());
+        paramsMap.put("introduction",et_content.getText().toString());
+        paramsMap.put("remarkPointTags",vAddTag.getText().toString());
+
+        Subscriber mSubscriber = new Subscriber<String>(){
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(final String jsonStr) {
+                // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+                RequestResultInfo resultInfo = JSON.parseObject(jsonStr, RequestResultInfo.class);
+                if ("0".equals(resultInfo.getCode())) {
+                    Toast.makeText(mContext,"评价成功",Toast.LENGTH_LONG).show();
+                    finish();
+                }
+
+            }
+        };
+
+        NetRequestManager.getInstance().foundComment(paramsMap,mSubscriber);
+    }
+
     private void initStar(){
         List<StarBarBean> starbars = new ArrayList<>();
         for (int i =0;i<5;i++){
@@ -174,6 +175,7 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
 
     public void getExt() {
         remarkPoint = getIntent().getParcelableExtra("locationData");
+        type = getIntent().getIntExtra("type",0);
     }
 
     class OnStarClick implements MWTStarOnclick{
@@ -219,9 +221,10 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
                         StringBuilder sb = new StringBuilder();
                         for (HotUserTag tag : hotSelectTags) {
                             sb.append(tag.tag);
-                            sb.append(",");
+                            sb.append(";");
                         }
-                        sb.deleteCharAt(sb.length()-1);
+                        if (sb.length() > 0)
+                            sb.deleteCharAt(sb.length()-1);
                         vAddTag.setText(sb.toString());
                     }
                 }

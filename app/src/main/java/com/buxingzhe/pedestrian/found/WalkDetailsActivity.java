@@ -41,13 +41,14 @@ import com.buxingzhe.pedestrian.bean.RequestResultInfo;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.StarBarBean;
 import com.buxingzhe.pedestrian.found.adapter.PointCommentAdapter;
-import com.buxingzhe.pedestrian.found.bean.PointComment;
+import com.buxingzhe.pedestrian.found.bean.Comment;
+import com.buxingzhe.pedestrian.found.bean.PageContent;
 import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
+import com.buxingzhe.pedestrian.found.bean.WalkRecord;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.PicassManager;
 import com.buxingzhe.pedestrian.widget.MWTStarBar;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -113,11 +114,12 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
                 if ("0".equals(resultInfo.getCode())) {
                     Object o = resultInfo.getContent();
                     if (o != null){
-                        PointComment pointComment = JSON.parseObject(o.toString(), PointComment.class);
+                        PageContent pointComment = JSON.parseObject(o.toString(), PageContent.class);
                         if (pointComment.getList() != null) {
+                            List<Comment> comments = JSON.parseArray(pointComment.getList().toString(), Comment.class);
                             LinearLayoutManager manager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
                             recycle_point_comments.setLayoutManager(manager);
-                            PointCommentAdapter adapter = new PointCommentAdapter(mContext, pointComment.getList(), R.layout.item_walkdetail_discuss);
+                            PointCommentAdapter adapter = new PointCommentAdapter(mContext, comments, R.layout.item_walkdetail_discuss);
                             recycle_point_comments.setAdapter(adapter);
                         }
                     }
@@ -189,7 +191,12 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
         searchRouteProcess();
     }
     private void getExtr() {
-        remarkPoint = getIntent().getParcelableExtra("locationData");
+        Object locationData = getIntent().getParcelableExtra("locationData");
+        if (locationData instanceof WalkRecord) {
+            remarkPoint = (WalkRecord) locationData;
+        }else if (locationData instanceof RemarkPoint){
+            remarkPoint = (RemarkPoint) locationData;
+        }
         myLocation = getIntent().getParcelableExtra("myLocation");
     }
     /**
@@ -283,20 +290,22 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
                 // result.getSuggestAddrInfo()
                 return;
             }
-            if ( result.getRouteLines().size() == 1 ) {
-                // 直接显示
-                WalkingRouteOverlay overlay = new MyWalkingRouteOverlay(mBaidumap);
-                mBaidumap.setOnMarkerClickListener(overlay);
-                overlay.setData(result.getRouteLines().get(0));
-                overlay.addToMap();
-                overlay.zoomToSpan();
+            if (result.getRouteLines() != null) {
+                if (result.getRouteLines().size() == 1) {
+                    // 直接显示
+                    WalkingRouteOverlay overlay = new MyWalkingRouteOverlay(mBaidumap);
+                    mBaidumap.setOnMarkerClickListener(overlay);
+                    overlay.setData(result.getRouteLines().get(0));
+                    overlay.addToMap();
+                    overlay.zoomToSpan();
 
-            }if (result.getRouteLines().size() > 1 ) {
+                }
+                if (result.getRouteLines().size() > 1 ) {
 
-
-            }else {
-                Log.d("route result", "结果数<0");
-                return;
+                }else {
+                    Log.d("route result", "结果数<0");
+                    return;
+                }
             }
         }
         @Override

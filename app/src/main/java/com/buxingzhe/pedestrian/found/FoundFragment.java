@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -16,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -41,11 +39,17 @@ import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
-import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.TextOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.geocode.GeoCodeOption;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.bean.RequestResultInfo;
@@ -88,18 +92,41 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
 
     private boolean isCloseTraffic;
     private ImageView vImageTraffic;
-    private List<RemarkPoint> remarkPoints;
-    private LatLng ll;
+    public static LatLng ll;
     private PopupWindow popupWindow;
     private Marker marker;
 
-    List<Marker> overlays = new ArrayList<>();
-    List<Marker> lines = new ArrayList<>();
+    private List<Marker> overlays = new ArrayList<>();
+    private List<Marker> lines = new ArrayList<>();
+
+    private OnGetGeoCoderResultListener geoListener = new OnGetGeoCoderResultListener() {
+        public void onGetGeoCodeResult(GeoCodeResult result) {
+            if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+                //没有检索到结果
+            }
+            //获取地理编码结果
+        }
+
+        @Override
+        public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
+            if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+                //没有找到检索结果
+            }
+            //获取反向地理编码结果
+            result.getAddress();
+            remarkPoint = new RemarkPoint();
+            remarkPoint.setTitle(result.getAddress());
+            remarkPoint.setLatitude(result.getLocation().latitude);
+            remarkPoint.setLongitude(result.getLocation().longitude);
+        }
+    };
+    private GeoCoder mGeoSearch;
+    private RemarkPoint remarkPoint;
 
     public FoundFragment() {
 
     }
-    @Nullable
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_found, container,false);
@@ -140,8 +167,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                         if ("0".equals(resultInfo.getCode())) {
                             Object o = resultInfo.getContent();
                             if (o != null) {
-                                remarkPoints = JSON.parseArray(o.toString(), RemarkPoint.class);
-                                initOverlay(remarkPoints);
+                                initOverlay(JSON.parseArray(o.toString(), RemarkPoint.class));
                             }
                         }
                     }
@@ -294,12 +320,14 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     }
 
     private void initBaiduMap(){
+        mGeoSearch = GeoCoder.newInstance();
         MapStatusUpdate u = MapStatusUpdateFactory.zoomTo(20);
         mBaidumap.animateMapStatus(u);
         mBaidumap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
 
             @Override
             public void onMapClick(LatLng latLng) {
+                remarkPoint = null;
                 showMarker(latLng);
             }
 
@@ -315,6 +343,9 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     }
 
     private void showMarker(LatLng latLng) {
+
+        mGeoSearch.setOnGetGeoCodeResultListener(geoListener);
+        mGeoSearch.reverseGeoCode(new ReverseGeoCodeOption().location(latLng));
         if (marker == null){
             MarkerOptions clickMarker = new MarkerOptions().icon(click)
                     .zIndex(9).draggable(false).flat(true);
@@ -484,15 +515,25 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
             linear_recommend.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(mContext, WalkDetialsDiscussActivity.class);
-                    EnterActUtils.startAct(getActivity(), intent);
+                    if (remarkPoint != null) {
+                        Intent intent = new Intent(mContext, WalkDetialsDiscussActivity.class);
+                        intent.putExtra("locationData", remarkPoint);
+                        intent.putExtra("myLocation", ll);
+                        intent.putExtra("type", 0);
+                        EnterActUtils.startAct(getActivity(), intent);
+                    }
                 }
             });
             linear_tucao.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(mContext, WalkDetialsDiscussActivity.class);
-                    EnterActUtils.startAct(getActivity(), intent);
+                    if (remarkPoint != null) {
+                        Intent intent = new Intent(mContext, WalkDetialsDiscussActivity.class);
+                        intent.putExtra("locationData", remarkPoint);
+                        intent.putExtra("myLocation", ll);
+                        intent.putExtra("type", 1);
+                        EnterActUtils.startAct(getActivity(), intent);
+                    }
                 }
             });
             linear_cancel.setOnClickListener(new View.OnClickListener() {
@@ -526,6 +567,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         mBaidumap.setMyLocationEnabled(false);
         vMapView.onDestroy();
         vMapView = null;
+        mGeoSearch.destroy();
         click.recycle();
         bdPre.recycle();
         bdnor.recycle();

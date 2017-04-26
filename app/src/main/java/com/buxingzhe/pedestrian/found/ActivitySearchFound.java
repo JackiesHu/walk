@@ -1,6 +1,7 @@
 package com.buxingzhe.pedestrian.found;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
@@ -20,11 +21,23 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
+import com.buxingzhe.pedestrian.bean.RequestResultInfo;
+import com.buxingzhe.pedestrian.common.GlobalParams;
+import com.buxingzhe.pedestrian.found.bean.PageContent;
+import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
+import com.buxingzhe.pedestrian.found.bean.Tag;
+import com.buxingzhe.pedestrian.found.bean.WalkRecord;
+import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import rx.Subscriber;
 
 /**
  * Created by jackie on 2017/2/9.
@@ -33,18 +46,18 @@ import java.util.List;
 public class ActivitySearchFound extends BaseActivity implements View.OnClickListener {
     private AppBarLayout vAppbar;
     private Toolbar vToolbar;
-    private ViewPager viewPager;
     private TabLayout tab_FindFragment_title;                            //定义TabLayout
     private ViewPager vp_FindFragment_pager;                             //定义viewPager
-    private FragmentPagerAdapter fAdapter;                               //定义adapter
-    List<Fragment> list_fragment;                                //定义要装fragment的列表
+    List<WalkCategoryFragment> list_fragment;                                //定义要装fragment的列表
 
     List<String> list_title;                                     //tab名称列表
     EditText vSearchContent;
     TextView vSearchBack;
     LinearLayout vSearchBar;
-    private WalkCategoryFragment mSearchFragment;
     FrameLayout vSearchContainer;
+    private List<Tag> tags;
+    private List walkRecords;
+    private WalkCategoryFragment mSearchFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +65,44 @@ public class ActivitySearchFound extends BaseActivity implements View.OnClickLis
         setContentView(R.layout.activity_search_found);
         findId();
         setOnClick();
-        initFragment();
         initSearchFragment();
+        loadTag();
     }
+
+    private void loadTag() {
+        Map<String,String> paramsMap = new HashMap<>();
+        paramsMap.put("userId", GlobalParams.USER_ID);
+        paramsMap.put("code","1");
+
+        Subscriber mSubscriber = new Subscriber<String>(){
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(final String jsonStr) {
+                // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+                RequestResultInfo resultInfo = JSON.parseObject(jsonStr, RequestResultInfo.class);
+                if ("0".equals(resultInfo.getCode())) {
+                    Object o = resultInfo.getContent();
+                    if (o != null) {
+                        tags = JSON.parseArray(o.toString(),Tag.class);
+                        initFragment();
+                    }
+                }
+            }
+        };
+
+        NetRequestManager.getInstance().queryTag(paramsMap,mSubscriber);
+    }
+
     private void setOnClick() {
         vSearchBack.setOnClickListener(this);
         vSearchContent.setOnKeyListener(new View.OnKeyListener(){
@@ -76,14 +124,49 @@ public class ActivitySearchFound extends BaseActivity implements View.OnClickLis
         vToolbar.setVisibility(View.GONE);
         tab_FindFragment_title.setVisibility(View.GONE);
         vSearchContainer.setVisibility(View.VISIBLE);
-
+        loadData(vSearchContent.getText().toString(), 1);
         AppBarLayout.LayoutParams mParams = (AppBarLayout.LayoutParams) vAppbar.getChildAt(0).getLayoutParams();
         mParams.setScrollFlags(0);  //mParams.setScrollFlags(0);的时候AppBarLayout下的toolbar就不会随着滚动条折叠 mParams.setScrollFlags(5);的时候AppBarLayout下的toolbar会随着滚动条折叠
 
-
-
-
     }
+
+    private void loadData(String key, int pageNo) {
+        Map<String,String> paramsMap = new HashMap<>();
+        paramsMap.put("title", key);
+        paramsMap.put("userId", GlobalParams.USER_ID);
+        paramsMap.put("pageNo",String.valueOf(pageNo));
+        paramsMap.put("pageSize ","20");
+
+        Subscriber mSubscriber = new Subscriber<String>(){
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(final String jsonStr) {
+                // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+                RequestResultInfo resultInfo = JSON.parseObject(jsonStr, RequestResultInfo.class);
+                if ("0".equals(resultInfo.getCode())) {
+                    Object o = resultInfo.getContent();
+                    if (o != null) {
+                        PageContent content = JSON.parseObject(o.toString(),PageContent.class);
+                        walkRecords = JSON.parseArray(content.getList().toString(), WalkRecord.class);
+                        mSearchFragment.setData(walkRecords);
+                    }
+                }
+            }
+        };
+
+        NetRequestManager.getInstance().queryWalkRecordByTitle(paramsMap,mSubscriber);
+    }
+
     private void addFragment(Fragment fragment) {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
@@ -105,25 +188,20 @@ public class ActivitySearchFound extends BaseActivity implements View.OnClickLis
         vSearchContainer = (FrameLayout) findViewById(R.id.fragment_container);
     }
     private void initFragment() {
-        list_fragment = new ArrayList<Fragment>();
-        for (int i=0;i<10;i++){
+        list_fragment = new ArrayList<>();
+        for (int i=0;i<tags.size();i++){
             WalkCategoryFragment fragment = new WalkCategoryFragment();
             list_fragment.add(fragment);
         }
 
-        //将名称加载tab名字列表，正常情况下，我们应该在values/arrays.xml中进行定义然后调用
-        list_title = new ArrayList<>();
-        for (int i=0;i<5;i++){
-            list_title.add("美食街"+i);
-            list_title.add("山城步行"+i);
-        }
         //设置TabLayout的模式
         tab_FindFragment_title.setTabMode(TabLayout.MODE_SCROLLABLE);
         //为TabLayout添加tab名称
-        for (int i=0;i<10;i++){
-            tab_FindFragment_title.addTab(tab_FindFragment_title.newTab().setText(list_title.get(i)));
+        for (int i=0;i<tags.size();i++){
+            tab_FindFragment_title.addTab(tab_FindFragment_title.newTab().setText(tags.get(i).getName()));
         }
-        fAdapter = new FindTabAdapter(this.getSupportFragmentManager(),list_fragment,list_title);
+        tab_FindFragment_title.setSelectedTabIndicatorColor(Color.RED);
+        FragmentPagerAdapter fAdapter = new FindTabAdapter(this.getSupportFragmentManager(), list_fragment, tags);
 
         //viewpager加载adapter
         vp_FindFragment_pager.setAdapter(fAdapter);
@@ -132,24 +210,6 @@ public class ActivitySearchFound extends BaseActivity implements View.OnClickLis
     private void initSearchFragment() {
         mSearchFragment = new WalkCategoryFragment();
         addFragment(mSearchFragment);
-    }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return false;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

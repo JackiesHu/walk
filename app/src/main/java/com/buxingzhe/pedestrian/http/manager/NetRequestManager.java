@@ -194,7 +194,7 @@ public class NetRequestManager{
                 .subscribe(subscriber);
     }
 
-    //获取标记点评价
+    //评价标记点
     public Subscription pointComment(Map<String, String> paramsMap, Subscriber subscriber) {
         return RetrofitManager.getInstance()
                 .getNetRequestService()
@@ -202,4 +202,41 @@ public class NetRequestManager{
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }
+
+    //发现推荐或吐槽
+    public Subscription foundComment(Map<String, String> paramsMap, Subscriber subscriber) {
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .foundComment(paramsMap)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
+    //查询标签
+    public Subscription queryTag(Map<String, String> paramsMap, Subscriber subscriber) {
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .queryTag(paramsMap)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
+    //查询标签
+    public Subscription queryWalkRecordByTag(Map<String, String> paramsMap, Subscriber subscriber) {
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .queryWalkRecordByTag(paramsMap)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
+    //查询标签
+    public Subscription queryWalkRecordByTitle(Map<String, String> paramsMap, Subscriber subscriber) {
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .queryWalkRecordByTitle(paramsMap)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
 }

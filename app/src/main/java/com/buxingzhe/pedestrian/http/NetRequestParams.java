@@ -70,5 +70,13 @@ public class NetRequestParams {
     public static final String REMARK_POINTS_COMMENT_FOUND = "walkman/wmRemarkPointComment/getRemarkPointComments";
     /** 评论标记点*/
     public static final String ADD_POINT_COMMENT = "walkman/wmRemarkPointComment/addRemarkPointComment";
+    /** 发现推荐或吐槽*/
+    public static final String FOUND_COMMENT = "walkman/wmRemarkPoint/remarkPoint";
+    /** 查询标签*/
+    public static final String QUERY_TAG = "walkman/wmTagType/getTags";
+    /** 根据标签查询步行记录*/
+    public static final String WALK_RECORD_BY_TAG = "walkman/wmWalkRecord/getWalkRecordsByTag";
+    /** 根据标题查询步行记录*/
+    public static final String WALK_RECORD_BY_TITLE = "walkman/wmWalkRecord/getWalkRecordsByTitle";
 
 }

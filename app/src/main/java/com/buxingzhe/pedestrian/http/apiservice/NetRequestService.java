@@ -124,5 +124,21 @@ public interface NetRequestService {
 
     @FormUrlEncoded
     @POST(NetRequestParams.ADD_POINT_COMMENT)
-    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> pointComment(Map<String, String> paramsMap);
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> pointComment(@FieldMap Map<String, String> paramsMap);
+
+    @FormUrlEncoded
+    @POST(NetRequestParams.FOUND_COMMENT)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> foundComment(@FieldMap Map<String, String> paramsMap);
+
+    @FormUrlEncoded
+    @POST(NetRequestParams.QUERY_TAG)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> queryTag(@FieldMap Map<String, String> paramsMap);
+
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_RECORD_BY_TAG)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> queryWalkRecordByTag(@FieldMap Map<String, String> paramsMap);
+
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_RECORD_BY_TITLE)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> queryWalkRecordByTitle(@FieldMap Map<String, String> paramsMap);
 }

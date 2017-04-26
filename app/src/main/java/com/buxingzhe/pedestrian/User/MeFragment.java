@@ -177,8 +177,8 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.user_iv_avatar://头像
-                Intent intent = new Intent(getActivity(),UserInfoActivity.class);
-                EnterActUtils.startForResultAct(getActivity(),intent,1);
+//                Intent intent = new Intent(getActivity(),UserInfoActivity.class);
+//                EnterActUtils.startForResultAct(getActivity(),intent,1);
                 break;
             case R.id.user_rl_walk://我的步行
 
