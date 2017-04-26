@@ -34,7 +34,7 @@ public class RemarkPoint implements Parcelable {
     private String title;
     private String type;
     private String views;
-    private String star;
+    private int star;
     private int streetStar;
     private int envirStar;
     private int safeStar;
@@ -55,7 +55,7 @@ public class RemarkPoint implements Parcelable {
         title = in.readString();
         type = in.readString();
         views = in.readString();
-        star = in.readString();
+        star = in.readInt();
         streetStar = in.readInt();
         envirStar = in.readInt();
         safeStar = in.readInt();
@@ -118,11 +118,11 @@ public class RemarkPoint implements Parcelable {
         this.views = views;
     }
 
-    public String getStar() {
+    public int getStar() {
         return star;
     }
 
-    public void setStar(String star) {
+    public void setStar(int star) {
         this.star = star;
     }
 
@@ -210,7 +210,7 @@ public class RemarkPoint implements Parcelable {
         dest.writeString(title);
         dest.writeString(type);
         dest.writeString(views);
-        dest.writeString(star);
+        dest.writeInt(star);
         dest.writeInt(streetStar);
         dest.writeInt(envirStar);
         dest.writeInt(safeStar);

@@ -156,6 +156,7 @@
             android:layout_height="wrap_content"
             android:lines="3"
             android:gravity="top"
+            android:background="@null"
             android:hint="请描述下该地点"/>
     </LinearLayout>
 </LinearLayout>
