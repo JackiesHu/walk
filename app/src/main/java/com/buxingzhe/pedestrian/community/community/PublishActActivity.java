@@ -15,11 +15,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
+import com.buxingzhe.pedestrian.bean.RequestResultInfo;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.NetRequestParams;
 import com.buxingzhe.pedestrian.http.imageupload.UploadImage_a;
+import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.PicassManager;
 import com.buxingzhe.pedestrian.utils.PictureUtil;
@@ -27,11 +30,13 @@ import com.buxingzhe.pedestrian.widget.TitleBarView;
 import com.pizidea.imagepicker.AndroidImagePicker;
 import com.pizidea.imagepicker.activity.ImagesGridActivity;
 import com.pizidea.imagepicker.bean.ImageItem;
+import com.umeng.socialize.media.UMediaObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,6 +44,9 @@ import java.util.List;
 import java.util.Map;
 
 import cn.qqtheme.framework.picker.DatePicker;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import rx.Subscriber;
 
 /**
  * Created by mzyr on 2017/4/18.
@@ -121,15 +129,47 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
             e.printStackTrace();
         }
 
-        Map<String, String> paramsMap = new HashMap<>();
-        paramsMap.put("userId", GlobalParams.USER_ID);
-        paramsMap.put("token", GlobalParams.TOKEN);
-        paramsMap.put("title", title);
-        paramsMap.put("startTimestamp", startTimestamp.toString());
-        paramsMap.put("endTimestamp", endTimestamp.toString());
-        paramsMap.put("introduction", introduction);
-        paramsMap.put("publisher", GlobalParams.USER_ID);
-        initTask(paramsMap);
+        Map<String, RequestBody> paramsMap = new HashMap<>();
+        paramsMap.put("userId", RequestBody.create(MediaType.parse("application/json"),GlobalParams.USER_ID));
+        paramsMap.put("token", RequestBody.create(MediaType.parse("application/json"),GlobalParams.TOKEN));
+        paramsMap.put("title", RequestBody.create(MediaType.parse("application/json"),title));
+        paramsMap.put("startTimestamp", RequestBody.create(MediaType.parse("application/json"),startTimestamp.toString()));
+        paramsMap.put("endTimestamp", RequestBody.create(MediaType.parse("application/json"),endTimestamp.toString()));
+        paramsMap.put("introduction", RequestBody.create(MediaType.parse("application/json"),introduction));
+        paramsMap.put("publisher", RequestBody.create(MediaType.parse("application/json"),GlobalParams.USER_ID));
+//        initTask(paramsMap);
+        test(paramsMap);
+    }
+
+    private void test(Map<String, RequestBody> paramsMap) {
+
+        Subscriber mSubscriber = new Subscriber<String>(){
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(final String jsonStr) {
+                // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+                RequestResultInfo resultInfo = JSON.parseObject(jsonStr, RequestResultInfo.class);
+                if ("0".equals(resultInfo.getCode())) {
+                    Toast.makeText(mContext,"评价成功",Toast.LENGTH_LONG).show();
+                    finish();
+                }
+
+            }
+        };
+//        List<RequestBody> pic = new ArrayList<>();
+//        RequestBody image = );
+//        pic.add(image);
+        NetRequestManager.getInstance().publishAct(paramsMap,RequestBody.create(MediaType.parse("application/octet-stream"), new File(localUrl)),mSubscriber);
     }
 
     private boolean checkEmpty(String title, String startTime, String endTime, String introduction) {

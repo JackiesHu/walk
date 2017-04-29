@@ -2,8 +2,12 @@ package com.buxingzhe.pedestrian.http.manager;
 
 import com.buxingzhe.lib.rxjava.TransformUtils;
 
+import java.io.File;
+import java.util.List;
 import java.util.Map;
 
+import okhttp3.RequestBody;
+import retrofit2.http.Field;
 import rx.Subscriber;
 import rx.Subscription;
 
@@ -204,10 +208,19 @@ public class NetRequestManager{
     }
 
     //发现推荐或吐槽
-    public Subscription foundComment(Map<String, String> paramsMap, Subscriber subscriber) {
+    public Subscription foundComment(Map<String, Object> paramsMap, List<String> files, Subscriber subscriber) {
         return RetrofitManager.getInstance()
                 .getNetRequestService()
-                .foundComment(paramsMap)
+                .foundComment(paramsMap,files)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
+    //发布活动
+    public Subscription publishAct(Map<String, RequestBody> paramsMap, RequestBody file, Subscriber subscriber) {
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .publishAct(paramsMap,file)
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }
@@ -221,7 +234,7 @@ public class NetRequestManager{
                 .subscribe(subscriber);
     }
 
-    //查询标签
+    //根据标签查询步行记录
     public Subscription queryWalkRecordByTag(Map<String, String> paramsMap, Subscriber subscriber) {
         return RetrofitManager.getInstance()
                 .getNetRequestService()
@@ -230,7 +243,7 @@ public class NetRequestManager{
                 .subscribe(subscriber);
     }
 
-    //查询标签
+    //根据标题查询步行记录
     public Subscription queryWalkRecordByTitle(Map<String, String> paramsMap, Subscriber subscriber) {
         return RetrofitManager.getInstance()
                 .getNetRequestService()

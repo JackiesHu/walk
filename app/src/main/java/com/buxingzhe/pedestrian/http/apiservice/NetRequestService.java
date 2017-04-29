@@ -1,16 +1,22 @@
 package com.buxingzhe.pedestrian.http.apiservice;
 
-import com.buxingzhe.pedestrian.bean.RequestResultInfo;
-import com.buxingzhe.pedestrian.found.bean.Streets;
 import com.buxingzhe.pedestrian.http.NetRequestParams;
 
+import java.io.File;
+import java.util.List;
 import java.util.Map;
-import java.util.function.DoubleUnaryOperator;
 
+import okhttp3.RequestBody;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.HeaderMap;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
+import retrofit2.http.PartMap;
+import retrofit2.http.QueryMap;
 import rx.Observable;
 
 /**
@@ -126,9 +132,9 @@ public interface NetRequestService {
     @POST(NetRequestParams.ADD_POINT_COMMENT)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String> pointComment(@FieldMap Map<String, String> paramsMap);
 
-    @FormUrlEncoded
     @POST(NetRequestParams.FOUND_COMMENT)
-    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> foundComment(@FieldMap Map<String, String> paramsMap);
+    @Multipart
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> foundComment(@PartMap Map<String, Object> paramsMap,@Part("viewUrls")List<String> file);
 
     @FormUrlEncoded
     @POST(NetRequestParams.QUERY_TAG)
@@ -141,4 +147,8 @@ public interface NetRequestService {
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_RECORD_BY_TITLE)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String> queryWalkRecordByTitle(@FieldMap Map<String, String> paramsMap);
+
+    @Multipart
+    @POST(NetRequestParams.PUBLISHACTIVITY)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> publishAct(@PartMap Map<String, RequestBody> paramsMap, @Part("bannerurl") RequestBody files);
 }

@@ -29,6 +29,7 @@ import com.pizidea.imagepicker.AndroidImagePicker;
 import com.pizidea.imagepicker.activity.ImagesGridActivity;
 import com.pizidea.imagepicker.bean.ImageItem;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,7 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
     private List<HotUserTag> hotSelectTags;
     private RemarkPoint remarkPoint;
     private int type;
+    private List<String> pics;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,9 +96,10 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
 
     @Override
     public void onRightListener(View v) {
-        Map<String,String> paramsMap = new HashMap<>();
-        paramsMap.put("title",remarkPoint.getTitle());
+        Map<String,Object> paramsMap = new HashMap<>();
+        paramsMap.put("title","大风车"+remarkPoint.getTitle());
         paramsMap.put("type",String.valueOf(type));
+        paramsMap.put("location","大风车");
         paramsMap.put("userId",GlobalParams.USER_ID);
         paramsMap.put("token", GlobalParams.TOKEN);
         paramsMap.put("streetStar",String.valueOf(vStressStar.getStarSize()));
@@ -104,8 +107,7 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
         paramsMap.put("safeStar",String.valueOf(vSafetyStar.getStarSize()));
         paramsMap.put("longitude",String.valueOf(remarkPoint.getLongitude()));
         paramsMap.put("latitude",String.valueOf(remarkPoint.getLatitude()));
-        paramsMap.put("viewUrls",et_content.getText().toString());
-//                paramsMap.put("brief",et_content.getText().toString());
+        paramsMap.put("brief",et_content.getText().toString());
         paramsMap.put("introduction",et_content.getText().toString());
         paramsMap.put("remarkPointTags",vAddTag.getText().toString());
 
@@ -133,7 +135,7 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
             }
         };
 
-        NetRequestManager.getInstance().foundComment(paramsMap,mSubscriber);
+        NetRequestManager.getInstance().foundComment(paramsMap,pics,mSubscriber);
     }
 
     private void initStar(){
@@ -201,7 +203,12 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
     }
     @Override
     public void onImagePickComplete(List<ImageItem> items) {
-
+        if (items != null && items.size() > 0) {
+            pics = new ArrayList<>();
+            for (ImageItem item : items){
+                pics.add(item.path);
+            }
+        }
     }
 
     @Override
