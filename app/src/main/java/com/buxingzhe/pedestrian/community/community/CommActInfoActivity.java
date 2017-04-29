@@ -9,9 +9,13 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
@@ -24,11 +28,14 @@ import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordsByActivity;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
+import com.buxingzhe.pedestrian.listen.SwpipeListViewOnScrollListener;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
 import com.buxingzhe.pedestrian.utils.PicassManager;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
 import com.google.gson.Gson;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import rx.Subscriber;
 
@@ -39,10 +46,9 @@ import rx.Subscriber;
 public class CommActInfoActivity extends BaseActivity implements View.OnClickListener {
     private WalkActivityInfo walkActivityInfo;
     private SwipeRefreshLayout mRefresh;
-    private RecyclerView vRecyclerView;
-    private BaseAdapter mAdapter;
-    private CommActInfoAdapter commActInfoAdapter;
-    private int currentIndex = 1;
+    private PullToRefreshListView mListView;
+    private CommActInfoAdapter mAdapter;
+    private int mPage = 1;
     private final static int pageSize = 10;
 
     private View headView;
@@ -62,25 +68,24 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
         mContext = this;
         walkActivityInfo = (WalkActivityInfo) getIntent().getParcelableExtra(CommActFragment.WALKACTIVITYINFO);
         initView();
-        setData();
-        initPullRefresh();
+        setListAdapter();
+        loadData();
         setTitleBar();
-//        setHeaderView(vRecyclerView);
+        setOnClick();
     }
 
     private void initView() {
         vTitleBar = (TitleBarView) findViewById(R.id.actinfo_title_bar);
         mRefresh = (SwipeRefreshLayout) findViewById(R.id.swipeLayout);
+        mListView = (PullToRefreshListView) findViewById(R.id.mListView);
+        mListView.setMode(PullToRefreshBase.Mode.BOTH);
+
+        SwpipeListViewOnScrollListener scrollListener = new SwpipeListViewOnScrollListener(mRefresh);
+        mListView.setOnScrollListener(scrollListener);
         mRefresh.setColorSchemeResources(R.color.red);
-        vRecyclerView = (RecyclerView) findViewById(R.id.detail_list);
-
-//        commActInfoAdapter = new CommActInfoAdapter(this, mContext);
-//        LinearLayoutManager linearLayoutManger =  new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-//        vRecyclerView.setLayoutManager(linearLayoutManger);//这里用线性显示 类似于listview
-//        vRecyclerView.setAdapter(mAdapter);
 
 
-//        initHeadView();
+        initHeadView();
     }
 
     private void setTitleBar() {
@@ -88,6 +93,11 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
             setTitle(walkActivityInfo.getTitle());
         }
         setRightIco(R.mipmap.ic_shequ_share);
+    }
+
+    private void setListAdapter() {
+        mAdapter = new CommActInfoAdapter(mActivity, this);
+        mListView.setAdapter(mAdapter);
     }
 
     private void initHeadView() {
@@ -99,14 +109,10 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
         iv_up = (ImageView) headView.findViewById(R.id.iv_up);
         iv_down = (ImageView) headView.findViewById(R.id.iv_down);
 
-//        vRecyclerView.addHeaderView(headView);
-//        setHeadData();
+        mListView.getRefreshableView().addHeaderView(headView);
+        setHeadData();
     }
 
-    private void setHeaderView(RecyclerView view) {
-        View header = LayoutInflater.from(this).inflate(R.layout.activity_info_head, view,false);
-//        commActInfoAdapter.setHeaderView(header);
-    }
 
     private void setHeadData() {
         if (walkActivityInfo == null) {
@@ -114,18 +120,20 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
         }
         if (!TextUtils.isEmpty(walkActivityInfo.getBanner())) {
             PicassManager.getInstance().load(mContext, walkActivityInfo.getBanner(), iv_banner);
+        }else{
+            iv_banner.setImageResource(R.mipmap.ic_shequ_tupian_moren);
         }
         if (!TextUtils.isEmpty(walkActivityInfo.getIsOutDate())) {
             //活动是否过期，0 没有 1 有
             if (walkActivityInfo.getIsOutDate().equals("0")) {
                 tv_attend.setText(getString(R.string.activity_unoutdate));
                 tv_attend.setBackgroundResource(R.drawable.bg_unoutdate);
-                tv_attend.setOnClickListener(this);
+//                tv_attend.setOnClickListener(this);
             }
             if (walkActivityInfo.getIsOutDate().equals("1")) {
                 tv_attend.setText(getString(R.string.activity_over));
                 tv_attend.setBackgroundResource(R.drawable.bg_outdate);
-                tv_attend.setOnClickListener(null);
+//                tv_attend.setOnClickListener(null);
             }
         }
         if (!TextUtils.isEmpty(walkActivityInfo.getIntroduction())) {
@@ -139,8 +147,8 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
-            case R.id.tv_attend:
-                break;
+//            case R.id.tv_attend:
+//                break;
             case R.id.iv_up:
                 isShowAllIntro(false);
                 break;
@@ -148,6 +156,7 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
                 isShowAllIntro(true);
                 break;
         }
+
     }
 
 
@@ -193,87 +202,84 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
     }
 
 
-    private void setData() {
-//        //创建被装饰者类实例
-        commActInfoAdapter = new CommActInfoAdapter(this, mContext);
-
-        //创建装饰者实例，并传入被装饰者和回调接口
-        mAdapter = new LoadMoreAdapterWrapper(commActInfoAdapter, new OnLoad() {
+    private void loadData() {
+        NetRequestManager.getInstance().getWalkRecordsByActivity(GlobalParams.USER_ID, walkActivityInfo.getId(), mPage, pageSize, new Subscriber<String>() {
             @Override
-            public void load(int pagePosition, int pageSize, final ILoadCallback callback) {
-                NetRequestManager.getInstance().getWalkRecordsByActivity(GlobalParams.USER_ID, walkActivityInfo.getId(), pagePosition, pageSize, new Subscriber<String>() {
-                    @Override
-                    public void onCompleted() {
+            public void onCompleted() {
 
-                    }
+            }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        callback.onFailure();
-                    }
+            @Override
+            public void onError(Throwable e) {
+                stopRefreshAnimation();
+            }
 
-                    @Override
-                    public void onNext(String jsonStr) {
-                        // 由于服务端的返回数据格式不固定，因此这里采用手动解析
-                        Object[] datas = JsonParseUtil.getInstance().parseJsonList(jsonStr, WalkRecordsByActivity.class);
-                        if ((Integer) datas[0] == 0) {
-                            WalkRecordsByActivity walkRecordsByActivity = new Gson().fromJson(datas[1].toString(), WalkRecordsByActivity.class);
-                            if (walkRecordsByActivity != null && walkRecordsByActivity.getList() != null) {
-                                commActInfoAdapter.appendData(walkRecordsByActivity.getList());
-                                callback.onSuccess();
-                            }
-                        } else {
-                            callback.onFailure();
-                        }
+            @Override
+            public void onNext(String jsonStr) {
+                // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+                Object[] datas = JsonParseUtil.getInstance().parseJsonList(jsonStr, WalkRecordsByActivity.class);
+                if ((Integer) datas[0] == 0) {
+                    WalkRecordsByActivity walkRecordsByActivity = new Gson().fromJson(datas[1].toString(), WalkRecordsByActivity.class);
+                    if (walkRecordsByActivity != null && walkRecordsByActivity.getList() != null) {
+                        mAdapter.setDatas(mPage, walkRecordsByActivity.getList());
+                        mPage++;
                     }
-                });
+                } else {
+                    Toast.makeText(mContext, datas[2].toString(), Toast.LENGTH_SHORT).show();
+                }
+                stopRefreshAnimation();
             }
         });
-
-        LinearLayoutManager linearLayoutManger = new LinearLayoutManager(this);
-        vRecyclerView.setLayoutManager(linearLayoutManger);//这里用线性显示 类似于listview
-        vRecyclerView.setAdapter(mAdapter);
     }
 
 
-    private void initPullRefresh() {
+    private void stopRefreshAnimation() {
+        if (mListView != null) {
+            mListView.onRefreshComplete();
+        }
+        if (mRefresh != null) {
+            mRefresh.setRefreshing(false);
+        }
+    }
+
+
+    private void setOnClick() {
+        mListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+                loadData();
+            }
+        });
         mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        NetRequestManager.getInstance().getActivities(currentIndex, pageSize, new Subscriber<String>() {
-                            @Override
-                            public void onCompleted() {
-
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                            }
-
-                            @Override
-                            public void onNext(String jsonStr) {
-                                // 由于服务端的返回数据格式不固定，因此这里采用手动解析
-                                Object[] datas = JsonParseUtil.getInstance().parseJsonList(jsonStr, WalkActivitiesInfo.class);
-                                if ((Integer) datas[0] == 0) {
-                                    WalkActivitiesInfo walkActivitiesInfo = new Gson().fromJson(datas[1].toString(), WalkActivitiesInfo.class);
-                                    if (walkActivitiesInfo != null && walkActivitiesInfo.getList() != null) {
-//                                        new CommActAdapter(getActivity(),mContext).updateData(walkActivitiesInfo.getList());
-                                        commActInfoAdapter.updateData(walkActivitiesInfo.getList());
-                                    }
-                                }
-                            }
-                        });
-                        //刷新完成
-                        mRefresh.setRefreshing(false);
-                    }
-
-                }, 2000);
-
+                mPage = 1;
+                loadData();
             }
         });
+
+//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+////                if (position == 1) {
+////                    iv_up = (ImageView) mListView.getChildAt(position).findViewById(R.id.iv_up);
+////                    iv_down = (ImageView) mListView.getChildAt(position).findViewById(R.id.iv_down);
+////                    tv_attend = (TextView) mListView.getChildAt(position).findViewById(R.id.tv_attend);
+////                    tv_attend.setOnClickListener(new View.OnClickListener() {
+////                        @Override
+////                        public void onClick(View v) {
+////                            tv_attend.setText("adfasfd");
+////                        }
+////                    });
+////                }
+//            }
+//        });
     }
+
 
 }

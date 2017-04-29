@@ -110,13 +110,13 @@ public class WalkRecordDetailActivity extends BaseActivity implements View.OnCli
             tv_altitudeLow.setText(df.format(Double.parseDouble(walkRecordInfo.getAltitudeLow())));
         }
         if (!TextUtils.isEmpty(walkRecordInfo.getCalorie())) {
-            tv_calorie.setText(walkRecordInfo.getCalorie());
+            tv_calorie.setText(df.format(Double.parseDouble(walkRecordInfo.getCalorie())));
         }
         if (!TextUtils.isEmpty(walkRecordInfo.getFat())) {
-            tv_fat.setText(walkRecordInfo.getFat());
+            tv_fat.setText(df.format(Double.parseDouble(walkRecordInfo.getFat())));
         }
         if (!TextUtils.isEmpty(walkRecordInfo.getNutrition())) {
-            tv_nutrition.setText(walkRecordInfo.getNutrition());
+            tv_nutrition.setText(df.format(Double.parseDouble(walkRecordInfo.getNutrition())));
         }
     }
 

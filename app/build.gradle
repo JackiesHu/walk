@@ -46,7 +46,6 @@ dependencies {
     compile project(':calendar')
     compile project(':spinnerLibrary')
     compile project(':umengLib')
-
     // chart
     //    compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
     compile 'com.github.lecho:hellocharts-android:v1.5.8'
@@ -54,4 +53,5 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile 'cn.qqtheme.framework:WheelPicker:latest.release'
     compile 'com.alibaba:fastjson:1.2.31'
+    compile project(':PullToRefreshListView')
 }

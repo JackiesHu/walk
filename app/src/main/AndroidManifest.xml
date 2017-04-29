@@ -117,6 +117,10 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
         <activity
+            android:name=".community.community.CommCircleCommentActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
+        <activity
             android:name=".community.community.WalkRecordDetailActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />

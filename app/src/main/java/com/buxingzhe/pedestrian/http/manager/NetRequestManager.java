@@ -163,10 +163,10 @@ public class NetRequestManager{
     }
 
     //评论步行或骑行记录
-    public Subscription walkRecordComment(String userId,String c,String walkRecord,String star,Double streetStar,Double envirStar,Double safeStar,String content,Subscriber subscriber){
+    public Subscription walkRecordComment(Map<String,String> paramsMap,Subscriber subscriber){
         return RetrofitManager.getInstance()
                 .getNetRequestService()
-                .walkRecordComment(userId,walkRecord,walkRecord,star,streetStar,envirStar,safeStar,content)
+                .walkRecordComment(paramsMap)
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }

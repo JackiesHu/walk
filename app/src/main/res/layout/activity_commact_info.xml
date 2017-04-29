@@ -15,11 +15,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/detail_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+        <com.handmark.pulltorefresh.library.PullToRefreshListView
+            android:id="@+id/mListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/publish_bg"
+            android:cacheColorHint="@color/transparent"
+            android:divider="@color/transparent"
+            android:footerDividersEnabled="false"
+            android:headerDividersEnabled="false" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

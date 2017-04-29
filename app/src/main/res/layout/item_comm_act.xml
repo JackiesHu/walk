@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rl_rl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
-    android:paddingTop="5dp"
+    android:background="@color/transparent"
     android:paddingLeft="10dp"
-    android:paddingBottom="5dp"
     android:paddingRight="10dp"
     >
-    <ImageView
+    <com.buxingzhe.pedestrian.widget.XCRoundRectImageView
         android:id="@+id/iv_banner"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:scaleType="centerCrop"
-        android:src="@mipmap/fengjing2"
+        android:src="@mipmap/ic_shequ_tupian_moren"
         />
     <RelativeLayout
         android:layout_width="match_parent"
@@ -24,7 +21,6 @@
             android:id="@+id/tv_end_time"
             android:layout_alignParentRight="true"
             android:layout_marginRight="14dp"
-            android:text="000"
             android:gravity="center"
             android:background="@mipmap/ac_tag"
             android:layout_width="wrap_content"
@@ -35,7 +31,6 @@
             android:id="@+id/tv_attenderCount"
             android:layout_toLeftOf="@+id/tv_end_time"
             android:layout_marginRight="10dp"
-            android:text="000"
             android:background="@mipmap/ac_tag"
             android:layout_width="wrap_content"
             android:layout_height="26dp"
@@ -56,7 +51,6 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="北山游步道徒步登山"
             android:textSize="16sp"
             android:textColor="@color/white"
             android:singleLine="true"/>
@@ -65,7 +59,6 @@
             android:layout_below="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="这里是活动介绍一下"
             android:textColor="@color/introduce_font"
             android:layout_marginTop="2dp"
             android:textSize="12sp"

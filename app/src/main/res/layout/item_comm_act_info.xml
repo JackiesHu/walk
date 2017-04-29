@@ -1,78 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:layout_marginLeft="15dp">
+        android:layout_marginTop="15dp">
+
         <com.buxingzhe.pedestrian.widget.CircularImageView
             android:id="@+id/cirImag_avatar"
             android:layout_width="29dp"
             android:layout_height="29dp"
-            android:src="@mipmap/fengjing1"
             android:layout_centerVertical="true"
-            />
+            android:src="@mipmap/fengjing1" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_alignParentRight="true">
+            android:layout_alignParentRight="true"
+            android:orientation="vertical">
+
             <TextView
                 android:id="@+id/tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="right"
                 android:text="11-11"
-                android:textSize="11sp"
                 android:textColor="@color/drak_gray"
-                android:layout_gravity="right"/>
+                android:textSize="11sp" />
+
             <com.buxingzhe.pedestrian.widget.MWTStarBar
                 android:id="@+id/starBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp">
-            </com.buxingzhe.pedestrian.widget.MWTStarBar>
+                android:layout_marginTop="6dp"></com.buxingzhe.pedestrian.widget.MWTStarBar>
         </LinearLayout>
 
         <TextView
             android:id="@+id/tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="坏小孩"
-            android:textSize="14sp"
-            android:textColor="@color/light_black"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
             android:layout_toRightOf="@+id/cirImag_avatar"
-            android:layout_marginLeft="5dp"/>
+            android:text="坏小孩"
+            android:textColor="@color/light_black"
+            android:textSize="14sp" />
     </RelativeLayout>
 
     <TextView
         android:id="@+id/tv_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="13sp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp"
         android:lineSpacingExtra="6dp"
         android:textColor="@color/grey_font"
-        />
+        android:textSize="13sp" />
+
     <ImageView
         android:id="@+id/iv_route"
-        android:layout_marginRight="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="160dp"
-        android:src="@mipmap/fengjing1"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:scaleType="fitXY"
-        />
+        android:src="@mipmap/fengjing1" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="10dp"
-        android:background="@color/list_bg"/>
+        android:background="@color/list_bg" />
 </LinearLayout>

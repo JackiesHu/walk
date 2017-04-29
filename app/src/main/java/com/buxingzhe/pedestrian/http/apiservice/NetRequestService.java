@@ -107,7 +107,7 @@ public interface NetRequestService {
     //评论步行或骑行记录
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_COMMENT_RECORD)
-    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> walkRecordComment(@Field("userId") String userId, @Field("token") String token, @Field("walkRecord") String walkRecord, @Field("star") String star, @Field("streetStar") Double streetStar, @Field("envirStar") Double envirStar, @Field("safeStar") Double safeStar, @Field("content") String content);
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> walkRecordComment(@FieldMap Map<String, String> paramsMap);
 
     //发布活动
 //    @FormUrlEncoded

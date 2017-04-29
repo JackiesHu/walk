@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/white">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -89,4 +90,8 @@
             android:textColor="@color/dark_back"
             android:textSize="15sp" />
     </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/introduce_font"></View>
 </LinearLayout>

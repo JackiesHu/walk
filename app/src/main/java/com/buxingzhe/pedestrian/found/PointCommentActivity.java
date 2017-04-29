@@ -1,6 +1,7 @@
 package com.buxingzhe.pedestrian.found;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -89,6 +90,11 @@ public class PointCommentActivity extends BaseActivity {
 
     @Override
     public void onRightListener(View v) {
+        String content = et_content.getText().toString();
+        if (TextUtils.isEmpty(content)) {
+            Toast.makeText(mContext, getString(R.string.comment_input_content), Toast.LENGTH_SHORT).show();
+            return;
+        }
         Map<String,String> paramsMap = new HashMap<>();
         paramsMap.put("userId", GlobalParams.USER_ID);
         paramsMap.put("token", GlobalParams.TOKEN);
@@ -96,7 +102,7 @@ public class PointCommentActivity extends BaseActivity {
         paramsMap.put("streetStar",String.valueOf(walked_stress_star.getStarSize()));
         paramsMap.put("envirStar",String.valueOf(walked_environment_star.getStarSize()));
         paramsMap.put("safeStar",String.valueOf(walked_safety_star.getStarSize()));
-        paramsMap.put("content",et_content.getText().toString());
+        paramsMap.put("content",content);
 
         Subscriber mSubscriber = new Subscriber<String>(){
 

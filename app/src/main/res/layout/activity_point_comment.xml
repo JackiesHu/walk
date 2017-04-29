@@ -4,6 +4,7 @@
     android:id="@+id/activity_point_comment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:orientation="vertical"
     tools:context="com.buxingzhe.pedestrian.found.PointCommentActivity">
 
@@ -12,151 +13,193 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
+
         <com.buxingzhe.pedestrian.widget.TitleBarView
             android:id="@+id/title_bar"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
-        </com.buxingzhe.pedestrian.widget.TitleBarView>
+            android:layout_height="wrap_content"></com.buxingzhe.pedestrian.widget.TitleBarView>
     </android.support.design.widget.AppBarLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/bxz_16px"
-        android:orientation="horizontal">
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="地点名称:"
+            android:text="@string/comment_address"
             android:textColor="@color/dark_back"
-            android:textSize="18sp"
-            />
+            android:textSize="16sp" />
+
         <TextView
             android:id="@+id/tv_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:ellipsize="end"
+            android:singleLine="true"
             android:textColor="@color/dark_back"
-            android:textSize="18sp"
-            />
+            android:textSize="16sp" />
     </LinearLayout>
-
-    <LinearLayout
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="@dimen/bxz_16px">
+        android:layout_height="1dp"
+        android:background="@color/light_gray_line"></View>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/light_gray"></View>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
 
         <ImageView
+            android:id="@+id/line1"
             android:layout_width="5dp"
             android:layout_height="15dp"
             android:src="@drawable/munu_rectangle"
-            android:layout_gravity="center_vertical" />
+            android:layout_centerVertical="true"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="路径评分："/>
+            android:layout_toRightOf="@+id/line1"
+            android:layout_marginLeft="2dp"
+            android:layout_centerVertical="true"
+            android:textSize="15sp"
+            android:textColor="@color/tab_layout_standard"
+            android:text="@string/comment_score" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/bxz_10px">
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:layout_marginTop="10dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="街道活力:"
-            android:textColor="@color/dark_gray"
+            android:text="@string/comment_streetStar"
+            android:textColor="@color/outdate_font"
             android:textSize="14sp" />
 
         <com.buxingzhe.pedestrian.widget.MWTStarBar
             android:id="@+id/walked_stress_star"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
             android:layout_gravity="center_vertical"
-            android:gravity="center_vertical"/>
+            android:layout_marginLeft="15dp"
+            android:gravity="center_vertical" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/bxz_10px">
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:layout_marginTop="10dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="环境舒适:"
-            android:textColor="@color/dark_gray"
+            android:text="@string/comment_envirStar"
+            android:textColor="@color/outdate_font"
             android:textSize="14sp" />
 
         <com.buxingzhe.pedestrian.widget.MWTStarBar
             android:id="@+id/walked_environment_star"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
             android:layout_gravity="center_vertical"
-            android:gravity="center_vertical"/>
+            android:layout_marginLeft="15dp"
+            android:gravity="center_vertical" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/bxz_10px">
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="15dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="步行安全:"
-            android:textColor="@color/dark_gray"
+            android:text="@string/comment_safeStar"
+            android:textColor="@color/outdate_font"
             android:textSize="14sp" />
 
         <com.buxingzhe.pedestrian.widget.MWTStarBar
             android:id="@+id/walked_safety_star"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
             android:layout_gravity="center_vertical"
-            android:gravity="center_vertical"/>
+            android:layout_marginLeft="15dp"
+            android:gravity="center_vertical" />
 
     </LinearLayout>
-
-    <LinearLayout
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="@dimen/bxz_16px">
+        android:layout_height="1dp"
+        android:background="@color/light_gray_line"></View>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/light_gray"></View>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
 
         <ImageView
+            android:id="@+id/line2"
             android:layout_width="5dp"
             android:layout_height="15dp"
             android:src="@drawable/munu_rectangle"
-            android:layout_gravity="center_vertical" />
+            android:layout_centerVertical="true"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="地点评价："/>
+            android:layout_toRightOf="@id/line2"
+            android:layout_marginLeft="2dp"
+            android:layout_centerVertical="true"
+            android:textSize="15sp"
+            android:textColor="@color/tab_layout_standard"
+            android:text="@string/comment_content" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/bxz_16px">
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
 
         <EditText
             android:id="@+id/et_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:lines="3"
-            android:gravity="top"
             android:background="@null"
-            android:hint="请描述下该地点"/>
+            android:gravity="top"
+            android:hint="@string/comment_input_content"
+            android:textColorHint="@color/outdate_font"
+            android:textColor="@color/dark_back"
+            android:textSize="16sp"/>
     </LinearLayout>
 </LinearLayout>
