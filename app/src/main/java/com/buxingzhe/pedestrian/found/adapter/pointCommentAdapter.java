@@ -18,9 +18,9 @@ import java.util.List;
  * Created by hasee on 2017/4/24.
  */
 
-public class pointCommentAdapter extends RecycleBaseAdapter<Comment> {
+public class PointCommentAdapter extends RecycleBaseAdapter<Comment> {
 
-    public pointCommentAdapter(Context context, List<Comment> list, int resId) {
+    public PointCommentAdapter(Context context, List<Comment> list, int resId) {
         super(context, list, resId);
     }
 
