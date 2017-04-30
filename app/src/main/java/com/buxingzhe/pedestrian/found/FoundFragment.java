@@ -1,12 +1,18 @@
 package com.buxingzhe.pedestrian.found;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -20,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.baidu.location.BDLocation;
@@ -52,6 +59,7 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.buxingzhe.pedestrian.R;
+import com.buxingzhe.pedestrian.activity.MainActivity;
 import com.buxingzhe.pedestrian.bean.RequestResultInfo;
 import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
 import com.buxingzhe.pedestrian.found.bean.Streets;
@@ -338,8 +346,23 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
             }
 
         });
-        initLocation();
+        checkPermission();
+
         setTraffic();
+    }
+
+    private void checkPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int checkCallPhonePermission = ContextCompat.checkSelfPermission(mContext,Manifest.permission.ACCESS_FINE_LOCATION);
+            if(checkCallPhonePermission != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},0x101);
+            }else{
+                //定位
+                initLocation();
+            }
+        }else {
+            initLocation();
+        }
     }
 
     private void showMarker(LatLng latLng) {
@@ -391,6 +414,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         return vImageViewPin;
     }
     private void initLocation(){
+
         // 开启定位图层
         mBaidumap.setMyLocationEnabled(true);
         mCurrentMode = MyLocationConfiguration.LocationMode.FOLLOWING;
@@ -573,4 +597,21 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         bdnor.recycle();
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 0x101:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission Granted
+                    initLocation();
+                } else {
+                    // Permission Denied
+                    Toast.makeText(mContext, "定位权限已被禁止", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            }
+
+    }
 }

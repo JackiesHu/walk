@@ -10,7 +10,6 @@ import com.alibaba.fastjson.JSON;
 import com.buxingzhe.pedestrian.bean.RequestResultInfo;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.found.bean.PageContent;
-import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
 import com.buxingzhe.pedestrian.found.bean.Tag;
 import com.buxingzhe.pedestrian.found.bean.WalkRecord;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
@@ -80,7 +79,7 @@ public class FindTabAdapter extends FragmentPagerAdapter {
                     if (o != null) {
                         PageContent content = JSON.parseObject(o.toString(),PageContent.class);
                         walkRecords = JSON.parseArray(content.getList().toString(), WalkRecord.class);
-                        list_fragment.get(position).setData(walkRecords);
+                        list_fragment.get(position).setData(walkRecords, tags.get(position).getName());
                     }
                 }
             }

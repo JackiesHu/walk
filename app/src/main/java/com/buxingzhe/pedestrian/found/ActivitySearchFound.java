@@ -130,7 +130,7 @@ public class ActivitySearchFound extends BaseActivity implements View.OnClickLis
 
     }
 
-    private void loadData(String key, int pageNo) {
+    private void loadData(final String key, int pageNo) {
         Map<String,String> paramsMap = new HashMap<>();
         paramsMap.put("title", key);
         paramsMap.put("userId", GlobalParams.USER_ID);
@@ -158,7 +158,7 @@ public class ActivitySearchFound extends BaseActivity implements View.OnClickLis
                     if (o != null) {
                         PageContent content = JSON.parseObject(o.toString(),PageContent.class);
                         walkRecords = JSON.parseArray(content.getList().toString(), WalkRecord.class);
-                        mSearchFragment.setData(walkRecords);
+                        mSearchFragment.setData(walkRecords,key);
                     }
                 }
             }

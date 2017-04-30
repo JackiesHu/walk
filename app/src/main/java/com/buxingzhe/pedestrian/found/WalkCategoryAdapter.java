@@ -6,8 +6,10 @@ import android.widget.TextView;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.common.StarBarBean;
+import com.buxingzhe.pedestrian.found.adapter.MyBaseAdapter;
 import com.buxingzhe.pedestrian.found.adapter.RecycleBaseAdapter;
 import com.buxingzhe.pedestrian.found.adapter.RecycleViewHolder;
+import com.buxingzhe.pedestrian.found.adapter.ViewHolder;
 import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
 import com.buxingzhe.pedestrian.found.bean.WalkRecord;
 import com.buxingzhe.pedestrian.utils.PicassManager;
@@ -20,14 +22,14 @@ import java.util.List;
  * Created by jackie on 2017/2/11.
  */
 
-public class WalkCategoryAdapter extends RecycleBaseAdapter<WalkRecord> {
+public class WalkCategoryAdapter extends MyBaseAdapter<WalkRecord> {
 
     public WalkCategoryAdapter(Context context, List<WalkRecord> list, int resId) {
         super(context, list, resId);
     }
 
     @Override
-    public void convert(RecycleViewHolder holder, WalkRecord walkRecord, int position) {
+    public void convert(ViewHolder holder, WalkRecord walkRecord, int position) {
         MWTStarBar vStarBar = holder.getView(R.id.tv_walk_star);
         ImageView iv_pic = holder.getView(R.id.iv_pic);
         TextView tv_add_name = holder.getView(R.id.tv_add_name);

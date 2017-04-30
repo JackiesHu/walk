@@ -5,12 +5,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context=".found.ActivitySearchFound">
-    <android.support.v7.widget.RecyclerView
+
+    <com.handmark.pulltorefresh.library.PullToRefreshListView
+        android:id="@+id/mListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/publish_bg"
+        android:cacheColorHint="@color/transparent"
+        android:divider="@color/transparent"
+        android:dividerHeight="10dp"
+        android:footerDividersEnabled="false"
+        android:headerDividersEnabled="false" />
+
+    <TextView
+        android:id="@+id/empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/walk_list"
-        >
-    </android.support.v7.widget.RecyclerView>
+        android:layout_centerInParent="true"
+        android:text="暂无往期活动"
+        android:textSize="15sp"
+        android:visibility="gone" />
 
 </LinearLayout>
