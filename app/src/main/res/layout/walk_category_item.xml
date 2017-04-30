@@ -8,7 +8,6 @@
         android:layout_marginLeft="15dp"
         android:layout_width="107dp"
         android:layout_height="80dp"
-        android:src="@mipmap/fengjing1"
         android:scaleType="centerCrop"
         android:layout_centerVertical="true" />
 
@@ -24,12 +23,11 @@
             android:id="@+id/tv_add_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="洪洞美食街"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:textColor="@color/dark_back"
             />
         <LinearLayout
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -38,15 +36,15 @@
                 android:id="@+id/tv_walk_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                />
+                android:textSize="13sp"
+                android:textColor="@color/dark_gray"/>
             <TextView
-                android:layout_marginLeft="24dp"
+                android:layout_marginLeft="25dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:textSize="13sp"
                 android:id="@+id/tv_walk_mile"
-                />
+                android:textColor="@color/dark_gray"/>
         </LinearLayout>
         <LinearLayout
             android:layout_marginTop="12dp"
@@ -57,8 +55,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="步行品质:"
-                android:textSize="16sp"
-                />
+                android:textSize="13sp"
+                android:textColor="@color/dark_gray"/>
             <com.buxingzhe.pedestrian.widget.MWTStarBar
                 android:layout_marginLeft="4dp"
                 android:id="@+id/tv_walk_star"
@@ -72,10 +70,9 @@
                 android:id="@+id/tv_walk_mark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="5分"
                 android:layout_marginLeft="10dp"
                 android:textColor="@color/dark_ad_yellow"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 />
         </LinearLayout>
     </LinearLayout>
@@ -84,6 +81,6 @@
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_marginTop="20dp"
-        android:background="@color/se_b"
+        android:background="@color/light_gray_line"
         />
 </RelativeLayout>
