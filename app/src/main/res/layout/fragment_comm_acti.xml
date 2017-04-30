@@ -17,7 +17,6 @@
             android:background="@color/publish_bg"
             android:cacheColorHint="@color/transparent"
             android:divider="@color/transparent"
-            android:dividerHeight="10dp"
             android:footerDividersEnabled="false"
             android:headerDividersEnabled="false" />
     </android.support.v4.widget.SwipeRefreshLayout>

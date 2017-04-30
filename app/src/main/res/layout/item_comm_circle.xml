@@ -146,10 +146,17 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/likeRL"
-            android:maxLength="400"
             android:singleLine="true"
+            android:ellipsize="end"
             android:textColor="@color/drak_gray"
             android:textSize="12sp" />
     </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/publish_bg">
+
+    </View>
 
 </LinearLayout>

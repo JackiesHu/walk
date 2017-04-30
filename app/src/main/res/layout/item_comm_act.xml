@@ -6,8 +6,16 @@
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
     >
-    <com.buxingzhe.pedestrian.widget.XCRoundRectImageView
+    <View
+        android:id="@+id/topView"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@color/publish_bg">
+
+    </View>
+    <ImageView
         android:id="@+id/iv_banner"
+        android:layout_below="@id/topView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:scaleType="centerCrop"
@@ -15,7 +23,7 @@
         />
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="50dp"
         android:gravity="center_vertical">
         <TextView
             android:id="@+id/tv_end_time"
@@ -42,10 +50,12 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingBottom="10dp"
         android:layout_alignBottom="@+id/iv_banner"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:background="@mipmap/ic_shequ_tupian_mengban"
+        android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/tv_title"
@@ -53,7 +63,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textColor="@color/white"
-            android:singleLine="true"/>
+            android:singleLine="true" />
         <TextView
             android:id="@+id/tv_introduction"
             android:layout_below="@+id/tv_title"
@@ -62,7 +72,14 @@
             android:textColor="@color/introduce_font"
             android:layout_marginTop="2dp"
             android:textSize="12sp"
-            android:singleLine="true"/>
+            android:singleLine="true" />
 
     </RelativeLayout>
+    <View
+        android:layout_below="@id/iv_banner"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@color/publish_bg">
+
+    </View>
 </RelativeLayout>

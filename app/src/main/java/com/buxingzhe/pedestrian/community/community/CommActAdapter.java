@@ -75,7 +75,7 @@ public class CommActAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = View.inflate(mContext, R.layout.item_comm_act, null);
             holder = new Holder();
-            holder.iv_banner = (XCRoundRectImageView) convertView.findViewById(R.id.iv_banner);
+            holder.iv_banner = (ImageView) convertView.findViewById(R.id.iv_banner);
             holder.tv_title = (TextView) convertView.findViewById(R.id.tv_title);
             holder.tv_introduction = (TextView) convertView.findViewById(R.id.tv_introduction);
             holder.tv_attenderCount = (TextView) convertView.findViewById(R.id.tv_attenderCount);
@@ -120,7 +120,7 @@ public class CommActAdapter extends BaseAdapter {
 
 
     class Holder {
-        XCRoundRectImageView iv_banner;
+        ImageView iv_banner;
         TextView tv_title;
         TextView tv_introduction;
         TextView tv_attenderCount;
@@ -148,9 +148,10 @@ public class CommActAdapter extends BaseAdapter {
      */
     private long residueDate(long endTimestamp) {
         Date date = new Date();
-        Long time = date.getTime();
+        Long time = date.getTime()/1000;
         long l = endTimestamp - time;
-        long days = l / (1000 * 60 * 60 * 24);
+//        long days = l / (1000 * 60 * 60 * 24);
+        long days = l / (60 * 60 * 24)+1;
         return days;
     }
 
