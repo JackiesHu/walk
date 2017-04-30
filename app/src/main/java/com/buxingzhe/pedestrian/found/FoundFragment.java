@@ -545,6 +545,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                         intent.putExtra("myLocation", ll);
                         intent.putExtra("type", 0);
                         EnterActUtils.startAct(getActivity(), intent);
+                        popupWindow.dismiss();
                     }
                 }
             });
@@ -557,6 +558,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                         intent.putExtra("myLocation", ll);
                         intent.putExtra("type", 1);
                         EnterActUtils.startAct(getActivity(), intent);
+                        popupWindow.dismiss();
                     }
                 }
             });
