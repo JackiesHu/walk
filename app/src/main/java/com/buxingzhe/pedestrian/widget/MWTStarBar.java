@@ -21,6 +21,7 @@ public class MWTStarBar extends LinearLayout {
     private final static int dividerSize = 10;
     private MWTStarOnclick mwtStarOnclick;
     private List<StarBarBean> starBarBeanList;
+    private int selectSize;
     private Context mContext;
 
     public void setStarBarBeanList(List<StarBarBean> starBarBeanList) {
@@ -58,6 +59,7 @@ public class MWTStarBar extends LinearLayout {
                 public void onClick(View view) {
                     if (mwtStarOnclick != null){
                         int id = view.getId()+1;
+                        setStarSize(id);
                         mwtStarOnclick.upStarIco(id);
                     }
                 }
@@ -91,7 +93,11 @@ public class MWTStarBar extends LinearLayout {
     }
 
     public int getStarSize(){
-        return starBarBeanList.size();
+        return selectSize;
+    }
+
+    public void setStarSize(int selectSize){
+        this.selectSize = selectSize;
     }
 
     public void refreshView(){
@@ -101,4 +107,5 @@ public class MWTStarBar extends LinearLayout {
         this.mwtStarOnclick = mwtStarOnclick;
         initView(mContext);
     }
+
 }
