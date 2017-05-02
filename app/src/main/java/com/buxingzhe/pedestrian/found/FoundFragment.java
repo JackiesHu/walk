@@ -331,6 +331,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         mGeoSearch = GeoCoder.newInstance();
         MapStatusUpdate u = MapStatusUpdateFactory.zoomTo(20);
         mBaidumap.animateMapStatus(u);
+        initLocation();
         mBaidumap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
 
             @Override
@@ -346,24 +347,11 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
             }
 
         });
-        checkPermission();
 
         setTraffic();
     }
 
-    private void checkPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int checkCallPhonePermission = ContextCompat.checkSelfPermission(mContext,Manifest.permission.ACCESS_FINE_LOCATION);
-            if(checkCallPhonePermission != PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},0x101);
-            }else{
-                //定位
-                initLocation();
-            }
-        }else {
-            initLocation();
-        }
-    }
+
 
     private void showMarker(LatLng latLng) {
 
@@ -605,7 +593,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
             case 0x101:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission Granted
-                    initLocation();
+
                 } else {
                     // Permission Denied
                     Toast.makeText(mContext, "定位权限已被禁止", Toast.LENGTH_SHORT).show();

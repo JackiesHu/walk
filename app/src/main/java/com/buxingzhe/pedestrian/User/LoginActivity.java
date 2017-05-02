@@ -1,8 +1,13 @@
 package com.buxingzhe.pedestrian.User;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -79,6 +84,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             login(null,GlobalParams.LOGIN_TYPE);
         }
 
+        checkPermission();
+    }
+
+    private void checkPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int checkCallPhonePermission = ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION);
+            if(checkCallPhonePermission != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},0x101);
+            }
+        }
     }
 
     private void registerListener() {

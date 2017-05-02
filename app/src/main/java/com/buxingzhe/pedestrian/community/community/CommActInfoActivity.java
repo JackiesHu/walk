@@ -166,7 +166,6 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
      * @param str
      */
     private void setContentText(String str) {
-        str = "民网悉尼4月18日电据澳大利亚广播公司报道，澳大利亚总理特恩布尔18日宣布，人民民网悉尼4月18日电据澳大利亚广播公司报道，澳大利亚总理特恩布尔18日宣布，人民民网悉尼4月18日电据澳大利亚广播公司报道，澳大利亚总理特恩布尔18日宣布，人民人民网悉尼4月18日电据澳大利亚广播公司报道，澳大利亚总理特恩布尔18日宣布，人民网悉尼4月18日电据澳大利亚广播公司报道，澳大利亚总理特恩布尔18日宣布，澳联邦政为增加本地就业机会，申请两年临时技术签证的工作种类也将有所减少。（实习生 唐艺瑜）";
         String newstr = "";
         int scWidth = SystemUtils.getDisplayWidth(mContext)[0];
         int tvWidth = scWidth - SystemUtils.dip2px(mContext, 30);

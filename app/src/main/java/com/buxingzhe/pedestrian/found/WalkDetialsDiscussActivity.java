@@ -16,12 +16,14 @@ import com.buxingzhe.pedestrian.bean.HotUserTag;
 import com.buxingzhe.pedestrian.bean.RequestResultInfo;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.StarBarBean;
+import com.buxingzhe.pedestrian.found.adapter.PicAdapter;
 import com.buxingzhe.pedestrian.found.bean.HotTagBean;
 import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
 import com.buxingzhe.pedestrian.found.tag.TagAddActivity;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
+import com.buxingzhe.pedestrian.widget.FullGridView;
 import com.buxingzhe.pedestrian.widget.MWTStarBar;
 import com.buxingzhe.pedestrian.widget.MWTStarOnclick;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
@@ -29,7 +31,6 @@ import com.pizidea.imagepicker.AndroidImagePicker;
 import com.pizidea.imagepicker.activity.ImagesGridActivity;
 import com.pizidea.imagepicker.bean.ImageItem;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,10 +50,11 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
     private TextView vAddTag;
     private TextView tv_address;
     private EditText et_content;
+    private FullGridView gv_pic ;
     private List<HotUserTag> hotSelectTags;
     private RemarkPoint remarkPoint;
     private int type;
-    private List<String> pics;
+    private List<String> pics = new ArrayList<>();;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,6 +87,7 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
         vAddTag =(TextView)findViewById(R.id.tag_add);
         tv_address =(TextView)findViewById(R.id.tv_address);
         et_content = (EditText) findViewById(R.id.et_content);
+        gv_pic = (FullGridView) findViewById(R.id.gv_pic);
         if (type == 0) {
             setTitle("推荐");
         }else {
@@ -97,9 +100,8 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
     @Override
     public void onRightListener(View v) {
         Map<String,Object> paramsMap = new HashMap<>();
-        paramsMap.put("title","大风车"+remarkPoint.getTitle());
+        paramsMap.put("title",remarkPoint.getTitle());
         paramsMap.put("type",String.valueOf(type));
-        paramsMap.put("location","大风车");
         paramsMap.put("userId",GlobalParams.USER_ID);
         paramsMap.put("token", GlobalParams.TOKEN);
         paramsMap.put("streetStar",String.valueOf(vStressStar.getStarSize()));
@@ -203,12 +205,14 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
     }
     @Override
     public void onImagePickComplete(List<ImageItem> items) {
+        pics.clear();
         if (items != null && items.size() > 0) {
-            pics = new ArrayList<>();
             for (ImageItem item : items){
                 pics.add(item.path);
             }
         }
+        PicAdapter adapter = new PicAdapter(mContext,pics,R.layout.item_pic);
+        gv_pic.setAdapter(adapter);
     }
 
     @Override

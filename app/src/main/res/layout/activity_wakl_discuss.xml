@@ -61,7 +61,7 @@
             android:layout_gravity="center_vertical"
             />
     </LinearLayout>
-    <GridView
+    <com.buxingzhe.pedestrian.widget.FullGridView
         android:id="@+id/gv_pic"
         android:layout_marginTop="15dp"
         android:layout_marginLeft="15dp"
