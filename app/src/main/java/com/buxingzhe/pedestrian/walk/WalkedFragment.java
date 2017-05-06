@@ -1,5 +1,6 @@
 package com.buxingzhe.pedestrian.walk;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,25 +11,37 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.buxingzhe.lib.util.Log;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
+import com.buxingzhe.pedestrian.bean.activity.PublisherBean;
+import com.buxingzhe.pedestrian.bean.activity.WalkActivitiesInfo;
+import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
+import com.buxingzhe.pedestrian.bean.walk.LatestActivityInfo;
 import com.buxingzhe.pedestrian.bean.walk.WalkWeatherInfo;
+import com.buxingzhe.pedestrian.community.community.CommActFragment;
+import com.buxingzhe.pedestrian.community.community.CommActInfoActivity;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
+import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
 import com.buxingzhe.pedestrian.widget.CalendarLayout;
 import com.buxingzhe.pedestrian.widget.MaterialSpinnerLayout;
+import com.google.gson.Gson;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.jeek.calendar.widget.calendar.OnCalendarClickListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import lecho.lib.hellocharts.gesture.ContainerScrollType;
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.listener.LineChartOnValueSelectListener;
@@ -48,6 +61,26 @@ import rx.Subscriber;
  */
 public class WalkedFragment extends BaseFragment implements View.OnClickListener {
 
+    @BindView(R.id.walk_data_day)
+    TextView walkDataDay;
+    @BindView(R.id.walk_data_week)
+    TextView walkDataWeek;
+    @BindView(R.id.walk_data_month)
+    TextView walkDataMonth;
+    @BindView(R.id.walk_data_year)
+    TextView walkDataYear;
+
+    @BindView(R.id.walk_action_title)
+    TextView walkActionTitle;
+    @BindView(R.id.walk_action_time)
+    TextView walkActionTime;
+    @BindView(R.id.walk_action_pic)
+    ImageView walkActionPic;
+    @BindView(R.id.walk_action_content)
+    TextView walkActionContent;
+    @BindView(R.id.actionLl)
+    LinearLayout actionLl;
+
     private ImageView mTitleCalendarImageView;
     private TextView mCurrentSelectedDate;
     private LineChartView mLineChartView;
@@ -60,18 +93,25 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
     private String[] WALK_SPINNER_DATA;
 
     //天气
-    @BindView(R.id.walk_weather_tv_address)TextView mWeatherAddress;
-    @BindView(R.id.walk_weather_tv_)TextView mWeather;
-    @BindView(R.id.walk_weather_tv_air_quality)TextView mWeatherAirQuality;
-    @BindView(R.id.walk_weather_tv_wear_suggest)TextView mWeatherWearSuggest;
-    @BindView(R.id.walk_weather_tv_sport_suggest)TextView mWeatherSportSuggest;
+    @BindView(R.id.walk_weather_tv_address)
+    TextView mWeatherAddress;
+    @BindView(R.id.walk_weather_tv_)
+    TextView mWeather;
+    @BindView(R.id.walk_weather_tv_air_quality)
+    TextView mWeatherAirQuality;
+    @BindView(R.id.walk_weather_tv_wear_suggest)
+    TextView mWeatherWearSuggest;
+    @BindView(R.id.walk_weather_tv_sport_suggest)
+    TextView mWeatherSportSuggest;
+    WalkActivityInfo walkActivitityInfo = new WalkActivityInfo();
+    private LatestActivityInfo info;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_layout_walk, container, false);
         mContext = getContext();
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
         findId(view);
         return view;
     }
@@ -113,21 +153,65 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
     }
 
     private void setData() {
-        setWeatherData(true,"");
+        setWeatherData(true, "");
+        setActionData();
         setSpinnerData();
         setChartData();
     }
 
+    private void setActionData() {
+        mSubscription = NetRequestManager.getInstance().getLatestActivity(new Subscriber<String>() {
+            @Override
+            public void onCompleted() {
+                Log.i("onCompleted");
+            }
 
-    private void setWeatherData(boolean isCurrentWeatherData){
-        setWeatherData(isCurrentWeatherData,"");
+            @Override
+            public void onError(Throwable e) {
+                Log.i(e.getMessage());
+            }
+
+            @Override
+            public void onNext(String jsonStr) {
+                Log.i("jsonStr" + jsonStr);
+               /* Gson gson = new Gson();
+                Object[] datas = JsonParseUtil.getInstance().parseJson(jsonStr, LatestActivityInfo.class);
+                String contentStr=(String) datas[1];
+                walkActivitityInfo = gson.fromJson(contentStr, WalkActivityInfo.class);*/
+                Gson gson2 = new Gson();
+                info = gson2.fromJson(jsonStr, LatestActivityInfo.class);
+                LatestActivityInfo.ContentBean content=info.getContent();
+
+                if (null != content) {
+                    walkActionTitle.setText(content.getTitle());
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Long time = new Long(info.getContent().getStartTimeStamp());
+                    String d = format.format(time);
+                    walkActionTime.setText(d);
+
+                    Glide.with(mContext).load(content.getBanner())
+                            .error(R.drawable.default_img)
+                            .into(walkActionPic);
+                    walkActionContent.setText(content.getIntroduction());
+                }
+
+
+
+            }
+
+        });
+    }
+
+
+    private void setWeatherData(boolean isCurrentWeatherData) {
+        setWeatherData(isCurrentWeatherData, "");
     }
 
 
     private void setWeatherData(boolean isCurrentWeatherData, String date) {
         String cityName = "北京";//TODO
-        if (isCurrentWeatherData){
-            mSubscription = NetRequestManager.getInstance().getCurrentWeather(cityName,new Subscriber<String>() {
+        if (isCurrentWeatherData) {
+            mSubscription = NetRequestManager.getInstance().getCurrentWeather(cityName, new Subscriber<String>() {
                 @Override
                 public void onCompleted() {
                     Log.i("onCompleted");
@@ -153,15 +237,15 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
                             WalkedFragment.this.setWeatherData(content);
                         }
 
-                    }else{
+                    } else {
                         Toast.makeText(mContext, datas[2].toString(), Toast.LENGTH_SHORT).show();
                     }
                 }
 
             });
-        }else{
+        } else {
             Log.i(date);
-            mSubscription = NetRequestManager.getInstance().getHistoryWeather(cityName,date, new Subscriber<String>() {
+            mSubscription = NetRequestManager.getInstance().getHistoryWeather(cityName, date, new Subscriber<String>() {
                 @Override
                 public void onCompleted() {
                     Log.i("onCompleted");
@@ -187,7 +271,7 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
                             WalkedFragment.this.setWeatherData(content);
                         }
 
-                    }else{
+                    } else {
                         Toast.makeText(mContext, datas[2].toString(), Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -197,11 +281,11 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
     }
 
     private void setWeatherData(WalkWeatherInfo content) {
-        if (TextUtils.isEmpty(content.getCityName())){
+        if (TextUtils.isEmpty(content.getCityName())) {
             return;
         }
         mWeatherAddress.setText(content.getCityName());
-        mWeather.setText(content.getTempLow()+"~"+ content.getTempHigh()+"  "+ content.getWeather()+"  "+ content.getWindDirection()+ content.getWindDegree());
+        mWeather.setText(content.getTempLow() + "~" + content.getTempHigh() + "  " + content.getWeather() + "  " + content.getWindDirection() + content.getWindDegree());
         mWeatherAirQuality.setText(content.getAirQuality());
         mWeatherWearSuggest.setText(content.getWearSuggest());
         mWeatherSportSuggest.setText(content.getSportSuggest());
@@ -342,15 +426,13 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
         mLineChartView.setLineChartData(lineChartData);
         mLineChartView.setVisibility(View.VISIBLE);
 
-
         //7.X轴固定显示数据项
         Viewport viewport = new Viewport(mLineChartView.getMaximumViewport());
         viewport.left = 0; //代表显示图表起始x轴坐标，0表示第一个
         viewport.right = 6; //代表显示图表结束x轴坐标，6表示第7个
         mLineChartView.setCurrentViewport(viewport);
-
-
         //8.如何设置以Y轴最小值0开始 显示折线？
+
 
     }
 
@@ -359,15 +441,64 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
         menu.clear();
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
+
+    @OnClick({R.id.walk_data_day, R.id.walk_data_week, R.id.walk_data_month, R.id.walk_data_year,R.id.actionLl})
+    public void onClick(View view) {
+        switch (view.getId()) {
             case R.id.walk_title_calendar://title calendar
                 mCalendarLayout.skipTodayCalendar();
                 break;
+            case R.id.walk_data_day:
+                walkDataDay.setSelected(true);
+                walkDataMonth.setSelected(false);
+                walkDataWeek.setSelected(false);
+                walkDataYear.setSelected(false);
+                mLineChartView.refreshDrawableState();
 
+                break;
+            case R.id.walk_data_week:
+                walkDataDay.setSelected(false);
+                walkDataMonth.setSelected(false);
+                walkDataWeek.setSelected(true);
+                walkDataYear.setSelected(false);
+                break;
+            case R.id.walk_data_month:
+                walkDataDay.setSelected(false);
+                walkDataMonth.setSelected(true);
+                walkDataWeek.setSelected(false);
+                walkDataYear.setSelected(false);
+                mLineChartView.refreshDrawableState();
+                break;
+            case R.id.walk_data_year:
+                walkDataDay.setSelected(false);
+                walkDataMonth.setSelected(false);
+                walkDataWeek.setSelected(false);
+                walkDataYear.setSelected(true);
+                mLineChartView.refreshDrawableState();
+                break;
+            case R.id.actionLl:
+                LatestActivityInfo.ContentBean content=info.getContent();
+                walkActivitityInfo.setId(content.getId());
+                walkActivitityInfo.setBanner(content.getBanner());
+                walkActivitityInfo.setIntroduction(content.getIntroduction());
+                walkActivitityInfo.setIsOutDate(content.getIsOutDate());
+                walkActivitityInfo.setTitle(content.getTitle());
+
+             /*   walkActivitityInfo.setCreateTimestamp((int)content.getCreateTimestamp());
+                walkActivitityInfo.setEndTimestamp((int)content.getEndTimestamp());
+                PublisherBean publisher=new PublisherBean();
+                publisher.setAvatarUrl(content.getPublisher().getAvatar());
+                publisher.setId(content.getPublisher().getId());
+                publisher.setNickName(content.getPublisher().getNickName());
+                walkActivitityInfo.setPublisher(publisher);*/
+                Intent intent = new Intent();
+                intent.setClass(mContext, CommActInfoActivity.class);
+                intent.putExtra(CommActFragment.WALKACTIVITYINFO,walkActivitityInfo);
+                EnterActUtils.startAct(getActivity(), intent);
+                break;
         }
     }
+
 
 
     private class MineLineChartOnValueSelectListener implements LineChartOnValueSelectListener {
@@ -395,8 +526,8 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
         public void onClickDate(int year, int month, int day) {
             mCalendarLayout.setSelectPosition(mCalendarLayout.getPosition(year, month, day));
             mCurrentSelectedDate.setText(mCalendarLayout.getCurrrentSelectedDate());
-            String date = year +(String.valueOf(month).length()==1?("0" + String.valueOf(month)):String.valueOf(month))+(String.valueOf(day).length()==1?("0" + String.valueOf(day)):String.valueOf(day));
-            setWeatherData(false,date);
+            String date = year + (String.valueOf(month).length() == 1 ? ("0" + String.valueOf(month)) : String.valueOf(month)) + (String.valueOf(day).length() == 1 ? ("0" + String.valueOf(day)) : String.valueOf(day));
+            setWeatherData(false, date);
         }
     }
 }

@@ -38,6 +38,8 @@ public class NetRequestParams {
     //*************************** Weather ****************************
     /** 获取今天天气信息 */
     public static final String WALK_GET_CURRENT_WEATHER = "walkman/wmWeather/getCurWeather";
+    /** 获取最新发布活动 */
+    public static final String WALK_GET_LATEST_ACTIVITY = "walkman/wmActivity/getLatestActivity";
     /** 获取历史天气信息 */
     public static final String WALK_GET_HISTORY_WEATHER = "walkman/wmWeather/getHistoryWeather";
 

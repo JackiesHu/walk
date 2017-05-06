@@ -11,6 +11,7 @@ import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -72,6 +73,11 @@ public interface NetRequestService {
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_GET_CURRENT_WEATHER)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getCurrentWeather(@Field("cityName") String cityName);
+
+    //获取最新发布活动
+    @POST(NetRequestParams.WALK_GET_LATEST_ACTIVITY)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getLatestActivity();
+
 
     //获取历史天气  //  data: 日期 格式为20170401
     @FormUrlEncoded

@@ -53,4 +53,18 @@
         <item name="android:background">#e6e6e6</item>
         <!--<item name="android:background">#b1b1b1</item>-->
     </style>
+
+    <!--年月日Tv-->
+    <style name="time_selector_tv">
+        <item name="android:textColor">#232323</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/timebtn_bg</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:gravity">center</item>
+
+    </style>
 </resources>

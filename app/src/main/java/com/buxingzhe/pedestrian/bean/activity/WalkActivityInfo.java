@@ -33,7 +33,8 @@ public class WalkActivityInfo implements Parcelable{
     private int endTimestamp;
     private String banner;
     private int createTimestamp;
-
+    public WalkActivityInfo() {
+    }
     protected WalkActivityInfo(Parcel in) {
         id = in.readString();
         createTime = in.readString();

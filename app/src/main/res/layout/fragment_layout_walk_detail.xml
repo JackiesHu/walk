@@ -225,6 +225,7 @@
             android:layout_marginRight="15dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/bg_corn_white"
+            android:id="@+id/actionLl"
             android:orientation="vertical">
 
             <RelativeLayout
@@ -356,43 +357,23 @@
 
                 <TextView
                     android:id="@+id/walk_data_day"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="@string/walk_data_day"
-                    android:textColor="#232323"
-                    android:textSize="14sp"/>
+                    style="@style/time_selector_tv"
+                    android:text="@string/walk_data_day" />
 
                 <TextView
                     android:id="@+id/walk_data_week"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="@string/walk_data_week"
-                    android:textColor="#232323"
-                    android:textSize="14sp"/>
+                    style="@style/time_selector_tv"
+                    android:text="@string/walk_data_week" />
 
                 <TextView
                     android:id="@+id/walk_data_month"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="@string/walk_data_month"
-                    android:textColor="#232323"
-                    android:textSize="14sp"/>
+                    style="@style/time_selector_tv"
+                    android:text="@string/walk_data_month" />
 
                 <TextView
                     android:id="@+id/walk_data_year"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
                     android:text="@string/walk_data_year"
-                    android:textColor="#232323"
-                    android:textSize="14sp"/>
+                    style="@style/time_selector_tv" />
             </LinearLayout>
             <!-- 折线图-->
             <LinearLayout

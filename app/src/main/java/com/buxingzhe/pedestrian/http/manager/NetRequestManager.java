@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import okhttp3.RequestBody;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Field;
 import rx.Subscriber;
 import rx.Subscription;
@@ -95,6 +96,15 @@ public class NetRequestManager{
         return RetrofitManager.getInstance()
                 .getNetRequestService()
                 .getCurrentWeather(cityName)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
+    //获取当天天气
+    public Subscription getLatestActivity(Subscriber subscriber){
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .getLatestActivity()
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }
