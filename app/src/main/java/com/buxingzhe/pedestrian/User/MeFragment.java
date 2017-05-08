@@ -25,6 +25,7 @@ import com.buxingzhe.pedestrian.utils.JsonParseUtil;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.squareup.picasso.Picasso;
 
+import butterknife.ButterKnife;
 import rx.Subscriber;
 
 /**
@@ -83,15 +84,14 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_me, null);
         mContext = getContext();
+        ButterKnife.bind(this, view);
         findId(view);
         onClick();
         return view;
     }
 
     private void findId(View view) {
-//        vTitleBar = (TitleBarView) view.findViewById(R.id.me_title_bar);
-//        setTitle("我");
-//        hideLeftIco();
+
 
         mUserAvatar = (ImageView) view.findViewById(R.id.user_iv_avatar);
         mUserName = (TextView) view.findViewById(R.id.user_tv_username);
@@ -177,20 +177,24 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.user_iv_avatar://头像
-//                Intent intent = new Intent(getActivity(),UserInfoActivity.class);
-//                EnterActUtils.startForResultAct(getActivity(),intent,1);
+                Intent intent = new Intent(getActivity(),UserInfoActivity.class);
+                EnterActUtils.startForResultAct(getActivity(),intent,1);
                 break;
             case R.id.user_rl_walk://我的步行
-
+                Intent intent1 = new Intent(getActivity(),MyWalkActivity.class);
+                EnterActUtils.startForResultAct(getActivity(),intent1,2);
                 break;
             case R.id.user_rl_team://我的跑团
-
+                Intent intent2 = new Intent(getActivity(),MyRunTeamActivity.class);
+                EnterActUtils.startForResultAct(getActivity(),intent2,3);
                 break;
             case R.id.user_rl_task://我的任务
-
+                Intent intent3 = new Intent(getActivity(),MyTaskActivity.class);
+                EnterActUtils.startForResultAct(getActivity(),intent3,4);
                 break;
             case R.id.user_rl_setting://设置
-
+                Intent intent4 = new Intent(getActivity(),SettingActivity.class);
+                EnterActUtils.startForResultAct(getActivity(),intent4,5);
                 break;
         }
     }

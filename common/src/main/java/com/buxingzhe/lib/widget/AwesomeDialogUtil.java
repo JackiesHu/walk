@@ -1,5 +1,6 @@
 package com.buxingzhe.lib.widget;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -13,7 +14,7 @@ public class AwesomeDialogUtil {
 
     private AwesomeDialog mDialog = null;
     private String mContent = "";
-
+    private Context mContext;
     private AwesomeDialogUtil() {
     }
 
@@ -29,6 +30,7 @@ public class AwesomeDialogUtil {
         if (mDialog == null) {
             mDialog = new AwesomeDialog(context);
         }
+        mContext=context;
         return mDialog;
     }
 
@@ -37,6 +39,7 @@ public class AwesomeDialogUtil {
             mContent = content;
             mDialog = new AwesomeDialog(context);
         }
+        mContext=context;
         return mDialog;
     }
 

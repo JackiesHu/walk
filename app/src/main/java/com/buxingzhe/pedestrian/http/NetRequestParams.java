@@ -46,6 +46,8 @@ public class NetRequestParams {
     //*************************** mine ****************************
     /** 我的跑团*/
     public static final String WALK_MINE_RUN_TEAM = "walkman/wmActivity/getActivityByPublisher";
+    /** 我的任务*/
+    public static final String WALK_MY_TASK = "walkman/wmActivity/getActivityByUserId";
 
 
     //*************************** common ****************************
@@ -53,6 +55,7 @@ public class NetRequestParams {
     public static final String WALK_GET_ACTIVITYS = "walkman/wmActivity/getActivities";
     /** 查询圈子*/
     public static final String WALK_GET_WALK_RECORDS = "walkman/wmWalkRecord/getWalkRecords";
+    public static final String WALK_GET_MY_WALK_RECORDS = "walkman/wmWalkRecord/getWalkRecordsByUserId";
     /** 查询该活动下的记录*/
     public static final String WALK_GET_RECORDSBYACT = "walkman/wmWalkRecord/getWalkRecordsByActivity";
     /** 步行或骑行记录点赞*/

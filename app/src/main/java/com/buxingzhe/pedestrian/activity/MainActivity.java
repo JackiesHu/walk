@@ -21,7 +21,7 @@ import com.buxingzhe.pedestrian.widget.MWTTabBar;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements  View.OnClickListener, OnInteractionData {
+public class MainActivity extends BaseActivity implements View.OnClickListener, OnInteractionData {
     private MWTTabBar vTabbar;
     private MainTabBarAdapter adapter;
 
@@ -34,12 +34,11 @@ public class MainActivity extends BaseActivity implements  View.OnClickListener,
 
     private RelativeLayout main_tab;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
         mContext = this;
 
         // Set up the ViewPager with the sections adapter.
@@ -53,6 +52,8 @@ public class MainActivity extends BaseActivity implements  View.OnClickListener,
         mViewPager.setAdapter(pagerAdapter);
         mViewPager.setOffscreenPageLimit(pagerAdapter.getCount());
     }
+
+
     private void initTabbar(){
         adapter = new MainTabBarAdapter();
         vTabbar.onChangeViewListener(this);
@@ -124,8 +125,6 @@ public class MainActivity extends BaseActivity implements  View.OnClickListener,
     public void onBackPressed() {
         dealWithTab();
 
-//        super.onBackPressed();
-
     }
 
     private void dealWithTab() {
@@ -135,4 +134,5 @@ public class MainActivity extends BaseActivity implements  View.OnClickListener,
         vRun.setVisibility(View.VISIBLE);
         vRun.setImageResource(R.mipmap.ic_run_nor);
     }
+
 }

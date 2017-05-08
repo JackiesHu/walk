@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/publish_bg">
+    <com.buxingzhe.pedestrian.widget.TitleBarView
+        android:id="@+id/title_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        >
+    </com.buxingzhe.pedestrian.widget.TitleBarView>
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeLayoutW"
+        android:layout_below="@+id/title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/publish_bg">
+
+        <com.handmark.pulltorefresh.library.PullToRefreshListView
+            android:id="@+id/mListViewW"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/publish_bg"
+            android:cacheColorHint="@color/transparent"
+            android:divider="@color/transparent"
+            android:footerDividersEnabled="false"
+            android:headerDividersEnabled="false" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <TextView
+        android:id="@+id/emptyWalk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="暂无步行"
+        android:textSize="15sp"
+        android:visibility="gone" />
+</RelativeLayout>

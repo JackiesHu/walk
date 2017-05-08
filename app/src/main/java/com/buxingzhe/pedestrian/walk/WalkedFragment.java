@@ -1,8 +1,16 @@
 package com.buxingzhe.pedestrian.walk;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -19,16 +27,17 @@ import com.bumptech.glide.Glide;
 import com.buxingzhe.lib.util.Log;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
-import com.buxingzhe.pedestrian.bean.activity.PublisherBean;
-import com.buxingzhe.pedestrian.bean.activity.WalkActivitiesInfo;
 import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.bean.walk.LatestActivityInfo;
 import com.buxingzhe.pedestrian.bean.walk.WalkWeatherInfo;
+import com.buxingzhe.pedestrian.common.Constant;
 import com.buxingzhe.pedestrian.community.community.CommActFragment;
 import com.buxingzhe.pedestrian.community.community.CommActInfoActivity;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
+import com.buxingzhe.pedestrian.service.StepService;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
+import com.buxingzhe.pedestrian.utils.StepCountModeDispatcher;
 import com.buxingzhe.pedestrian.widget.CalendarLayout;
 import com.buxingzhe.pedestrian.widget.MaterialSpinnerLayout;
 import com.google.gson.Gson;
@@ -59,7 +68,7 @@ import rx.Subscriber;
 /**
  * Created by quanjing on 2017/2/23.
  */
-public class WalkedFragment extends BaseFragment implements View.OnClickListener {
+public class WalkedFragment extends BaseFragment implements Handler.Callback, View.OnClickListener {
 
     @BindView(R.id.walk_data_day)
     TextView walkDataDay;
@@ -80,6 +89,8 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
     TextView walkActionContent;
     @BindView(R.id.actionLl)
     LinearLayout actionLl;
+    @BindView(R.id.stepCount)
+    TextView stepCount;
 
     private ImageView mTitleCalendarImageView;
     private TextView mCurrentSelectedDate;
@@ -106,6 +117,43 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
     WalkActivityInfo walkActivitityInfo = new WalkActivityInfo();
     private LatestActivityInfo info;
 
+
+    //计步
+    private Handler delayHandler;
+    //循环取当前时刻的步数中间的间隔时间
+    private long TIME_INTERVAL = 500;
+    private boolean isBind = false;
+    private Messenger messenger;
+    private Messenger mGetReplyMessenger = new Messenger(new Handler(this));
+
+    /**
+     * 从service服务中拿到步数
+     *
+     * @param msg
+     * @return
+     */
+    @Override
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case Constant.MSG_FROM_SERVER:
+                stepCount.setText(msg.getData().getInt("step")+"");
+                delayHandler.sendEmptyMessageDelayed(Constant.REQUEST_SERVER, TIME_INTERVAL);
+
+                break;
+            case Constant.REQUEST_SERVER:
+                try {
+                    Message msg1 = Message.obtain(null, Constant.MSG_FROM_CLIENT);
+                    msg1.replyTo = mGetReplyMessenger;
+                    messenger.send(msg1);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+
+                break;
+        }
+        return false;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -115,6 +163,62 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
         findId(view);
         return view;
     }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        delayHandler = new Handler(this);
+        checkSensor();
+    }
+
+    private void checkSensor() {
+        if (StepCountModeDispatcher.isSupportStepCountSensor(mContext)) {
+            Toast.makeText(mContext, "计步中", Toast.LENGTH_SHORT).show();
+            setupService();
+        } else {
+            Toast.makeText(mContext, "该设备不支持计步", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * 开启计步服务
+     */
+    private void setupService() {
+        Intent intent = new Intent(mContext, StepService.class);
+        isBind = mContext.bindService(intent, conn, Context.BIND_AUTO_CREATE);
+        mContext.startService(intent);
+    }
+
+
+    ServiceConnection conn = new ServiceConnection() {
+        /**
+         * 在建立起于Service的连接时会调用该方法，目前Android是通过IBind机制实现与服务的连接。
+         * @param name 实际所连接到的Service组件名称
+         * @param service 服务的通信信道的IBind，可以通过Service访问对应服务
+         */
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            try {
+                messenger = new Messenger(service);
+                Message msg = Message.obtain(null, Constant.MSG_FROM_CLIENT);
+                msg.replyTo = mGetReplyMessenger;
+                messenger.send(msg);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        /**
+         * 当与Service之间的连接丢失的时候会调用该方法，
+         * 这种情况经常发生在Service所在的进程崩溃或者被Kill的时候调用，
+         * 此方法不会移除与Service的连接，当服务重新启动的时候仍然会调用 onServiceConnected()。
+         * @param name 丢失连接的组件名称
+         */
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 
 
     @Override
@@ -180,7 +284,7 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
                 walkActivitityInfo = gson.fromJson(contentStr, WalkActivityInfo.class);*/
                 Gson gson2 = new Gson();
                 info = gson2.fromJson(jsonStr, LatestActivityInfo.class);
-                LatestActivityInfo.ContentBean content=info.getContent();
+                LatestActivityInfo.ContentBean content = info.getContent();
 
                 if (null != content) {
                     walkActionTitle.setText(content.getTitle());
@@ -194,7 +298,6 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
                             .into(walkActionPic);
                     walkActionContent.setText(content.getIntroduction());
                 }
-
 
 
             }
@@ -442,7 +545,7 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
     }
 
 
-    @OnClick({R.id.walk_data_day, R.id.walk_data_week, R.id.walk_data_month, R.id.walk_data_year,R.id.actionLl})
+    @OnClick({R.id.walk_data_day, R.id.walk_data_week, R.id.walk_data_month, R.id.walk_data_year, R.id.actionLl})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.walk_title_calendar://title calendar
@@ -477,7 +580,7 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
                 mLineChartView.refreshDrawableState();
                 break;
             case R.id.actionLl:
-                LatestActivityInfo.ContentBean content=info.getContent();
+                LatestActivityInfo.ContentBean content = info.getContent();
                 walkActivitityInfo.setId(content.getId());
                 walkActivitityInfo.setBanner(content.getBanner());
                 walkActivitityInfo.setIntroduction(content.getIntroduction());
@@ -493,12 +596,11 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
                 walkActivitityInfo.setPublisher(publisher);*/
                 Intent intent = new Intent();
                 intent.setClass(mContext, CommActInfoActivity.class);
-                intent.putExtra(CommActFragment.WALKACTIVITYINFO,walkActivitityInfo);
+                intent.putExtra(CommActFragment.WALKACTIVITYINFO, walkActivitityInfo);
                 EnterActUtils.startAct(getActivity(), intent);
                 break;
         }
     }
-
 
 
     private class MineLineChartOnValueSelectListener implements LineChartOnValueSelectListener {
@@ -528,6 +630,14 @@ public class WalkedFragment extends BaseFragment implements View.OnClickListener
             mCurrentSelectedDate.setText(mCalendarLayout.getCurrrentSelectedDate());
             String date = year + (String.valueOf(month).length() == 1 ? ("0" + String.valueOf(month)) : String.valueOf(month)) + (String.valueOf(day).length() == 1 ? ("0" + String.valueOf(day)) : String.valueOf(day));
             setWeatherData(false, date);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (isBind) {
+            mContext.unbindService(conn);
         }
     }
 }

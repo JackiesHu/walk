@@ -435,13 +435,21 @@ public class RunFragment extends MapFragment implements View.OnClickListener, Ch
 
         @Override
         public void onRightListener(View v) {
-            //TODO  完成 回到 Walk界面
+            //TODO  完成 回到 Walk界面.
+            System.out.println("点击title-完成");
+            setInitTitle();
+            isRunDone = false;
             mChronometer.stop();
             seconds = 0;
-            if (mOnInteractionData != null) {
+            mLLBottomAllView.setVisibility(View.GONE);
+            mLLBottomSmallView.setVisibility(View.GONE);
+            mIVLocation.setVisibility(View.GONE);
+            mLLBottomData.setVisibility(View.GONE);
+            mIVZoomZhankai.setVisibility(View.GONE);
+            mIVZoomSuoFang.setVisibility(View.GONE);
+            mIVRunStart.setVisibility(View.VISIBLE);
+            mTVRunStart.setVisibility(View.VISIBLE);
 
-                mOnInteractionData.onInteraction();
-            }
 
             //TODO 发送数据到服务端
             Map<String, String> paramsMap = new HashMap<String,String>();

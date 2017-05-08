@@ -89,10 +89,22 @@ public interface NetRequestService {
     @POST(NetRequestParams.WALK_MINE_RUN_TEAM)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getMineRunTeam(@FieldMap Map<String, String> runTeamMap);
 
+    //我的任务
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_MY_TASK)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getMyTask(@FieldMap Map<String, String> myTaskMap);
+
+
     //查询圈子
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_GET_WALK_RECORDS)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getWalkRecords(@Field("userId") String userId, @Field("pageNo") int pageNo, @Field("pageSize") int pageSize);
+
+    //我的步行，根据ID查找
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_GET_MY_WALK_RECORDS)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getMyWalkRecords(@Field("token") String token,@Field("userId") String userId, @Field("pageNo") int pageNo, @Field("pageSize") int pageSize);
+
 
     //活动查询
     @FormUrlEncoded

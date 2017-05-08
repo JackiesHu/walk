@@ -93,7 +93,13 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
             setTitle(walkActivityInfo.getTitle());
         }
         setRightIco(R.mipmap.ic_shequ_share);
+
     }
+    @Override
+    public void onRightListener(View v) {
+
+    }
+
 
     private void setListAdapter() {
         mAdapter = new CommActInfoAdapter(mActivity, this);

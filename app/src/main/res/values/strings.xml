@@ -75,4 +75,5 @@
     <string name="comment_streetStar">街道活力</string>
     <string name="comment_envirStar">环境舒适</string>
     <string name="comment_safeStar">步行安全</string>
+    <string name="title_activity_setting">SettingActivity</string>
 </resources>

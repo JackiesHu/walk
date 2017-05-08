@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
@@ -196,7 +197,7 @@ public class EditInfoActiviy extends BaseActivity implements View.OnClickListene
 
             @Override
             public void onError(Throwable e) {
-
+                Toast.makeText(EditInfoActiviy.this,e.toString(),Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -204,6 +205,7 @@ public class EditInfoActiviy extends BaseActivity implements View.OnClickListene
                 try {
                     JSONObject jsonObject = new JSONObject(str);
                     int code = (int) jsonObject.get("code");
+                    Toast.makeText(EditInfoActiviy.this,jsonObject.get("content")+"content",Toast.LENGTH_SHORT).show();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

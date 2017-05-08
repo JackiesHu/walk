@@ -2,6 +2,8 @@ package com.buxingzhe.pedestrian.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
@@ -19,6 +21,14 @@ public class BaseFragment extends Fragment implements TitleBarLinstener {
     protected Context mContext;
     protected Activity mActivity;
     protected TitleBarView vTitleBar;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mContext = getContext();
+        mActivity = getActivity();
+    }
+
     protected void setTitle(String title){
         if (vTitleBar != null){
             vTitleBar.setvTitle(title);
@@ -100,8 +110,7 @@ public class BaseFragment extends Fragment implements TitleBarLinstener {
 
     }
     private void initTitle(){
-        mContext = getContext();
-        mActivity = getActivity();
+
         if (vTitleBar != null){
             vTitleBar.hideStatusbar();
         }

@@ -3,7 +3,7 @@ apply plugin: 'com.jakewharton.butterknife'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '24.0.1'
+    buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "com.buxingzhe.pedestrian"
         minSdkVersion 16
@@ -13,16 +13,22 @@ android {
         multiDexEnabled true
     }
     //    配置keystore签名
-    /*signingConfigs {
+    signingConfigs {
         release {
-            storeFile file(KEYSTORE)
-            storePassword KEYPASSWORD
-            keyAlias KETALIAS
-            keyPassword KEYALIASPASSWORD
+            storeFile file("../app/WalkKeystore.jks")
+            storePassword "walk1234"
+            keyAlias "walk"
+            keyPassword "walk1234"
         }
-    }*/
+        debug {
+            /* storeFile file("../app/WalkKeystore.jks")
+            storePassword "walk1234"
+            keyAlias "walk"
+            keyPassword "walk1234"*/
+        }
+    }
     buildTypes {
-        debug{
+        debug {
             minifyEnabled false
             //signingConfig signingConfigs.release
         }
@@ -32,15 +38,14 @@ android {
             //signingConfig signingConfigs.release
         }
     }
-    lintOptions{
+    lintOptions {
         abortOnError false
     }
 }
 
 dependencies {
     //compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:design:24.2.1'
-    compile 'com.android.support:support-v13:24.2.1'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':imagepickerModule')
     compile project(':baidumapsapiasdemo')
     compile project(':calendar')
@@ -48,10 +53,13 @@ dependencies {
     compile project(':umengLib')
     // chart
     //    compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
+    compile project(':PullToRefreshListView')
+    compile 'com.android.support:design:24.2.1'
+    compile 'com.android.support:support-v13:24.2.1'
     compile 'com.github.lecho:hellocharts-android:v1.5.8'
     compile 'com.jakewharton:butterknife:8.5.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile 'cn.qqtheme.framework:WheelPicker:latest.release'
     compile 'com.alibaba:fastjson:1.2.31'
-    compile project(':PullToRefreshListView')
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha8'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }

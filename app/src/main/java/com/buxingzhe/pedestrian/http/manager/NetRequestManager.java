@@ -126,6 +126,14 @@ public class NetRequestManager{
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }
+    //我的任务
+    public Subscription getMyTask(Map<String,String> paramsMap, Subscriber subscriber){
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .getMyTask(paramsMap)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
 
     //获取用户信息
 //    public Subscription getUserInfo(String userId,String token,Subscriber subscriber){
@@ -144,6 +152,16 @@ public class NetRequestManager{
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }
+
+    //我的步行，根据用户Id查询步行记录
+    public Subscription getMyWalkRecords(String token,String userId,int pageNo,int pageSize,Subscriber subscriber){
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .getMyWalkRecords(token,userId,pageNo,pageSize)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
 
     //活动查询
     public Subscription getActivities(int pageNo,int pageSize,Subscriber subscriber){

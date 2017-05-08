@@ -1,6 +1,7 @@
 package com.buxingzhe.pedestrian.User;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -285,7 +286,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     private void login(Map<String, String> loginParams, final int loginType) {
         //TODO 访问服务端
 
-        AwesomeDialogUtil.getInstance().create(this, "正在登陆...").showDialog();
+        //show dialog
+      //  AwesomeDialogUtil.getInstance().create(LoginActivity.this, "正在登陆...").showDialog();
+
+        try{
+            AwesomeDialogUtil.getInstance().create(LoginActivity.this, "正在登陆...").showDialog();
+        }catch(Exception e){
+
+        }
+
 
         Subscriber mSubscriber = new Subscriber<String>() {
 
@@ -304,7 +313,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             @Override
             public void onNext(String jsonStr) {
                 Log.i(jsonStr);
-                AwesomeDialogUtil.getInstance().create(LoginActivity.this).dismissDialog();
+               // AwesomeDialogUtil.getInstance().create(LoginActivity.this).dismissDialog();
 
                 // 由于服务端的返回数据格式不固定，因此这里采用手动解析
                 Object[] datas = JsonParseUtil.getInstance().parseJson(jsonStr, UserLoginResultInfo.class);
@@ -410,6 +419,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     protected void onDestroy() {
         super.onDestroy();
         isShowPwd = false;
-
+        System.out.println("login--onDestroy");
     }
 }
