@@ -23,6 +23,15 @@ public class UserInfo {
     private String unionId;//qq唯一标识
     private String openid;
     private String token;//访问凭证
+    private String age;
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
+    }
 
     public UserInfo() {
     }
@@ -37,6 +46,7 @@ public class UserInfo {
         this.unionId = userLoginResultInfo.getUnionId();
         this.openid = userLoginResultInfo.getOpenid();
         this.token = userLoginResultInfo.getToken();
+        this.age = userLoginResultInfo.getAge();
     }
 
     /**
@@ -57,6 +67,7 @@ public class UserInfo {
                 .putString("weight",userInfo.getWeight())
                 .putString("unionId",userInfo.getUnionId())
                 .putString("openid",userInfo.getOpenid())
+                .putString("age",userInfo.getAge())
                 .commit();
     }
 
@@ -81,6 +92,7 @@ public class UserInfo {
         userInfo.setWeight(preferences.getString("weight",""));
         userInfo.setUnionId(preferences.getString ("unionId",""));
         userInfo.setOpenid(preferences.getString("openid",""));
+        userInfo.setAge(preferences.getString("age",""));
         return userInfo;
     }
 

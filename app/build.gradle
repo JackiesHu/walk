@@ -21,10 +21,10 @@ android {
             keyPassword "walk1234"
         }
         debug {
-            /* storeFile file("../app/WalkKeystore.jks")
+             storeFile file("../app/WalkKeystore.jks")
             storePassword "walk1234"
             keyAlias "walk"
-            keyPassword "walk1234"*/
+            keyPassword "walk1234"
         }
     }
     buildTypes {

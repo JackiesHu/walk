@@ -33,7 +33,7 @@
                 android:background="@drawable/bg_avatar"
                 android:gravity="center">
 
-                <ImageView
+                <com.buxingzhe.pedestrian.widget.CircularImageView
                     android:id="@+id/user_iv_avatar"
                     android:layout_width="67dp"
                     android:layout_height="67dp"

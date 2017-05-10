@@ -30,13 +30,11 @@ import com.buxingzhe.pedestrian.widget.TitleBarView;
 import com.pizidea.imagepicker.AndroidImagePicker;
 import com.pizidea.imagepicker.activity.ImagesGridActivity;
 import com.pizidea.imagepicker.bean.ImageItem;
-import com.umeng.socialize.media.UMediaObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,6 +43,7 @@ import java.util.Map;
 
 import cn.qqtheme.framework.picker.DatePicker;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Subscriber;
 
@@ -124,24 +123,30 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
             Date startDate = sdf.parse(startTime);
             Date endDate = sdf.parse(endTime);
             startTimestamp = startDate.getTime();
+            startTimestamp=startTimestamp/1000;
             endTimestamp = endDate.getTime();
+            endTimestamp=endTimestamp/1000;
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
         Map<String, RequestBody> paramsMap = new HashMap<>();
-        paramsMap.put("userId", RequestBody.create(MediaType.parse("application/json"),GlobalParams.USER_ID));
-        paramsMap.put("token", RequestBody.create(MediaType.parse("application/json"),GlobalParams.TOKEN));
-        paramsMap.put("title", RequestBody.create(MediaType.parse("application/json"),title));
-        paramsMap.put("startTimestamp", RequestBody.create(MediaType.parse("application/json"),startTimestamp.toString()));
-        paramsMap.put("endTimestamp", RequestBody.create(MediaType.parse("application/json"),endTimestamp.toString()));
-        paramsMap.put("introduction", RequestBody.create(MediaType.parse("application/json"),introduction));
-        paramsMap.put("publisher", RequestBody.create(MediaType.parse("application/json"),GlobalParams.USER_ID));
+        paramsMap.put("userId", RequestBody.create(MediaType.parse("multipart/form-data"), GlobalParams.USER_ID));
+        paramsMap.put("token", RequestBody.create(MediaType.parse("multipart/form-data"), GlobalParams.TOKEN));
+
+        paramsMap.put("title", RequestBody.create(MediaType.parse("multipart/form-data"), title));
+        paramsMap.put("startTimestamp", RequestBody.create(MediaType.parse("multipart/form-data"), startTimestamp.toString()));
+        paramsMap.put("endTimestamp", RequestBody.create(MediaType.parse("multipart/form-data"), endTimestamp.toString()));
+        paramsMap.put("introduction", RequestBody.create(MediaType.parse("multipart/form-data"), introduction));
+        paramsMap.put("publisher", RequestBody.create(MediaType.parse("multipart/form-data"), GlobalParams.USER_ID));
+
+
 //        initTask(paramsMap);
         test(paramsMap);
     }
 
     private void test(Map<String, RequestBody> paramsMap) {
+
 
         Subscriber mSubscriber = new Subscriber<String>(){
 
@@ -152,24 +157,37 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
 
             @Override
             public void onError(Throwable e) {
-
             }
 
             @Override
             public void onNext(final String jsonStr) {
+                System.out.println("eePublish--jsonStr--" + jsonStr.toString());
                 // 由于服务端的返回数据格式不固定，因此这里采用手动解析
                 RequestResultInfo resultInfo = JSON.parseObject(jsonStr, RequestResultInfo.class);
+
                 if ("0".equals(resultInfo.getCode())) {
-                    Toast.makeText(mContext,"评价成功",Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, "发布成功", Toast.LENGTH_LONG).show();
                     finish();
                 }
 
             }
         };
-//        List<RequestBody> pic = new ArrayList<>();
-//        RequestBody image = );
-//        pic.add(image);
-        NetRequestManager.getInstance().publishAct(paramsMap,RequestBody.create(MediaType.parse("application/octet-stream"), new File(localUrl)),mSubscriber);
+
+        MultipartBody.Part filePart;
+
+        if (localUrl != null) {
+            File uploadFile = new File(localUrl);
+            RequestBody requestFile =
+                    RequestBody.create(MediaType.parse("multipart/form-data"), uploadFile);
+
+            filePart = MultipartBody.Part.createFormData("bannerUrl", uploadFile.getName(), requestFile);
+
+        } else {
+            filePart = null;
+        }
+
+        NetRequestManager.getInstance().publishAct(paramsMap, filePart, mSubscriber);// RequestBody.create(null, title)
+
     }
 
     private boolean checkEmpty(String title, String startTime, String endTime, String introduction) {

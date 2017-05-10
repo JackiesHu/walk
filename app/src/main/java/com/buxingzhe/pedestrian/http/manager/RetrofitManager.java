@@ -91,6 +91,7 @@ public class RetrofitManager {
             Request request = chain.request();
             if (!NetUtil.isNetWorkConnectted(PDConfig.getInstance().getContext())){
                 request = request.newBuilder()
+                        // .addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
                         .cacheControl(CacheControl.FORCE_CACHE)
                         .build();
                 Log.d("no network");

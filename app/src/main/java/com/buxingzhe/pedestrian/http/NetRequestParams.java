@@ -17,7 +17,7 @@ public class NetRequestParams {
     /** 用户登陆 */
     public static final String WALK_USER_LOGIN = "walkman/wmUser/login";
     /** 修改用户信息 */
-    public static final String WALK_USER_MODIFY_USER_INFO = "walkman/wmUser/modifyUserInformationAndAvatar";
+    public static final String WALK_USER_MODIFY_USER_INFO = "walkman/wmUser/modifyUserInformationAndAvatarAndroid";
     /** 增加用户步票 */
     public static final String WALK_USER_ADD_WALK_NUM = "walkman/wmUser/addWalkMoneyAmount";
     /** 获取用户信息 */
@@ -30,7 +30,7 @@ public class NetRequestParams {
 
     //*************************** Walk ****************************
     /** 上传步行或者骑行记录 */
-    public static final String WALK_UPLOAD_WALK = "walkman/wmWalkRecord/addWalkRecord";
+    public static final String WALK_UPLOAD_WALK = "walkman/wmWalkRecord/addWalkRecordAndroid";
     /** 获取步行或者骑行记录*/
     public static final String WALK_GET_WALK_RECORD = "walkman/wmWalkRecord/getWalkRecord";
 
@@ -63,7 +63,7 @@ public class NetRequestParams {
     /** 评论步行或骑行记录*/
     public static final String WALK_COMMENT_RECORD = "walkman/wmWalkRecordComment/walkRecordComment";
     /** 发布活动*/
-    public static final String PUBLISHACTIVITY = "walkman/wmActivity/publishActivity";
+    public static final String PUBLISHACTIVITY = "walkman/wmActivity/publishActivityAndroid";
 
 
     //*************************** found ****************************
@@ -83,5 +83,9 @@ public class NetRequestParams {
     public static final String WALK_RECORD_BY_TAG = "walkman/wmWalkRecord/getWalkRecordsByTag";
     /** 根据标题查询步行记录*/
     public static final String WALK_RECORD_BY_TITLE = "walkman/wmWalkRecord/getWalkRecordsByTitle";
+    /**
+     * 根据时间段获取步行记录
+     **/
+    public static final String WALK_RECORD_BY_DAY = "walkman/wmWalkRecord/getDayWalkRecord";
 
 }

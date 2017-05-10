@@ -1,5 +1,6 @@
 package com.buxingzhe.pedestrian.community.community;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -36,6 +37,15 @@ import com.buxingzhe.pedestrian.widget.TitleBarView;
 import com.google.gson.Gson;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.umeng.socialize.ShareAction;
+import com.umeng.socialize.ShareContent;
+import com.umeng.socialize.UMShareAPI;
+import com.umeng.socialize.UMShareListener;
+import com.umeng.socialize.bean.SHARE_MEDIA;
+import com.umeng.socialize.media.UMImage;
+import com.umeng.socialize.media.UMWeb;
+import com.umeng.socialize.shareboard.SnsPlatform;
+import com.umeng.socialize.utils.ShareBoardlistener;
 
 import rx.Subscriber;
 
@@ -95,10 +105,59 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
         setRightIco(R.mipmap.ic_shequ_share);
 
     }
+
     @Override
-    public void onRightListener(View v) {
+    public void onRightImageListener(View v) {
+        System.out.println("Share--");
+
+        UMImage thumb =  new UMImage(this, R.mipmap.ic_launcher);
+        UMWeb web = new UMWeb("http://www.bxzlm.com/?from=singlemessage&isappinstalled=1");
+        web.setTitle(walkActivityInfo.getTitle());//标题
+        web.setThumb(thumb);  //缩略图
+        final ShareContent sharecontent= new ShareContent();
+        sharecontent.mText = walkActivityInfo.getIntroduction();
+        sharecontent.mMedia = web;
+        new ShareAction(CommActInfoActivity.this).withText("hello")
+                .setDisplayList(SHARE_MEDIA.WEIXIN_CIRCLE,SHARE_MEDIA.WEIXIN)
+
+                .setShareboardclickCallback(new ShareBoardlistener() {
+                    @Override
+                    public void onclick(SnsPlatform snsPlatform, SHARE_MEDIA share_media) {
+                        new ShareAction(CommActInfoActivity.this).setPlatform(share_media).setCallback(umShareListener)
+
+                                .setShareContent(sharecontent)
+                                .share();
+                    }
+                })
+                .open();
 
     }
+
+    private UMShareListener umShareListener = new UMShareListener() {
+        @Override
+        public void onStart(SHARE_MEDIA platform) {
+            //分享开始的回调
+        }
+        @Override
+        public void onResult(SHARE_MEDIA platform) {
+
+            Toast.makeText(CommActInfoActivity.this, platform + " 分享成功啦", Toast.LENGTH_SHORT).show();
+
+        }
+
+        @Override
+        public void onError(SHARE_MEDIA platform, Throwable t) {
+            Toast.makeText(CommActInfoActivity.this,platform + " 分享失败啦", Toast.LENGTH_SHORT).show();
+            if(t!=null){
+                System.out.println("share--"+t.toString());
+            }
+        }
+
+        @Override
+        public void onCancel(SHARE_MEDIA platform) {
+            Toast.makeText(CommActInfoActivity.this,platform + " 分享取消了", Toast.LENGTH_SHORT).show();
+        }
+    };
 
 
     private void setListAdapter() {
@@ -284,6 +343,13 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
 ////                }
 //            }
 //        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        UMShareAPI.get(this).onActivityResult(requestCode, resultCode, data);
+
     }
 
 

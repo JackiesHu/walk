@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -79,6 +80,7 @@ public class MyTaskActivity extends BaseActivity {
                     if (walkActivitiesInfo != null && walkActivitiesInfo.getList() != null) {
                         mAdapter.setWalkActivityInfos(mPage,walkActivitiesInfo.getList());
                         mPage++;
+
                     }
                 } else {
                     Toast.makeText(mContext, datas[2].toString(), Toast.LENGTH_SHORT).show();

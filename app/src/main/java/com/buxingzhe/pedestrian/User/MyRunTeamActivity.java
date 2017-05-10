@@ -1,6 +1,5 @@
 package com.buxingzhe.pedestrian.User;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -13,13 +12,10 @@ import android.widget.Toast;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.bean.activity.WalkActivitiesInfo;
-import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.community.community.CommActAdapter;
-import com.buxingzhe.pedestrian.community.community.CommActInfoActivity;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.listen.SwpipeListViewOnScrollListener;
-import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
 import com.google.gson.Gson;
@@ -34,7 +30,6 @@ import butterknife.ButterKnife;
 import rx.Subscriber;
 
 public class MyRunTeamActivity extends BaseActivity {
-    public final static String WALKACTIVITYINFO = "WALKACTIVITYINFO";
     @BindView(R.id.mListViewR)
     PullToRefreshListView mListViewR;
     @BindView(R.id.swipeLayoutR)
@@ -83,6 +78,7 @@ public class MyRunTeamActivity extends BaseActivity {
                     if (walkActivitiesInfo != null && walkActivitiesInfo.getList() != null) {
                         mAdapter.setWalkActivityInfos(mPage,walkActivitiesInfo.getList());
                         mPage++;
+
                     }
                 } else {
                     Toast.makeText(mContext, datas[2].toString(), Toast.LENGTH_SHORT).show();

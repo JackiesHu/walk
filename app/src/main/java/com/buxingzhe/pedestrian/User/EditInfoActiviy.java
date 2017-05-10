@@ -102,7 +102,7 @@ public class EditInfoActiviy extends BaseActivity implements View.OnClickListene
                 maxLength = 3;
                 inputType = InputType.TYPE_CLASS_NUMBER;
                 tv_editInfo_unit.setText("岁");
-                et_editInfo_content.setText(SystemUtils.getAge(new Date(user.getCreateTimestamp()) ));
+                et_editInfo_content.setText(user.getAge());
                 break;
             case R.id.ll_userHeight:
 
@@ -122,24 +122,7 @@ public class EditInfoActiviy extends BaseActivity implements View.OnClickListene
                 tv_editInfo_unit.setText("kg");
                 et_editInfo_content.setText(user.getWeight());
                 break;
-          /*  case R.id.lv_personal:  // 验证邀请码
 
-                title = "验证邀请";
-                digits = "0123456789";
-                maxLength = 6;
-                inputType = InputType.TYPE_CLASS_NUMBER;
-                tv_editInfo_unit.setVisibility(View.GONE);
-                et_editInfo_content.setHint("请输入验证码");
-                break;
-            case R.id.tv_add:  // 跑团加入验证邀
-
-                title = "验证信息";
-                digits = "";
-                minlines = 6;
-                setRightTitle("发送");
-                tv_editInfo_unit.setVisibility(View.GONE);
-                et_editInfo_content.setHint("对方需要填写验证信息");
-                break;*/
         }
         setTitle(title);
         // 移动光标
@@ -157,73 +140,50 @@ public class EditInfoActiviy extends BaseActivity implements View.OnClickListene
     @Override
     public void onRightListener(View v) {
         super.onRightListener(v);
-        String content = et_editInfo_content.getText().toString().trim();
-        if (content.length() < 1) {
-            ProgressUtils.showDialog(this, "请输入信息！", 2);
-            return;
-        }
-        Map<String, String> params = new HashMap<>();
-        switch (getIntent().getIntExtra(IntentKey.EDIT_TAG, R.id.ll_userName)) {
-            case R.id.ll_userName:
-                user.setNickName(content);
-                params.put("nickName ", content);
-                break;
-            case R.id.ll_userSex:
-                user.setGender(sex);
-                params.put("gender ", sex);
-                break;
-            case R.id.ll_userAge:
+        if(findViewById(R.id.ll_edit_sex).getVisibility()==View.GONE){
+            String content = et_editInfo_content.getText().toString().trim();
+            if (content.length() < 1) {
+                ProgressUtils.showDialog(this, "请输入信息！", 2);
+                return;
+            }
+            switch (getIntent().getIntExtra(IntentKey.EDIT_TAG, R.id.ll_userName)) {
+                case R.id.ll_userName:
+                    user.setNickName(content);
+                    break;
+                case R.id.ll_userAge:
+                    user.setAge(content);
+                    break;
+                case R.id.ll_userHeight:
+                    user.setHeight(content);
+                    break;
+                case R.id.ll_userWeight:
+                    user.setWeight(content);
 
-                break;
-            case R.id.ll_userHeight:
-                user.setHeight(content);
-                params.put("height ", user.getHeight());
-                break;
-            case R.id.ll_userWeight:
+                    break;
+            }
 
-                user.setWeight(content);
-                params.put("field", "weight");
-                params.put("value", user.getWeight());
-                break;
+        }else{
+            user.setGender(sex);
         }
         user.saveUserInfo(this,user);
-        params.put("userId", GlobalParams.USER_ID );
-        params.put("userId", GlobalParams.TOKEN);
-        NetRequestManager.getInstance().modifyUserInfo(params, new Subscriber<String>() {
-            @Override
-            public void onCompleted() {
+        System.out.println("Edit-sex-"+user.getGender());
+        finish();
 
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Toast.makeText(EditInfoActiviy.this,e.toString(),Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNext(String str) {
-                try {
-                    JSONObject jsonObject = new JSONObject(str);
-                    int code = (int) jsonObject.get("code");
-                    Toast.makeText(EditInfoActiviy.this,jsonObject.get("content")+"content",Toast.LENGTH_SHORT).show();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                finish();
-            }
-        });
     }
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.ll_edit_sex_m) {
             rbtn_editSex_m.setChecked(true);
             rbtn_editSex_f.setChecked(false);
-            sex = "1";
+            sex = "0";
+            user.setGender(sex);
+            System.out.println("Edit--click---sex-"+user.getGender());
         } else if (view.getId() == R.id.ll_edit_sex_f) {
-
             rbtn_editSex_m.setChecked(false);
             rbtn_editSex_f.setChecked(true);
-            sex = "2";
+            sex = "1";
+            user.setGender(sex);
+            System.out.println("Edit--click---sex-"+user.getGender());
         }
     }
 }

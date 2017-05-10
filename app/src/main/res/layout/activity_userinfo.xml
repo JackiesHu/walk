@@ -167,7 +167,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="12dp"
-        android:visibility="gone"
+        android:visibility="visible"
         >
 
         <TextView
@@ -293,6 +293,7 @@
     </LinearLayout>
 
     <View style="@style/view_line_horizontal" />
+
 
 
 </LinearLayout>

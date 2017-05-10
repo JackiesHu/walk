@@ -2,22 +2,18 @@ package com.buxingzhe.pedestrian.http.apiservice;
 
 import com.buxingzhe.pedestrian.http.NetRequestParams;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.GET;
-import retrofit2.http.HeaderMap;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.PartMap;
-import retrofit2.http.QueryMap;
 import rx.Observable;
 
 /**
@@ -38,11 +34,8 @@ public interface NetRequestService {
     //修改用户信息
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_USER_MODIFY_USER_INFO)
-    Observable</* RequestResultInfo<UserModifyInfo> */ String> modifyUserInfo(@FieldMap Map<String, String> modifyInfoMap);
-    //修改用户信息
-    @FormUrlEncoded
-    @POST(NetRequestParams.WALK_USER_MODIFY_USER_INFO)
     Observable</* RequestResultInfo<UserModifyInfo> */ String> modifyUserInfo2(@FieldMap Map<String, String> modifyInfoMap);
+
     //增加用户步票，（社交网络分享步行记录后调用）
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_USER_ADD_WALK_NUM)
@@ -103,7 +96,7 @@ public interface NetRequestService {
     //我的步行，根据ID查找
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_GET_MY_WALK_RECORDS)
-    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getMyWalkRecords(@Field("token") String token,@Field("userId") String userId, @Field("pageNo") int pageNo, @Field("pageSize") int pageSize);
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> getMyWalkRecords(@Field("token") String token, @Field("userId") String userId, @Field("pageNo") int pageNo, @Field("pageSize") int pageSize);
 
 
     //活动查询
@@ -152,7 +145,7 @@ public interface NetRequestService {
 
     @POST(NetRequestParams.FOUND_COMMENT)
     @Multipart
-    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> foundComment(@PartMap Map<String, Object> paramsMap,@Part("viewUrls")List<String> file);
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> foundComment(@PartMap Map<String, Object> paramsMap, @Part("viewUrls") List<String> file);
 
     @FormUrlEncoded
     @POST(NetRequestParams.QUERY_TAG)
@@ -166,7 +159,21 @@ public interface NetRequestService {
     @POST(NetRequestParams.WALK_RECORD_BY_TITLE)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String> queryWalkRecordByTitle(@FieldMap Map<String, String> paramsMap);
 
+
+    //根据时间段获取步行记录
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_RECORD_BY_DAY)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> queryWalkRecordByDay(@FieldMap Map<String, String> paramsMap);
+
+
     @Multipart
     @POST(NetRequestParams.PUBLISHACTIVITY)
-    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> publishAct(@PartMap Map<String, RequestBody> paramsMap, @Part("bannerurl") RequestBody files);
+
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> publishAct(@PartMap Map<String, RequestBody> paramsMap,@Part MultipartBody.Part files);
+
+    //修改用户信息
+    @Multipart
+    @POST(NetRequestParams.WALK_USER_MODIFY_USER_INFO)
+    Observable</* RequestResultInfo<UserModifyInfo> */ String> modifyUserInfo(@PartMap Map<String, RequestBody> paramsMap, @Part MultipartBody.Part photo);
+
 }

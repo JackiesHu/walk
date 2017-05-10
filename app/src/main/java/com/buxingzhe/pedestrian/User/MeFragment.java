@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.buxingzhe.lib.util.Log;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
@@ -23,6 +24,7 @@ import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
+import com.buxingzhe.pedestrian.widget.CircularImageView;
 import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
@@ -36,7 +38,7 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
     /**
      * 用户头像
      */
-    private ImageView mUserAvatar;
+    private CircularImageView mUserAvatar;
     /**
      * 用户名称
      */
@@ -93,7 +95,7 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
     private void findId(View view) {
 
 
-        mUserAvatar = (ImageView) view.findViewById(R.id.user_iv_avatar);
+        mUserAvatar = (CircularImageView) view.findViewById(R.id.user_iv_avatar);
         mUserName = (TextView) view.findViewById(R.id.user_tv_username);
         mUserGender = (TextView) view.findViewById(R.id.user_tv_gender);
         mUserHeight = (TextView) view.findViewById(R.id.user_tv_height);
@@ -145,13 +147,24 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
                     if (resultInfo != null) {
                         String userAvatar = (!TextUtils.isEmpty(userInfo.getAvatar())) ? userInfo.getAvatar() : "";
                         if (!TextUtils.isEmpty(userAvatar)) {
-                            Picasso.with(getActivity()).load(userAvatar).resize(SystemUtils.dip2px(getActivity(),67.0f),SystemUtils.dip2px(getActivity(),67.0f)).centerCrop().into(mUserAvatar);
+
+                            Glide
+                                    .with(getActivity())
+                                    .load(userAvatar)
+                                    .override(SystemUtils.dip2px(getActivity(), 67.0f), SystemUtils.dip2px(getActivity(), 67.0f))
+                                    .centerCrop()
+                                    .into(mUserAvatar);
                         }
 
                         mUserName.setText(userInfo.getNickName());
-                        mUserGender.setText(userInfo.getGender());
-                        mUserHeight.setText(userInfo.getHeight());
-                        mUserWeight.setText(userInfo.getWeight());
+                        if(userInfo.getGender().equals("1")){
+                            mUserGender.setText("女");
+                        }else{
+                            mUserGender.setText("男");
+                        }
+
+                        mUserHeight.setText(userInfo.getHeight()+"cm");
+                        mUserWeight.setText(userInfo.getWeight()+"kg");
                         mUserStepTicket.setText(resultInfo.getWalkMoney());
                         mUserPoints.setText(resultInfo.getScore());
                     }

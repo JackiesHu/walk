@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Field;
@@ -47,13 +48,14 @@ public class NetRequestManager{
     }
 
     //修改用户信息
-    public Subscription modifyUserInfo(Map<String, String> paramsMap, Subscriber subscriber) {
+    /*public Subscription modifyUserInfo(Map<String, String> paramsMap, Subscriber subscriber) {
         return RetrofitManager.getInstance()
                 .getNetRequestService()
                 .modifyUserInfo(paramsMap)
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
-    }
+    }*/
+
 
     //查询用户信息
     public Subscription getUserInfo(String userId, String token, Subscriber subscriber){
@@ -245,10 +247,19 @@ public class NetRequestManager{
     }
 
     //发布活动
-    public Subscription publishAct(Map<String, RequestBody> paramsMap, RequestBody file, Subscriber subscriber) {
+    public Subscription publishAct(Map<String, RequestBody> paramsMap, MultipartBody.Part file, Subscriber subscriber) {
         return RetrofitManager.getInstance()
                 .getNetRequestService()
                 .publishAct(paramsMap,file)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
+
+    public Subscription modifyUserInfo(Map<String, RequestBody> paramsMap, MultipartBody.Part photo,Subscriber subscriber) {
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .modifyUserInfo(paramsMap,photo)
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }
@@ -276,6 +287,14 @@ public class NetRequestManager{
         return RetrofitManager.getInstance()
                 .getNetRequestService()
                 .queryWalkRecordByTitle(paramsMap)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+    //根据标题查询步行记录
+    public Subscription queryWalkRecordByDay(Map<String, String> paramsMap, Subscriber subscriber) {
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .queryWalkRecordByDay(paramsMap)
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }

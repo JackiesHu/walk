@@ -31,6 +31,7 @@ import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.bean.walk.LatestActivityInfo;
 import com.buxingzhe.pedestrian.bean.walk.WalkWeatherInfo;
 import com.buxingzhe.pedestrian.common.Constant;
+import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.community.community.CommActFragment;
 import com.buxingzhe.pedestrian.community.community.CommActInfoActivity;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
@@ -44,9 +45,14 @@ import com.google.gson.Gson;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.jeek.calendar.widget.calendar.OnCalendarClickListener;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,6 +68,8 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import rx.Subscriber;
 
 
@@ -407,6 +415,7 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
      */
     private void setChartData() {
 
+        getMonthData();
         String[] XData = {"2017年3月", "2月", "1月", "2016年12月", "11月", "10月", "9月", "8月", "7月", "6月", "5月"};
         int[] YData = {1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000,};
 //        String[] YData = {"5000","10000","15000","20000"};
@@ -537,6 +546,51 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
         //8.如何设置以Y轴最小值0开始 显示折线？
 
 
+    }
+
+    private void getMonthData() {
+
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date mBefore;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DAY_OF_MONTH,-30);//往上推一天  30推三十天  365推一年
+        mBefore = calendar.getTime();
+        sdf.format(mBefore);
+
+        //Date或者String转化为时间戳
+        String time="1970-01-06 11:45:55";
+        Date date = null;
+        try {
+            date = sdf.parse(time);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Map<String, String> params = new HashMap<>();
+        params.put("beginDate", date.toString());
+        params.put("userId", GlobalParams.USER_ID);
+        params.put("token",  GlobalParams.TOKEN);
+        mSubscription = NetRequestManager.getInstance().queryWalkRecordByDay(params, new Subscriber<String>() {
+            @Override
+            public void onCompleted() {
+                Log.i("onCompleted");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.i(e.getMessage());
+            }
+
+            @Override
+            public void onNext(String jsonStr) {
+                Log.i("walk--jsonStr" + jsonStr);
+
+
+            }
+
+        });
     }
 
     @Override
