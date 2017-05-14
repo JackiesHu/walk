@@ -114,7 +114,7 @@ public class CommunityFragment extends BaseFragment implements View.OnClickListe
     }
 
     private void setViewPager(){
-        FragmentPagerAdapter adapter = new FragmentPagerAdapter(getFragmentManager());
+        FragmentPagerAdapter adapter = new FragmentPagerAdapter(getChildFragmentManager());
         CommActFragment commActFragment = new CommActFragment();
         fragments.add(commActFragment);
         CommCircleFragment commCircle = new CommCircleFragment();

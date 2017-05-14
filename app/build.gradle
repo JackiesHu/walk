@@ -21,7 +21,7 @@ android {
             keyPassword "walk1234"
         }
         debug {
-             storeFile file("../app/WalkKeystore.jks")
+            storeFile file("../app/WalkKeystore.jks")
             storePassword "walk1234"
             keyAlias "walk"
             keyPassword "walk1234"
@@ -30,22 +30,28 @@ android {
     buildTypes {
         debug {
             minifyEnabled false
-            //signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            //signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
         }
     }
     lintOptions {
         abortOnError false
     }
+
+    sourceSets {
+        main {
+            jniLibs.srcDir 'libs'
+        }
+    }
 }
 
 dependencies {
     //compile 'com.android.support:appcompat-v7:24.2.1'
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':imagepickerModule')
     compile project(':baidumapsapiasdemo')
     compile project(':calendar')
@@ -54,6 +60,9 @@ dependencies {
     // chart
     //    compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
     compile project(':PullToRefreshListView')
+    compile files('libs/BaiduTraceSDK_v3_0_1.jar')
+    compile files('libs/bos-android-sdk-1.0.2.jar')
+   // compile files('libs/locSDK_6.13.jar')
     compile 'com.android.support:design:24.2.1'
     compile 'com.android.support:support-v13:24.2.1'
     compile 'com.github.lecho:hellocharts-android:v1.5.8'
@@ -61,5 +70,6 @@ dependencies {
     compile 'cn.qqtheme.framework:WheelPicker:latest.release'
     compile 'com.alibaba:fastjson:1.2.31'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha8'
+    compile 'com.android.support:support-v4:24.2.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }

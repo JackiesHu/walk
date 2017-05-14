@@ -54,7 +54,8 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="15dp"
-                        android:src="@mipmap/ic_jibu_dingwei_nor"/>
+                        android:src="@mipmap/ic_jibu_dingwei_nor"
+                        android:visibility="gone"/>
 
                     <ImageView
                         android:id="@+id/run_iv_start"
@@ -79,7 +80,8 @@
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="15dp"
-                        android:src="@mipmap/ic_jibu_map_zhankai"/>
+                        android:src="@mipmap/ic_jibu_map_zhankai"
+                        android:visibility="gone"/>
 
                     <ImageView
                         android:id="@+id/run_iv_zoom_suofang"
@@ -311,7 +313,7 @@
                         android:id="@+id/run_tv_distance_small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text=""
+                        android:text="11111"
                         android:textColor="#00AE66"
                         android:textSize="27sp"
                         android:textStyle="bold"/>
@@ -347,9 +349,22 @@
         </LinearLayout>
 
         <!-- Data View -->
-        <include
-            layout="@layout/fragment_run_done_data"
-            android:visibility="gone"/>
+        <ScrollView
+            android:id="@+id/run_done_data"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:visibility="gone">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <include
+                    layout="@layout/fragment_run_done_data"
+                    android:visibility="gone"/>
+                <include
+                    layout="@layout/fragment_run_done_pic"
+                    android:visibility="gone"/>
+            </LinearLayout>
+        </ScrollView>
 
 
     </LinearLayout>

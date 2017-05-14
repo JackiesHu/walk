@@ -166,7 +166,7 @@ public class CommActAdapter extends BaseAdapter {
 
     private void enterCommActInfoActivity(WalkActivityInfo walkActivityInfo) {
         Intent intent = new Intent();
-        intent.setClass(mContext, CommActInfoActivity.class);
+        intent.setClass(mActivity, CommActInfoActivity.class);
         intent.putExtra(CommActFragment.WALKACTIVITYINFO,walkActivityInfo);
         EnterActUtils.startAct(mActivity, intent);
     }

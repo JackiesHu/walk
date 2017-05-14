@@ -76,4 +76,12 @@
     <string name="comment_envirStar">环境舒适</string>
     <string name="comment_safeStar">步行安全</string>
     <string name="title_activity_setting">SettingActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <!--百度地图-->
+    <string name="font_type">微软雅黑</string>
+    <string name="no_track_data">未查询到轨迹</string>
 </resources>

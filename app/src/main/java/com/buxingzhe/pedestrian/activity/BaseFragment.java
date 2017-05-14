@@ -20,7 +20,10 @@ public class BaseFragment extends Fragment implements TitleBarLinstener {
 
     protected Context mContext;
     protected Activity mActivity;
+    protected Activity sActivity;
     protected TitleBarView vTitleBar;
+
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,6 +31,7 @@ public class BaseFragment extends Fragment implements TitleBarLinstener {
         mContext = getContext();
         mActivity = getActivity();
     }
+
 
     protected void setTitle(String title){
         if (vTitleBar != null){
@@ -41,6 +45,13 @@ public class BaseFragment extends Fragment implements TitleBarLinstener {
         if (vTitleBar != null){
             vTitleBar.setRight(titleRight);
             initTitle();
+        }
+    }
+    protected String getTitleRight(){
+        if (vTitleBar != null){
+            return vTitleBar.getRightTitle();
+        }else{
+            return "0";
         }
     }
     protected void setTitleLeft(String titleLeft){

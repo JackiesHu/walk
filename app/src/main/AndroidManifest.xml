@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.buxingzhe.pedestrian">
 
+    <!-- 用于Android M及以上系统，申请加入忽略电池优化白名单-->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"></uses-permission>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
@@ -91,9 +93,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- 百度地图 -->
-        <meta-data
+      <!--  <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="Okn98kzR3SR85ZOWW2OQbOwtugPiExcP" />
+            android:value="Okn98kzR3SR85ZOWW2OQbOwtugPiExcP" />-->
       <!--  nhyHUpEKigoFE7T5a1VYwifg2g8PEPPf-->
 
         <!-- 测试 -->
@@ -245,6 +247,16 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <!--baidu-->
+        <service
+            android:name="com.baidu.trace.LBSTraceService"
+            android:enabled="true"
+            android:process=":remote">
+        </service>
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="xeIomh5jkgzIQPOxpp1USqHElTARQ2Hd" />
     </application>
 
 </manifest>

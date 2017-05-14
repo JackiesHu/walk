@@ -14,6 +14,34 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical">
+
+        <View
+            android:layout_width="3dp"
+            android:layout_height="14dp"
+            android:background="#00AE66"></View>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="标题"
+            android:textColor="#232323"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/run_ll_bottom_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="请输入标题"
+        android:textColor="#BBBBBB"
+        android:textSize="14sp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="22dp"
         android:background="#F2FFFFFF"
         android:orientation="vertical">
@@ -40,10 +68,119 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/run_ll_bottom_pick_pic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@mipmap/ic_addpicture"/>
+        <com.buxingzhe.pedestrian.widget.FullGridView
+            android:id="@+id/bottom_gv_pic"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:numColumns="3" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp">
 
+            <ImageView
+                android:id="@+id/line1"
+                android:layout_width="5dp"
+                android:layout_height="15dp"
+                android:src="@drawable/munu_rectangle"
+                android:layout_centerVertical="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/line1"
+                android:layout_marginLeft="2dp"
+                android:layout_centerVertical="true"
+                android:textSize="15sp"
+                android:textColor="@color/tab_layout_standard"
+                android:text="@string/comment_score" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/comment_streetStar"
+                android:textColor="@color/outdate_font"
+                android:textSize="14sp" />
+
+            <com.buxingzhe.pedestrian.widget.MWTStarBar
+                android:id="@+id/run_bottom_walked_stress_star"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:gravity="center_vertical" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/comment_envirStar"
+                android:textColor="@color/outdate_font"
+                android:textSize="14sp" />
+
+            <com.buxingzhe.pedestrian.widget.MWTStarBar
+                android:id="@+id/run_bottom_walked_environment_star"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:gravity="center_vertical" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/comment_safeStar"
+                android:textColor="@color/outdate_font"
+                android:textSize="14sp" />
+
+            <com.buxingzhe.pedestrian.widget.MWTStarBar
+                android:id="@+id/run_bottom_walked_safety_star"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:gravity="center_vertical" />
+
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/light_gray_line"></View>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -65,7 +202,8 @@
                 android:textSize="16sp"/>
         </LinearLayout>
 
-        <TextView
+        <EditText
+            android:id="@+id/run_ll_bottom_intro"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="说出你的步行体验"

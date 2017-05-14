@@ -1,8 +1,10 @@
 package com.buxingzhe.pedestrian.activity;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +17,7 @@ import com.buxingzhe.pedestrian.community.CommunityFragment;
 import com.buxingzhe.pedestrian.found.FoundFragment;
 import com.buxingzhe.pedestrian.listen.OnInteractionData;
 import com.buxingzhe.pedestrian.run.RunFragment;
+import com.buxingzhe.pedestrian.run.RunRunFragment;
 import com.buxingzhe.pedestrian.walk.WalkedFragment;
 import com.buxingzhe.pedestrian.widget.MWTTabBar;
 
@@ -48,9 +51,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         main_tab = (RelativeLayout) findViewById(R.id.main_tab);
         initTabbar();
         construct();
-        pagerAdapter = new MQJMainPagerAdapter(mContext,getSupportFragmentManager(), fragments);
+        pagerAdapter = new MQJMainPagerAdapter(MainActivity.this,getSupportFragmentManager(), fragments);
         mViewPager.setAdapter(pagerAdapter);
         mViewPager.setOffscreenPageLimit(pagerAdapter.getCount());
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Bundle mBundle = getIntent().getExtras();
+        if(mBundle!=null){
+            if (getIntent().hasExtra("fragId")) {
+                int id = mBundle.getInt("fragId");
+                if(id==2){
+                    main_tab.setVisibility(View.GONE);
+                    vRun.setVisibility(View.GONE);
+                    vRun.setImageResource(R.mipmap.ic_run_press);
+
+                    adapter.switchView(2);
+                    mViewPager.setCurrentItem(2,false);
+                }
+
+
+            }
+        }
     }
 
 
@@ -60,6 +86,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         vTabbar.setAdapter(adapter);
         adapter.switchView(0);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -101,7 +128,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onClick(View view) {
         int id = view.getId();
-
+        System.out.println("actId--onClick"+id);
         if (id == 2){
             main_tab.setVisibility(View.GONE);
             vRun.setVisibility(View.GONE);

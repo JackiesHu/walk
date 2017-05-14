@@ -75,8 +75,7 @@ public class NetRequestParams {
     public static final String REMARK_POINTS_COMMENT_FOUND = "walkman/wmRemarkPointComment/getRemarkPointComments";
     /** 评论标记点*/
     public static final String ADD_POINT_COMMENT = "walkman/wmRemarkPointComment/addRemarkPointComment";
-    /** 发现推荐或吐槽*/
-    public static final String FOUND_COMMENT = "walkman/wmRemarkPoint/remarkPoint";
+
     /** 查询标签*/
     public static final String QUERY_TAG = "walkman/wmTagType/getTags";
     /** 根据标签查询步行记录*/
@@ -87,5 +86,11 @@ public class NetRequestParams {
      * 根据时间段获取步行记录
      **/
     public static final String WALK_RECORD_BY_DAY = "walkman/wmWalkRecord/getDayWalkRecord";
+    /**
+     * 上传步行数
+     **/
+    public static final String PUBLISH_WALK_RECORD = "walkman/wmWalkRecord/publishWalkRecord";
+    /** 发现推荐或吐槽*/
+    public static final String FOUND_COMMENT = "walkman/wmRemarkPoint/remarkPoint";
 
 }

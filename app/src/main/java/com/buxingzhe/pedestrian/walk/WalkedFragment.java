@@ -13,6 +13,8 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,8 +29,10 @@ import com.bumptech.glide.Glide;
 import com.buxingzhe.lib.util.Log;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
+import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.bean.walk.LatestActivityInfo;
+import com.buxingzhe.pedestrian.bean.walk.WalkHistoryStepEntity;
 import com.buxingzhe.pedestrian.bean.walk.WalkWeatherInfo;
 import com.buxingzhe.pedestrian.common.Constant;
 import com.buxingzhe.pedestrian.common.GlobalParams;
@@ -76,7 +80,7 @@ import rx.Subscriber;
 /**
  * Created by quanjing on 2017/2/23.
  */
-public class WalkedFragment extends BaseFragment implements Handler.Callback, View.OnClickListener {
+public class WalkedFragment extends StepFragment implements Handler.Callback, View.OnClickListener {
 
     @BindView(R.id.walk_data_day)
     TextView walkDataDay;
@@ -110,12 +114,14 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
     private CalendarLayout mCalendarLayout;
 
     private String[] WALK_SPINNER_DATA;
-
+    private HourStepCache stepCache;
     //天气
     @BindView(R.id.walk_weather_tv_address)
     TextView mWeatherAddress;
+
     @BindView(R.id.walk_weather_tv_)
     TextView mWeather;
+
     @BindView(R.id.walk_weather_tv_air_quality)
     TextView mWeatherAirQuality;
     @BindView(R.id.walk_weather_tv_wear_suggest)
@@ -133,6 +139,9 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
     private boolean isBind = false;
     private Messenger messenger;
     private Messenger mGetReplyMessenger = new Messenger(new Handler(this));
+
+    private List<String> XDatas=new ArrayList<>();
+    private List<Integer> YDatas=new ArrayList<>();
 
     /**
      * 从service服务中拿到步数
@@ -169,20 +178,24 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
         mContext = getContext();
         ButterKnife.bind(this, view);
         findId(view);
+
         return view;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        trackApp.setToday(new Date());
         delayHandler = new Handler(this);
-        checkSensor();
+       // checkSensor();
+        stepCache=new HourStepCache(getActivity());
+
     }
 
     private void checkSensor() {
         if (StepCountModeDispatcher.isSupportStepCountSensor(mContext)) {
             Toast.makeText(mContext, "计步中", Toast.LENGTH_SHORT).show();
-            setupService();
+            //setupService();暂时不使用这个计步
         } else {
             Toast.makeText(mContext, "该设备不支持计步", Toast.LENGTH_SHORT).show();
         }
@@ -239,6 +252,7 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
     @Override
     public void onResume() {
         super.onResume();
+        startStep();
     }
 
     @Override
@@ -248,6 +262,9 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
     }
 
     private void findId(View view) {
+        distanceTv=(TextView) view.findViewById(R.id.walk_licheng);
+        stepCountTv=(TextView) view.findViewById(R.id.walk_number);
+
         mCurrentSelectedDate = (TextView) view.findViewById(R.id.currentSelectedDate);
         mLineChartView = (LineChartView) view.findViewById(R.id.linechartview);
         mMaterialSpinner = (MaterialSpinner) view.findViewById(R.id.walk_spinner);
@@ -268,10 +285,13 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
         setWeatherData(true, "");
         setActionData();
         setSpinnerData();
+        getDayData();
         setChartData();
     }
 
     private void setActionData() {
+
+
         mSubscription = NetRequestManager.getInstance().getLatestActivity(new Subscriber<String>() {
             @Override
             public void onCompleted() {
@@ -296,7 +316,7 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
 
                 if (null != content) {
                     walkActionTitle.setText(content.getTitle());
-                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
                     Long time = new Long(info.getContent().getStartTimeStamp());
                     String d = format.format(time);
                     walkActionTime.setText(d);
@@ -314,13 +334,9 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
     }
 
 
-    private void setWeatherData(boolean isCurrentWeatherData) {
-        setWeatherData(isCurrentWeatherData, "");
-    }
-
 
     private void setWeatherData(boolean isCurrentWeatherData, String date) {
-        String cityName = "北京";//TODO
+        String cityName = trackApp.getCityName();//TODO
         if (isCurrentWeatherData) {
             mSubscription = NetRequestManager.getInstance().getCurrentWeather(cityName, new Subscriber<String>() {
                 @Override
@@ -396,7 +412,7 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
             return;
         }
         mWeatherAddress.setText(content.getCityName());
-        mWeather.setText(content.getTempLow() + "~" + content.getTempHigh() + "  " + content.getWeather() + "  " + content.getWindDirection() + content.getWindDegree());
+        mWeather.setText(content.getWeather() + "  " + content.getWindDirection() + content.getWindDegree()+content.getSportSuggest());
         mWeatherAirQuality.setText(content.getAirQuality());
         mWeatherWearSuggest.setText(content.getWearSuggest());
         mWeatherSportSuggest.setText(content.getSportSuggest());
@@ -415,26 +431,19 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
      */
     private void setChartData() {
 
-        getMonthData();
-        String[] XData = {"2017年3月", "2月", "1月", "2016年12月", "11月", "10月", "9月", "8月", "7月", "6月", "5月"};
-        int[] YData = {1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000,};
-//        String[] YData = {"5000","10000","15000","20000"};
-        int[] score = {5200, 4000, 7000, 0, 2000, 3000, 10000, 12000, 15000};
-
-
         //1. 获取XY轴的标注
         List<AxisValue> mAxisXValue = new ArrayList<AxisValue>();
-        for (int i = 0; i < XData.length; i++) {
-            mAxisXValue.add(new AxisValue(i).setLabel(XData[i]));
+        for (int i = 0; i < XDatas.size(); i++) {
+            mAxisXValue.add(new AxisValue(i).setLabel(XDatas.get(i)));
         }
         List<AxisValue> mAxisYValue = new ArrayList<AxisValue>();
-        for (int i = 0; i < YData.length; i++) {
-            mAxisYValue.add(new AxisValue(i).setLabel(YData[i] + ""));
+        for (int i = 0; i < YDatas.size(); i++) {
+            mAxisYValue.add(new AxisValue(i).setLabel(YDatas.get(i)+""));
         }
         //2. 获取坐标点
         List<PointValue> mPointValue = new ArrayList<PointValue>();
-        for (int i = 0; i < score.length; i++) {
-            mPointValue.add(new PointValue(i, score[i]));
+        for (int i = 0; i < YDatas.size(); i++) {
+            mPointValue.add(new PointValue(i, YDatas.get(i).intValue()));
         }
 
         //3. 折线的属性
@@ -547,29 +556,30 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
 
 
     }
+    private void getDayData() {
+        XDatas.clear();
+        YDatas.clear();
+        List<HourStep> dayList= stepCache.readStepsList();
+        int size=dayList.size();
+        for(int i=0;i<size;i++){
+            XDatas.add(dayList.get(i).getHour());
+            YDatas.add(dayList.get(i).getStepCount());
+        }
 
-    private void getMonthData() {
-
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    }
+    private void getWeekData() {
+        XDatas.clear();
+        YDatas.clear();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         Date mBefore;
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.DAY_OF_MONTH,-30);//往上推一天  30推三十天  365推一年
+        calendar.add(Calendar.DAY_OF_MONTH,-7);//往上推一天  30推三十天  365推一年
         mBefore = calendar.getTime();
-        sdf.format(mBefore);
-
-        //Date或者String转化为时间戳
-        String time="1970-01-06 11:45:55";
-        Date date = null;
-        try {
-            date = sdf.parse(time);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        String dateBefore=sdf.format(mBefore);
 
         Map<String, String> params = new HashMap<>();
-        params.put("beginDate", date.toString());
+        params.put("beginDate", dateBefore);
         params.put("userId", GlobalParams.USER_ID);
         params.put("token",  GlobalParams.TOKEN);
         mSubscription = NetRequestManager.getInstance().queryWalkRecordByDay(params, new Subscriber<String>() {
@@ -585,12 +595,74 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
 
             @Override
             public void onNext(String jsonStr) {
-                Log.i("walk--jsonStr" + jsonStr);
-
-
+                Gson gson = new Gson();
+                WalkHistoryStepEntity steps = gson.fromJson(jsonStr, WalkHistoryStepEntity.class);
+                if(steps.getCode()==0){
+                    int size=steps.getContent().size();
+                    for(int i=0;i<size;i++){
+                        WalkHistoryStepEntity.ContentBean bean=steps.getContent().get(i);
+                        YDatas.add(bean.getStepCount());
+                        SimpleDateFormat format =  new SimpleDateFormat("dd");
+                        Long time=new Long(bean.getPublishDate());
+                        String d = format.format(time);
+                        XDatas.add(d);
+                    }
+                }
             }
 
         });
+
+    }
+    private void getMonthData() {
+        XDatas.clear();
+        YDatas.clear();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        Date mBefore;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DAY_OF_MONTH,-30);//往上推一天  30推三十天  365推一年
+        mBefore = calendar.getTime();
+        String dateBefore=sdf.format(mBefore);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("beginDate", dateBefore);
+        params.put("userId", GlobalParams.USER_ID);
+        params.put("token",  GlobalParams.TOKEN);
+        mSubscription = NetRequestManager.getInstance().queryWalkRecordByDay(params, new Subscriber<String>() {
+            @Override
+            public void onCompleted() {
+                Log.i("onCompleted");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.i(e.getMessage());
+            }
+
+            @Override
+            public void onNext(String jsonStr) {
+
+                Gson gson = new Gson();
+                WalkHistoryStepEntity steps = gson.fromJson(jsonStr, WalkHistoryStepEntity.class);
+                if(steps.getCode()==0){
+                    int size=steps.getContent().size();
+                    for(int i=0;i<size;i++){
+                        WalkHistoryStepEntity.ContentBean bean=steps.getContent().get(i);
+                        YDatas.add(bean.getStepCount());
+                        SimpleDateFormat format =  new SimpleDateFormat("dd");
+                        Long time=new Long(bean.getPublishDate());
+                        String d = format.format(time);
+                        XDatas.add(d);
+                    }
+                }
+            }
+
+        });
+    }
+    private void getYearData(){
+        XDatas.clear();
+        YDatas.clear();
     }
 
     @Override
@@ -610,6 +682,7 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
                 walkDataMonth.setSelected(false);
                 walkDataWeek.setSelected(false);
                 walkDataYear.setSelected(false);
+                getDayData();
                 mLineChartView.refreshDrawableState();
 
                 break;
@@ -618,12 +691,15 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
                 walkDataMonth.setSelected(false);
                 walkDataWeek.setSelected(true);
                 walkDataYear.setSelected(false);
+                getWeekData();
+                mLineChartView.refreshDrawableState();
                 break;
             case R.id.walk_data_month:
                 walkDataDay.setSelected(false);
                 walkDataMonth.setSelected(true);
                 walkDataWeek.setSelected(false);
                 walkDataYear.setSelected(false);
+                getMonthData();
                 mLineChartView.refreshDrawableState();
                 break;
             case R.id.walk_data_year:
@@ -631,6 +707,7 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
                 walkDataMonth.setSelected(false);
                 walkDataWeek.setSelected(false);
                 walkDataYear.setSelected(true);
+                getYearData();
                 mLineChartView.refreshDrawableState();
                 break;
             case R.id.actionLl:
@@ -655,6 +732,8 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
                 break;
         }
     }
+
+
 
 
     private class MineLineChartOnValueSelectListener implements LineChartOnValueSelectListener {
@@ -690,8 +769,10 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
     @Override
     public void onDestroy() {
         super.onDestroy();
+        trackApp.setDistance(distance);
         if (isBind) {
             mContext.unbindService(conn);
         }
+        stopStep();
     }
 }

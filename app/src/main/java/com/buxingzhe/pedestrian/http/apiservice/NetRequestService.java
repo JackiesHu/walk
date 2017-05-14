@@ -51,10 +51,7 @@ public interface NetRequestService {
     @POST(NetRequestParams.WALK_USER_REGISTER)
     Observable</* RequestResultInfo<UserLoginResultInfo> */ String> register(@FieldMap Map<String, String> registerMap);
 
-    //上传步行或者骑行记录
-    @FormUrlEncoded
-    @POST(NetRequestParams.WALK_UPLOAD_WALK)
-    Observable</* RequestResultInfo<String> */ String> uploadWalkRecord(@FieldMap Map<String, String> registerMap);
+
 
     //获取步行或者骑行记录
     @FormUrlEncoded
@@ -143,9 +140,6 @@ public interface NetRequestService {
     @POST(NetRequestParams.ADD_POINT_COMMENT)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String> pointComment(@FieldMap Map<String, String> paramsMap);
 
-    @POST(NetRequestParams.FOUND_COMMENT)
-    @Multipart
-    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> foundComment(@PartMap Map<String, Object> paramsMap, @Part("viewUrls") List<String> file);
 
     @FormUrlEncoded
     @POST(NetRequestParams.QUERY_TAG)
@@ -164,6 +158,10 @@ public interface NetRequestService {
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_RECORD_BY_DAY)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String> queryWalkRecordByDay(@FieldMap Map<String, String> paramsMap);
+    //根据时间段获取步行记录
+    @FormUrlEncoded
+    @POST(NetRequestParams.PUBLISH_WALK_RECORD)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> publishWalkRecord(@FieldMap Map<String, String> paramsMap);
 
 
     @Multipart
@@ -175,5 +173,14 @@ public interface NetRequestService {
     @Multipart
     @POST(NetRequestParams.WALK_USER_MODIFY_USER_INFO)
     Observable</* RequestResultInfo<UserModifyInfo> */ String> modifyUserInfo(@PartMap Map<String, RequestBody> paramsMap, @Part MultipartBody.Part photo);
+
+    //上传步行或者骑行记录
+    @Multipart
+    @POST(NetRequestParams.WALK_UPLOAD_WALK)
+    Observable</* RequestResultInfo<String> */ String> uploadWalkRecord(@PartMap Map<String, RequestBody> registerMap,@Part List<MultipartBody.Part> file,@Part MultipartBody.Part photo);
+
+    @POST(NetRequestParams.FOUND_COMMENT)
+    @Multipart
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> foundComment(@PartMap Map<String, Object> paramsMap, @Part List<MultipartBody.Part> file);
 
 }

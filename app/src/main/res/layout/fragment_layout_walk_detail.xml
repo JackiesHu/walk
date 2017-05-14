@@ -51,15 +51,18 @@
 
                     <TextView
                         android:id="@+id/walk_weather_tv_"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
+                        android:gravity="right"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/bxz_18px"/>
+                        android:layout_marginRight="10dp"
+                        />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/bxz_10px">
+                    android:layout_marginBottom="@dimen/bxz_10px"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -76,7 +79,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/bxz_10px">
+                    android:layout_marginBottom="@dimen/bxz_10px"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -92,7 +96,8 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -147,7 +152,7 @@
                     android:id="@+id/walk_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="12789"
+                    android:text="0"
                     android:textColor="#232323"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
@@ -202,7 +207,7 @@
                     android:id="@+id/walk_licheng"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="12789"
+                    android:text="0"
                     android:textColor="#232323"
                     android:textSize="18sp"
                     android:textStyle="bold"/>

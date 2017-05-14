@@ -75,14 +75,6 @@ public class NetRequestManager{
                 .subscribe(subscriber);
     }
 
-    //上传步行或者骑行记录
-    public Subscription uploadWalkRecord(Map<String,String> paramsMap,Subscriber subscriber){
-        return RetrofitManager.getInstance()
-                .getNetRequestService()
-                .uploadWalkRecord(paramsMap)
-                .compose(TransformUtils.defaultSchedulers())
-                .subscribe(subscriber);
-    }
 
     //获取步行或者骑行记录
     public Subscription getWalkRecord(String recordId,Subscriber subscriber){
@@ -238,10 +230,19 @@ public class NetRequestManager{
     }
 
     //发现推荐或吐槽
-    public Subscription foundComment(Map<String, Object> paramsMap, List<String> files, Subscriber subscriber) {
+    public Subscription foundComment(Map<String, Object> paramsMap, List<MultipartBody.Part> files, Subscriber subscriber) {
         return RetrofitManager.getInstance()
                 .getNetRequestService()
                 .foundComment(paramsMap,files)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
+    //上传步行或者骑行记录
+    public Subscription uploadWalkRecord(Map<String,RequestBody> paramsMap,List<MultipartBody.Part> files,MultipartBody.Part file,Subscriber subscriber){
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .uploadWalkRecord(paramsMap,files,file)
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }
@@ -298,5 +299,14 @@ public class NetRequestManager{
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }
+    //根据标题查询步行记录
+    public Subscription publishWalkRecord(Map<String, String> paramsMap, Subscriber subscriber) {
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .publishWalkRecord(paramsMap)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+
 
 }

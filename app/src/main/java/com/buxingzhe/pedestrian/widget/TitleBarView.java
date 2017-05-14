@@ -116,6 +116,14 @@ public class TitleBarView extends FrameLayout {
         vRight.setVisibility(View.VISIBLE);
         vImgRight.setVisibility(GONE);
     }
+    public String getRightTitle(){
+        if(vRight.getVisibility()==VISIBLE){
+            return vRight.getText().toString();
+        }else{
+            return "0";
+        }
+
+    }
     public void setRightIcon(int id){
         vImgRight.setImageResource(id);
     }

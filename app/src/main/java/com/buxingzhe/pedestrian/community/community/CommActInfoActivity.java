@@ -23,7 +23,9 @@ import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.activity.BaseAdapter;
 import com.buxingzhe.pedestrian.activity.ILoadCallback;
 import com.buxingzhe.pedestrian.activity.LoadMoreAdapterWrapper;
+import com.buxingzhe.pedestrian.activity.MainActivity;
 import com.buxingzhe.pedestrian.activity.OnLoad;
+import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.bean.activity.WalkActivitiesInfo;
 import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordsByActivity;
@@ -108,7 +110,6 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     public void onRightImageListener(View v) {
-        System.out.println("Share--");
 
         UMImage thumb =  new UMImage(this, R.mipmap.ic_launcher);
         UMWeb web = new UMWeb("http://www.bxzlm.com/?from=singlemessage&isappinstalled=1");
@@ -193,7 +194,7 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
             if (walkActivityInfo.getIsOutDate().equals("0")) {
                 tv_attend.setText(getString(R.string.activity_unoutdate));
                 tv_attend.setBackgroundResource(R.drawable.bg_unoutdate);
-//                tv_attend.setOnClickListener(this);
+                tv_attend.setOnClickListener(this);
             }
             if (walkActivityInfo.getIsOutDate().equals("1")) {
                 tv_attend.setText(getString(R.string.activity_over));
@@ -212,8 +213,19 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
-//            case R.id.tv_attend:
-//                break;
+            case R.id.tv_attend:
+                //使用getApplication()方法得到一个MyApp对象
+                PDApplication myApp = (PDApplication) getApplication();
+                //设置名字
+                myApp.setActId(walkActivityInfo.getId());
+
+                Intent it = new Intent(CommActInfoActivity.this, MainActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("fragId", 2);
+                it.putExtras(bundle);
+                startActivity(it);
+
+                break;
             case R.id.iv_up:
                 isShowAllIntro(false);
                 break;

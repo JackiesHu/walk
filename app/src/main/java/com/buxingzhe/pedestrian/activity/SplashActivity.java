@@ -43,7 +43,6 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void checkOverLayWindow() {
-        System.out.println("checkOverLayWindow");
         if ("Xiaomi".equals(Build.MANUFACTURER)) {//小米手机
             requestPermission();
         } else if ("Meizu".equals(Build.MANUFACTURER)) {//魅族手机

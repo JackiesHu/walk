@@ -36,6 +36,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import rx.Subscriber;
 
 /**·
@@ -55,6 +58,9 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
     private RemarkPoint remarkPoint;
     private int type;
     private List<String> pics = new ArrayList<>();;
+    private List<String> picNames = new ArrayList<>();;
+    private List<MultipartBody.Part> picParts = new ArrayList<>();
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -113,6 +119,22 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
         paramsMap.put("introduction",et_content.getText().toString());
         paramsMap.put("remarkPointTags",vAddTag.getText().toString());
 
+
+        if (pics != null) {
+            for(int i=0;i<pics.size();i++){
+                RequestBody requestFile =
+                        RequestBody.create(MediaType.parse("multipart/form-data"), pics.get(i));
+
+                MultipartBody.Part  filePart = MultipartBody.Part.createFormData("viewUrls", picNames.get(i), requestFile);
+                picParts.add(filePart);
+            }
+
+
+        } else {
+            picParts = null;
+        }
+
+
         Subscriber mSubscriber = new Subscriber<String>(){
 
             @Override
@@ -137,7 +159,7 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
             }
         };
 
-        NetRequestManager.getInstance().foundComment(paramsMap,pics,mSubscriber);
+        NetRequestManager.getInstance().foundComment(paramsMap,picParts,mSubscriber);
     }
 
     private void initStar(){
@@ -209,6 +231,7 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
         if (items != null && items.size() > 0) {
             for (ImageItem item : items){
                 pics.add(item.path);
+                picNames.add(item.name);
             }
         }
         PicAdapter adapter = new PicAdapter(mContext,pics,R.layout.item_pic);

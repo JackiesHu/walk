@@ -13,7 +13,9 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.util.Base64;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -117,6 +119,8 @@ public class MapFragment extends BaseFragment {
     private boolean agps = false;
     private boolean gps = false;
 
+    private boolean isVisible =false;
+    View view;
     /**
      * 处理自带GPS传感器和百度SDK分别得到的位置坐标，进行优化修正
      */
@@ -252,13 +256,24 @@ public class MapFragment extends BaseFragment {
 
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view=setRootView(inflater,container);
+        onVisible();
+        return view;
+    }
+
+    private View setRootView(LayoutInflater inflater, ViewGroup container) {
+        return null;
+    }
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initMap();
         initLocation();
         mMonitorThread();
-
     }
 
     @Override
@@ -652,7 +667,18 @@ public class MapFragment extends BaseFragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
-        if (isVisibleToUser) {
+        if(getUserVisibleHint()){
+            isVisible=true;
+            onVisible();
+        }else{
+            //onInvisible
+        }
+
+
+    }
+
+    private void onVisible() {
+        if (isVisible&& view!=null) {
             // 相当于Fragment的onResume
             Log.i(TAG, "visible");
 
@@ -661,13 +687,13 @@ public class MapFragment extends BaseFragment {
                 if (network) {
                     Toast.makeText(getActivity(), "当前网络可用", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getActivity(), "当前网络不可用，请检查网络状态",
+                    Toast.makeText( getActivity() , "当前网络不可用，请检查网络状态",
                             Toast.LENGTH_SHORT).show();
                 }
                 if (gps) {
                     Toast.makeText(getActivity(), "GPS已打开", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getActivity(), "GPS已关闭，请开启GPS",
+                    Toast.makeText( getActivity(), "GPS已关闭，请开启GPS",
                             Toast.LENGTH_SHORT).show();
                 }
 
@@ -688,7 +714,6 @@ public class MapFragment extends BaseFragment {
             // Log.v("tag", "pause");
 
         }
-
     }
 
 

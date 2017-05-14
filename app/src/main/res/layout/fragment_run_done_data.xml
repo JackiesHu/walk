@@ -392,7 +392,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:text="单位"
+                    android:text=" 克"
                     android:textColor="#464646"
                     android:textSize="12sp"/>
             </LinearLayout>
@@ -439,7 +439,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="单位"
+                    android:text=" 克"
                     android:textColor="#464646"
                     android:textSize="12sp"/>
             </LinearLayout>
@@ -448,5 +448,5 @@
 
     <include
         layout="@layout/fragment_run_done_pic"
-        android:visibility="gone"/>
+        android:visibility="visible"/>
 </LinearLayout>
