@@ -25,6 +25,7 @@ import com.buxingzhe.pedestrian.PDConfig;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.map.CommonUtil;
+import com.umeng.analytics.MobclickAgent;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
 
@@ -98,6 +99,7 @@ public class PDApplication extends Application {
         }
         PDConfig.getInstance().init(this);
         SDKInitializer.initialize(this);
+        MobclickAgent.openActivityDurationTrack(false);
         mContext = getApplicationContext();
         entityName = CommonUtil.getImei(this);
         entityStepName = CommonUtil.getImei(this) + "step";

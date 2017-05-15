@@ -430,7 +430,7 @@ public class MapFragment extends BaseFragment {
                 sTotalString += sCurrentLine;
         }
         String mapX = "", mapY = "";
-        System.out.println(sTotalString);
+
         sTotalString = sTotalString.substring(1, sTotalString.length() - 1);
         String[] results = sTotalString.split("\\,");
         if (results.length == 3) {

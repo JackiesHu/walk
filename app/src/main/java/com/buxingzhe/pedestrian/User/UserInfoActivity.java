@@ -122,7 +122,6 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
         params.put("age", RequestBody.create(MediaType.parse("multipart/form-data"), userInfo.getAge()));
         params.put("userId", RequestBody.create(MediaType.parse("multipart/form-data"), GlobalParams.USER_ID));
         params.put("token", RequestBody.create(MediaType.parse("multipart/form-data"), GlobalParams.TOKEN));
-        System.out.println("eeUserInfo--next" + "userId" +GlobalParams.USER_ID);
         MultipartBody.Part filePart;
         if (uploadFile != null) {
             RequestBody requestFile =
@@ -193,7 +192,6 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
         ((TextView) findViewById(R.id.tv_userName)).setText(userInfo.getNickName());
         // 性别
 
-        System.out.println("User-sex-"+userInfo.getGender());
         if (userInfo.getGender().equals("1"))
             ((ImageView) findViewById(R.id.iv_userSex)).setImageResource(R.mipmap.personal_icon_f);
         else

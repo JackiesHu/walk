@@ -44,6 +44,7 @@ import com.buxingzhe.pedestrian.widget.TitleBarView;
 import com.pizidea.imagepicker.AndroidImagePicker;
 import com.pizidea.imagepicker.activity.ImagesGridActivity;
 import com.pizidea.imagepicker.bean.ImageItem;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -176,6 +177,18 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
 
         setData();
         onClick();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("RunFragment");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("RunFragment");
     }
 
     private void findId(View view) {
@@ -523,12 +536,9 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         public void onLeftTitleListener(View v) {
             // 取消操作
             isRunDone = false;
-            mLLBottomAllView.setVisibility(View.VISIBLE);
 
-            mLLBottomData.setVisibility(View.GONE);
-            mLLBottomDataPic.setVisibility(View.GONE);
-            run_done_scroll.setVisibility(View.GONE);
             setInitTitle();
+            changeLayout();
         }
 
         @Override
@@ -554,6 +564,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
             }
 
         }
+
         @Override
         public void onRightImageListener(View v) {
 
@@ -664,6 +675,8 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         isRunDone = false;
         mChronometer.stop();
         seconds = 0;
+
+
         mLLBottomAllView.setVisibility(View.GONE);
         mLLBottomSmallView.setVisibility(View.GONE);
         mLLBottomData.setVisibility(View.GONE);

@@ -168,10 +168,9 @@ public class RunRunFragment extends BaseFragment {
                     editor.putBoolean("is_trace_started", true);
                     editor.apply();
                 }
-                ViewUtil.showToast(getActivity(),
+               /* ViewUtil.showToast(getActivity(),
                         String.format("onStartTraceCallback, errorNo:%d, message:%s ", status, message));
-
-                System.out.println("map--onStartTraceCallback");
+*/
 
                 startRefreshThread(true);
             }
@@ -189,9 +188,9 @@ public class RunRunFragment extends BaseFragment {
                     editor.remove("is_gather_started");
                     editor.apply();
                 }
-                ViewUtil.showToast(getActivity(),
+               /* ViewUtil.showToast(getActivity(),
                         String.format("onStopTraceCallback, errorNo:%d, message:%s ", status, message));
-
+*/
                 startRefreshThread(false);
 
             }
@@ -205,10 +204,9 @@ public class RunRunFragment extends BaseFragment {
                     editor.putBoolean("is_gather_started", true);
                     editor.apply();
                 }
-                ViewUtil.showToast(getActivity(),
+              /*  ViewUtil.showToast(getActivity(),
                         String.format("onStartGatherCallback, errorNo:%d, message:%s ", errorNo, message));
-
-                System.out.println("map--onStartGatherCallback");
+*/
 
             }
 
@@ -221,9 +219,9 @@ public class RunRunFragment extends BaseFragment {
                     editor.remove("is_gather_started");
                     editor.apply();
                 }
-                ViewUtil.showToast(getActivity(),
+                /*ViewUtil.showToast(getActivity(),
                         String.format("onStopGatherCallback, errorNo:%d, message:%s ", errorNo, message));
-
+*/
             }
 
             // 推送回调
@@ -263,12 +261,11 @@ public class RunRunFragment extends BaseFragment {
 
             @Override
             public void onHistoryTrackCallback(HistoryTrackResponse response) {
-                System.out.println("map--onHistoryTrackCallback");
                 int total = response.getTotal();
                 if (StatusCodes.SUCCESS != response.getStatus()) {
                     ViewUtil.showToast(getActivity(), response.getMessage());
                 } else if (0 == total) {
-                    ViewUtil.showToast(getActivity(), getString(R.string.no_track_data));
+                 //   ViewUtil.showToast(getActivity(), getString(R.string.no_track_data));
                 } else {
                     List<TrackPoint> points = response.getTrackPoints();
                     if (null != points) {
@@ -284,10 +281,8 @@ public class RunRunFragment extends BaseFragment {
                 if (total > Constants.PAGE_SIZE * pageIndex) {
                     historyTrackRequest.setPageIndex(++pageIndex);
                     queryHistoryTrack();
-                    System.out.println("map--queryHistoryTrack");
                 } else {
                     if (trackPoints.size() > 0) {
-                        System.out.println("map--drawHistoryTrack");
                         mapUtil.drawHistoryTrack(trackPoints, sortType);
                     }
 
@@ -298,10 +293,8 @@ public class RunRunFragment extends BaseFragment {
             public void onDistanceCallback(DistanceResponse response) {
                 super.onDistanceCallback(response);
                 if (StatusCodes.SUCCESS == response.getStatus()) {
-                    System.out.println("map--response" + response.getDistance());
                     distance=response.getDistance();
                 } else {
-                    System.out.println("map--response--返回有误");
                 }
 
 
@@ -379,7 +372,6 @@ public class RunRunFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 // 开启采集
-                System.out.println("map---mIVRunStart");
                 mapStartRun();
 
             }
@@ -405,7 +397,6 @@ public class RunRunFragment extends BaseFragment {
 
 
     protected void mapStartRun() {
-        System.out.println("map---mapStartRun");
         trackApp.isTraceStarted = true;
         trackApp.mClient.startTrace(trackApp.mTrace, mTraceListener);
         if (Constants.DEFAULT_PACK_INTERVAL != packInterval) {
@@ -422,7 +413,6 @@ public class RunRunFragment extends BaseFragment {
     private void calculateCar() {
         UserInfo user = new UserInfo();
         user = user.getUserInfo(getActivity());
-        System.out.println("user--user"+user.getAge());
       //  curCalories = ((userAge*0.2017 + userWeight*0.09036 + v/1000.0*3600*1.8)- 55.0969)*(time / 60.0) / 6.34;
     }
 
@@ -530,14 +520,12 @@ public class RunRunFragment extends BaseFragment {
         if (null == data) {
             return;
         }
-        System.out.println("map--onActivityResult");
         trackPoints.clear();
         pageIndex = 1;
 
         if (data.hasExtra("startTime")) {
             startTime = data.getLongExtra("startTime", CommonUtil.getCurrentTime());
         }
-        System.out.println("map--onActivityResult--startTime" + startTime);
         if (data.hasExtra("endTime")) {
             endTime = data.getLongExtra("endTime", CommonUtil.getCurrentTime());
         }
@@ -590,7 +578,6 @@ public class RunRunFragment extends BaseFragment {
                 try {
                     Thread.sleep(packInterval * 1000);
                 } catch (InterruptedException e) {
-                    System.out.println("线程休眠失败");
                 }
             }
 

@@ -419,6 +419,5 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     protected void onDestroy() {
         super.onDestroy();
         isShowPwd = false;
-        System.out.println("login--onDestroy");
     }
 }

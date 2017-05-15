@@ -148,9 +148,9 @@ public class StepFragment extends BaseFragment {
                     editor.putBoolean("is_trace_started", true);
                     editor.apply();
                 }
-                ViewUtil.showToast(getActivity(),
+               /* ViewUtil.showToast(getActivity(),
                         String.format("onStartTraceCallback, errorNo:%d, message:%s ", status, message));
-
+*/
                 startRefreshThread(true);
             }
 
@@ -167,9 +167,9 @@ public class StepFragment extends BaseFragment {
                     editor.remove("is_gather_started");
                     editor.apply();
                 }
-                ViewUtil.showToast(getActivity(),
+               /* ViewUtil.showToast(getActivity(),
                         String.format("onStopTraceCallback, errorNo:%d, message:%s ", status, message));
-
+*/
                 startRefreshThread(false);
 
             }
@@ -184,9 +184,9 @@ public class StepFragment extends BaseFragment {
                     editor.putBoolean("is_gather_started", true);
                     editor.apply();
                 }
-                ViewUtil.showToast(getActivity(),
+               /* ViewUtil.showToast(getActivity(),
                         String.format("onStartGatherCallback, errorNo:%d, message:%s ", errorNo, message));
-            }
+           */ }
 
             // 停止采集回调
             @Override
@@ -197,9 +197,9 @@ public class StepFragment extends BaseFragment {
                     editor.remove("is_gather_started");
                     editor.apply();
                 }
-                ViewUtil.showToast(getActivity(),
+               /* ViewUtil.showToast(getActivity(),
                         String.format("onStopGatherCallback, errorNo:%d, message:%s ", errorNo, message));
-
+*/
             }
 
             // 推送回调
@@ -333,7 +333,6 @@ public class StepFragment extends BaseFragment {
         trackApp.mClient.stopGather(mTraceListener);
 
         startRefreshThread(false);
-
     }
 
 
@@ -514,6 +513,7 @@ public class StepFragment extends BaseFragment {
             Date date = new Date();
             SimpleDateFormat format = new SimpleDateFormat("HH");
             String s = format.format(date);
+            trackApp.setDistance(distance);
             if (!timeStap.equals(s)) {
                 //TODO
                 stepList = stepCache.readStepsList();

@@ -161,7 +161,7 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
 
             @Override
             public void onNext(final String jsonStr) {
-                System.out.println("eePublish--jsonStr--" + jsonStr.toString());
+
                 // 由于服务端的返回数据格式不固定，因此这里采用手动解析
                 RequestResultInfo resultInfo = JSON.parseObject(jsonStr, RequestResultInfo.class);
 

@@ -9,15 +9,14 @@ import android.view.View;
 
 import com.buxingzhe.pedestrian.widget.TitleBarLinstener;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
-import com.umeng.analytics.MobclickAgent;
 
 import rx.Subscription;
 
 /**
- * Created by quanjing on 2017/2/3.
+ * Created by chinaso on 2017/5/15.
  */
-public class BaseActivity extends AppCompatActivity implements TitleBarLinstener {
 
+public class BaseMainActivity extends AppCompatActivity implements TitleBarLinstener {
     protected Subscription mSubscription;
     protected Context mContext;
     protected Activity mActivity;
@@ -94,17 +93,13 @@ public class BaseActivity extends AppCompatActivity implements TitleBarLinstener
     @Override
     protected void onResume() {
         super.onResume();
-        String contextString = mContext.toString();
-        MobclickAgent.onPageStart(contextString); //统计页面(仅有Activity的应用中SDK自动调用，不需要单独写。"SplashScreen"为页面名称，可自定义)
-        MobclickAgent.onResume(this);          //统计时长
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        String contextString = mContext.toString();
-        MobclickAgent.onPageEnd(contextString); // （仅有Activity的应用中SDK自动调用，不需要单独写）保证 onPageEnd 在onPause 之前调用,因为 onPause 中会保存信息。"SplashScreen"为页面名称，可自定义
-        MobclickAgent.onPause(this);
+
     }
 
     @Override

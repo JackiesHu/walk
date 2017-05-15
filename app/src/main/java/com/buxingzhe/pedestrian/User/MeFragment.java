@@ -26,6 +26,7 @@ import com.buxingzhe.pedestrian.utils.JsonParseUtil;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.buxingzhe.pedestrian.widget.CircularImageView;
 import com.squareup.picasso.Picasso;
+import com.umeng.analytics.MobclickAgent;
 
 import butterknife.ButterKnife;
 import rx.Subscriber;
@@ -112,7 +113,14 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart("MeFragment");
         setData();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("MeFragment");
     }
 
     private void onClick() {

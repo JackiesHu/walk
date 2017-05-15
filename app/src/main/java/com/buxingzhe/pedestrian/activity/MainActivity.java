@@ -20,11 +20,12 @@ import com.buxingzhe.pedestrian.run.RunFragment;
 import com.buxingzhe.pedestrian.run.RunRunFragment;
 import com.buxingzhe.pedestrian.walk.WalkedFragment;
 import com.buxingzhe.pedestrian.widget.MWTTabBar;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener, OnInteractionData {
+public class MainActivity extends BaseMainActivity implements View.OnClickListener, OnInteractionData {
     private MWTTabBar vTabbar;
     private MainTabBarAdapter adapter;
 
@@ -61,6 +62,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         Bundle mBundle = getIntent().getExtras();
         if(mBundle!=null){
             if (getIntent().hasExtra("fragId")) {
@@ -79,6 +81,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 
     private void initTabbar(){
         adapter = new MainTabBarAdapter();
@@ -128,7 +135,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onClick(View view) {
         int id = view.getId();
-        System.out.println("actId--onClick"+id);
         if (id == 2){
             main_tab.setVisibility(View.GONE);
             vRun.setVisibility(View.GONE);

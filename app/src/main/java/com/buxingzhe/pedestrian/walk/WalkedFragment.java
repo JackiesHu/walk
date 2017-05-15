@@ -45,6 +45,7 @@ import com.buxingzhe.pedestrian.widget.MaterialSpinnerLayout;
 import com.google.gson.Gson;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.jeek.calendar.widget.calendar.OnCalendarClickListener;
+import com.umeng.analytics.MobclickAgent;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -247,7 +248,14 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
     @Override
     public void onResume() {
         super.onResume();
+        MobclickAgent.onPageStart("WalkFragment");
         startStep();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("WalkFragment");
     }
 
     @Override
@@ -849,7 +857,7 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
     @Override
     public void onDestroy() {
         super.onDestroy();
-        trackApp.setDistance(distance);
+
         if (isBind) {
             mContext.unbindService(conn);
         }

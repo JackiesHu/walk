@@ -111,7 +111,13 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onRightImageListener(View v) {
 
-        UMImage thumb =  new UMImage(this, R.mipmap.ic_launcher);
+        UMImage thumb=null;
+        if(walkActivityInfo.getBanner()==null){
+             thumb =  new UMImage(this, walkActivityInfo.getBanner());
+        }else{
+           thumb =  new UMImage(this, R.mipmap.ic_launcher);
+        }
+
         UMWeb web = new UMWeb("http://www.bxzlm.com/?from=singlemessage&isappinstalled=1");
         web.setTitle(walkActivityInfo.getTitle());//标题
         web.setThumb(thumb);  //缩略图
@@ -150,7 +156,6 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
         public void onError(SHARE_MEDIA platform, Throwable t) {
             Toast.makeText(CommActInfoActivity.this,platform + " 分享失败啦", Toast.LENGTH_SHORT).show();
             if(t!=null){
-                System.out.println("share--"+t.toString());
             }
         }
 

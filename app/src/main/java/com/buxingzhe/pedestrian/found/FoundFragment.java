@@ -65,6 +65,7 @@ import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
 import com.buxingzhe.pedestrian.found.bean.Streets;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -562,6 +563,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onPause() {
+        MobclickAgent.onPageEnd("FoundFragment");
         // MapView的生命周期与Activity同步，当activity挂起时需调用MapView.onPause()
         vMapView.onPause();
         super.onPause();
@@ -571,6 +573,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         // MapView的生命周期与Activity同步，当activity恢复时需调用MapView.onResume()
         vMapView.onResume();
         super.onResume();
+        MobclickAgent.onPageStart("FoundFragment");
     }
     @Override
     public void onDestroy() {

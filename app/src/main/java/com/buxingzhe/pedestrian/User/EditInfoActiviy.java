@@ -166,7 +166,6 @@ public class EditInfoActiviy extends BaseActivity implements View.OnClickListene
             user.setGender(sex);
         }
         user.saveUserInfo(this,user);
-        System.out.println("Edit-sex-"+user.getGender());
         finish();
 
     }
@@ -177,13 +176,11 @@ public class EditInfoActiviy extends BaseActivity implements View.OnClickListene
             rbtn_editSex_f.setChecked(false);
             sex = "0";
             user.setGender(sex);
-            System.out.println("Edit--click---sex-"+user.getGender());
         } else if (view.getId() == R.id.ll_edit_sex_f) {
             rbtn_editSex_m.setChecked(false);
             rbtn_editSex_f.setChecked(true);
             sex = "1";
             user.setGender(sex);
-            System.out.println("Edit--click---sex-"+user.getGender());
         }
     }
 }

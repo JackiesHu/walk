@@ -23,6 +23,7 @@ import com.buxingzhe.pedestrian.community.community.CommCircleFragment;
 import com.buxingzhe.pedestrian.community.community.PublishActActivity;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 
@@ -48,6 +49,18 @@ public class CommunityFragment extends BaseFragment implements View.OnClickListe
         setViewPager();
         onClick();
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("CommunityFragment");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("CommunityFragment");
     }
 
     private void findId(View view){
