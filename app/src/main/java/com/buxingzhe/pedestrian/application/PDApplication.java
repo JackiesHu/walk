@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.DisplayMetrics;
 
-
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
@@ -49,9 +48,7 @@ public class PDApplication extends Application {
     private Date today;
 
 
-
     private String cityName;
-
 
 
     public SharedPreferences trackConf = null;
@@ -87,21 +84,23 @@ public class PDApplication extends Application {
         PlatformConfig.setWeixin("wx609e5d32a2de0351", "3dfae04eac20da17e00a31ff17dc618d");
         PlatformConfig.setQQZone("100424468", "c7394704798a158208a74ab60104f0ba");
     }
+
     private LocationClient mLocationClient;
+
     @Override
     public void onCreate() {
         super.onCreate();
-        if(today==null){
-            today=new Date();
+        if (today == null) {
+            today = new Date();
         }
-        if(distance==0){
-            distance=0;
+        if (distance == 0) {
+            distance = 0;
         }
         PDConfig.getInstance().init(this);
         SDKInitializer.initialize(this);
         mContext = getApplicationContext();
         entityName = CommonUtil.getImei(this);
-        entityStepName=CommonUtil.getImei(this)+"step";
+        entityStepName = CommonUtil.getImei(this) + "step";
         // 若为创建独立进程，则不初始化成员变量
         if ("com.baidu.track:remote".equals(CommonUtil.getCurProcessName(mContext))) {
             return;
@@ -142,11 +141,11 @@ public class PDApplication extends Application {
         // umeng
         UMShareAPI.get(this);
 
-        Date newDate=new Date();
-        if(newDate!=today){
+        Date newDate = new Date();
+        if (newDate != today) {
             upLoadDistance();
-            today=newDate;
-            distance=0;
+            today = newDate;
+            distance = 0;
         }
 
         getLocalCityName(this);
@@ -169,12 +168,11 @@ public class PDApplication extends Application {
         mLocationClient.registerLocationListener(new BDLocationListener() {
 
 
-
             @Override
             public void onReceiveLocation(BDLocation location) {
                 if (location != null) {
-                    String city=location.getCity();
-                    city = city.replaceAll("市","");
+                    String city = location.getCity();
+                    city = city.replaceAll("市", "");
                     setCityName(city);
                 } else {
                     setCityName("北京");
@@ -187,18 +185,18 @@ public class PDApplication extends Application {
     }
 
     private void upLoadDistance() {
-        double distanceUp=distance/1000;
-        int stepCount=(int)(distance/0.4);
+        double distanceUp = distance / 1000;
+        int stepCount = (int) (distance / 0.4);
 
 
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
         String s = format.format(today);
         Map<String, String> params = new HashMap<>();
-        params.put("distance", distanceUp+" ");
-        params.put("stepCount", stepCount+" ");
+        params.put("distance", distanceUp + " ");
+        params.put("stepCount", stepCount + " ");
         params.put("publishDate", s);
         params.put("userId", GlobalParams.USER_ID);
-        params.put("token",  GlobalParams.TOKEN);
+        params.put("token", GlobalParams.TOKEN);
         mSubscription = NetRequestManager.getInstance().publishWalkRecord(params, new Subscriber<String>() {
             @Override
             public void onCompleted() {
@@ -226,6 +224,7 @@ public class PDApplication extends Application {
     public void setActId(String activityId) {
         this.activityId = activityId;
     }
+
     public double getDistance() {
         return distance;
     }
@@ -249,6 +248,7 @@ public class PDApplication extends Application {
     public void setCityName(String cityName) {
         this.cityName = cityName;
     }
+
     /**
      * 获取屏幕尺寸
      */
@@ -267,6 +267,7 @@ public class PDApplication extends Application {
         request.setTag(getTag());
         request.setServiceId(serviceId);
     }
+
     public void initStepRequest(BaseRequest request) {
         request.setTag(getStepTag());
         request.setServiceId(serviceId);
@@ -311,6 +312,7 @@ public class PDApplication extends Application {
             mStepClient.queryRealTimeLoc(locStepRequest, entityListener);
         }
     }
+
     /**
      * 获取请求标识
      *
@@ -319,9 +321,11 @@ public class PDApplication extends Application {
     public int getTag() {
         return mSequenceGenerator.incrementAndGet();
     }
+
     public int getStepTag() {
         return mStepSequenceGenerator.incrementAndGet();
     }
+
     /**
      * 清除Trace状态：初始化app时，判断上次是正常停止服务还是强制杀死进程，根据trackConf中是否有is_trace_started字段进行判断。
      * <p>
@@ -335,6 +339,7 @@ public class PDApplication extends Application {
             editor.apply();
         }
     }
+
     private void clearStepTraceStatus() {
         if (trackStepConf.contains("is_trace_started") || trackStepConf.contains("is_gather_started")) {
             SharedPreferences.Editor editor = trackStepConf.edit();

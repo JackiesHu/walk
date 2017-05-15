@@ -158,6 +158,12 @@ public interface NetRequestService {
     @FormUrlEncoded
     @POST(NetRequestParams.WALK_RECORD_BY_DAY)
     Observable</* RequestResultInfo<WalkWeatherInfo> */ String> queryWalkRecordByDay(@FieldMap Map<String, String> paramsMap);
+
+    //根据时间段获取步行记录
+    @FormUrlEncoded
+    @POST(NetRequestParams.WALK_RECORD_BY_MONTH)
+    Observable</* RequestResultInfo<WalkWeatherInfo> */ String> queryWalkRecordByMonth(@FieldMap Map<String, String> paramsMap);
+
     //根据时间段获取步行记录
     @FormUrlEncoded
     @POST(NetRequestParams.PUBLISH_WALK_RECORD)

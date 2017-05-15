@@ -291,11 +291,19 @@ public class NetRequestManager{
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }
-    //根据标题查询步行记录
+    //根据日查询步数
     public Subscription queryWalkRecordByDay(Map<String, String> paramsMap, Subscriber subscriber) {
         return RetrofitManager.getInstance()
                 .getNetRequestService()
                 .queryWalkRecordByDay(paramsMap)
+                .compose(TransformUtils.defaultSchedulers())
+                .subscribe(subscriber);
+    }
+    //根据月查询步数
+    public Subscription queryWalkRecordByMonth(Map<String, String> paramsMap, Subscriber subscriber) {
+        return RetrofitManager.getInstance()
+                .getNetRequestService()
+                .queryWalkRecordByMonth(paramsMap)
                 .compose(TransformUtils.defaultSchedulers())
                 .subscribe(subscriber);
     }

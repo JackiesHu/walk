@@ -86,11 +86,13 @@ public class NetRequestParams {
      * 根据时间段获取步行记录
      **/
     public static final String WALK_RECORD_BY_DAY = "walkman/wmWalkRecord/getDayWalkRecord";
+    //获取月的
+    public static final String WALK_RECORD_BY_MONTH = "walkman/wmWalkRecord/getDayWalkRecordByMonth";
     /**
      * 上传步行数
      **/
     public static final String PUBLISH_WALK_RECORD = "walkman/wmWalkRecord/publishWalkRecord";
     /** 发现推荐或吐槽*/
-    public static final String FOUND_COMMENT = "walkman/wmRemarkPoint/remarkPoint";
+    public static final String FOUND_COMMENT = "walkman/wmRemarkPoint/remarkPointAndroid";
 
 }

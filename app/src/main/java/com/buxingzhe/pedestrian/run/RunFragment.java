@@ -614,11 +614,11 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         paramsMap.put("star", RequestBody.create(MediaType.parse("multipart/form-data"),0+""));//Double 星级，可空
 
         int ss=run_bottom_walked_stress_star.getStarSize();
-        paramsMap.put("streetStar", RequestBody.create(MediaType.parse("multipart/form-data"),1+""));//Double 星级，可空
+        paramsMap.put("streetStar", RequestBody.create(MediaType.parse("multipart/form-data"),0+""));//Double 星级，可空
         int safeStar=run_bottom_walked_safety_star.getStarSize();
-        paramsMap.put("safeStar", RequestBody.create(MediaType.parse("multipart/form-data"),1+""));//Double 星级，可空
+        paramsMap.put("safeStar", RequestBody.create(MediaType.parse("multipart/form-data"),0+""));//Double 星级，可空
         int es=run_bottom_walked_environment_star.getStarSize();
-        paramsMap.put("envirStar", RequestBody.create(MediaType.parse("multipart/form-data"),1+""));//Double 星级，可空
+        paramsMap.put("envirStar", RequestBody.create(MediaType.parse("multipart/form-data"),0+""));//Double 星级，可空
 
         String introduction = TextUtils.isEmpty(bottom_intro.getText().toString()) ? "0" : bottom_intro.getText().toString();
         paramsMap.put("introduction", RequestBody.create(MediaType.parse("multipart/form-data"),introduction));//介绍，可空
@@ -654,7 +654,6 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
 
             @Override
             public void onNext(String s) {
-                System.out.println("s---"+s);
             }
 
         });

@@ -142,7 +142,6 @@ public class StepFragment extends BaseFragment {
             @Override
             public void onStartTraceCallback(int status, String message) {
                 if (StatusCodes.SUCCESS == status || StatusCodes.START_TRACE_NETWORK_CONNECT_FAILED <= status) {
-                    System.out.println("step--onStartTraceCallback");
 
                     trackApp.isStepTraceStarted = true;
                     SharedPreferences.Editor editor = trackApp.trackStepConf.edit();
@@ -153,7 +152,6 @@ public class StepFragment extends BaseFragment {
                         String.format("onStartTraceCallback, errorNo:%d, message:%s ", status, message));
 
                 startRefreshThread(true);
-                System.out.println("step--onStartTraceCallback");
             }
 
 
@@ -179,7 +177,6 @@ public class StepFragment extends BaseFragment {
             // 开启采集回调
             @Override
             public void onStartGatherCallback(int errorNo, String message) {
-                System.out.println("step--onStartGatherCallback---" + message);
                 if (StatusCodes.SUCCESS == errorNo || StatusCodes.GATHER_STARTED == errorNo) {
 
                     trackApp.isStepGatherStarted = true;
@@ -189,7 +186,6 @@ public class StepFragment extends BaseFragment {
                 }
                 ViewUtil.showToast(getActivity(),
                         String.format("onStartGatherCallback, errorNo:%d, message:%s ", errorNo, message));
-                System.out.println("step--onStartGatherCallback");
             }
 
             // 停止采集回调
@@ -243,12 +239,11 @@ public class StepFragment extends BaseFragment {
 
             @Override
             public void onHistoryTrackCallback(HistoryTrackResponse response) {
-                System.out.println("step--onHistoryTrackCallback");
                 int total = response.getTotal();
                 if (StatusCodes.SUCCESS != response.getStatus()) {
-                    ViewUtil.showToast(getActivity(), response.getMessage());
+                   // ViewUtil.showToast(getActivity(), response.getMessage());
                 } else if (0 == total) {
-                    ViewUtil.showToast(getActivity(), getString(R.string.no_track_data));
+                   // ViewUtil.showToast(getActivity(), getString(R.string.no_track_data));
                 } else {
                     List<TrackPoint> points = response.getTrackPoints();
                     if (null != points) {
@@ -278,7 +273,6 @@ public class StepFragment extends BaseFragment {
             public void onDistanceCallback(DistanceResponse response) {
                 super.onDistanceCallback(response);
                 if (StatusCodes.SUCCESS == response.getStatus()) {
-                    System.out.println("step--response" + response.getDistance());
                     if (distance < 1.5) {//1s最多1.5米，否则不算做步行
                         distance = distance + response.getDistance();
                         hourStepCount = hourStepCount + (int) (response.getDistance() / 0.4);
@@ -286,7 +280,6 @@ public class StepFragment extends BaseFragment {
                     distanceTv.setText(distance + "");
                     stepCountTv.setText((int) distance / 4 + "");
                 } else {
-                    System.out.println("step--response--返回有误");
                 }
 
 
@@ -345,17 +338,14 @@ public class StepFragment extends BaseFragment {
 
 
     protected void startStep() {
-        System.out.println("step--startStep");
         trackApp.isStepTraceStarted = true;
         trackApp.mClient.startTrace(trackApp.mTrace, mTraceListener);
-        System.out.println("step--startStep1");
         if (Constants.DEFAULT_PACK_INTERVAL != packInterval) {
             stopRealTimeLoc();
             startRealTimeLoc(packInterval);
         }
 
         trackApp.mClient.startGather(mTraceListener);
-        System.out.println("step--startStep2");
         startTime = CommonUtil.getCurrentTime();
     }
 
@@ -364,7 +354,6 @@ public class StepFragment extends BaseFragment {
      * 查询历史轨迹
      */
     private void queryHistoryTrack() {
-        System.out.println("step--queryHistoryTrack");
         endTime = CommonUtil.getCurrentTime();
         trackApp.initStepRequest(historyTrackRequest);
         trackApp.initStepRequest(distanceRequest);
@@ -516,7 +505,6 @@ public class StepFragment extends BaseFragment {
                 try {
                     Thread.sleep(packInterval * 100);
                 } catch (InterruptedException e) {
-                    System.out.println("线程休眠失败");
                 }
             }
 
@@ -530,7 +518,7 @@ public class StepFragment extends BaseFragment {
                 //TODO
                 stepList = stepCache.readStepsList();
                 HourStep hourStep = new HourStep();
-                hourStep.setHour(s);
+                hourStep.setHour(s+"点");
                 hourStep.setStepCount(hourStepCount);
                 stepList.add(hourStep);
                 hourStepCount = 0;
