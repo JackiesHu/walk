@@ -56,7 +56,7 @@ public class PDApplication extends Application {
     public SharedPreferences trackStepConf = null;
 
     public LBSTraceClient mClient = null;//轨迹客户端
-    public LBSTraceClient mStepClient = null;//轨迹客户端
+  //  public LBSTraceClient mStepClient = null;//轨迹客户端
 
     public Trace mTrace = null;//轨迹服务
     public Trace mStepTrace = null;//轨迹服务
@@ -94,9 +94,8 @@ public class PDApplication extends Application {
         if (today == null) {
             today = new Date();
         }
-        if (distance == 0) {
-            distance = 0;
-        }
+        distance = this.getSharedPreferences("stupdistance", Context.MODE_PRIVATE).getLong("stupdistanceKey", 0);
+
         PDConfig.getInstance().init(this);
         SDKInitializer.initialize(this);
         MobclickAgent.openActivityDurationTrack(false);
@@ -109,7 +108,7 @@ public class PDApplication extends Application {
         }
 
         mClient = new LBSTraceClient(mContext);
-        mStepClient = new LBSTraceClient(mContext);
+      //  mStepClient = new LBSTraceClient(mContext);
         mTrace = new Trace(serviceId, entityName);
         mStepTrace = new Trace(serviceId, entityStepName);
         trackConf = getSharedPreferences("track_conf", MODE_PRIVATE);
@@ -126,7 +125,7 @@ public class PDApplication extends Application {
                 return map;
             }
         });
-
+/*
         mStepClient.setOnCustomAttributeListener(new OnCustomAttributeListener() {
             @Override
             public Map<String, String> onTrackAttributeCallback() {
@@ -135,7 +134,7 @@ public class PDApplication extends Application {
                 map.put("key2", "value2");
                 return map;
             }
-        });
+        });*/
 
         clearTraceStatus();
         clearStepTraceStatus();
@@ -309,9 +308,9 @@ public class PDApplication extends Application {
             processOption.setNeedDenoise(true);
             processOption.setRadiusThreshold(100);
             request.setProcessOption(processOption);
-            mStepClient.queryLatestPoint(request, trackListener);
+            mClient.queryLatestPoint(request, trackListener);
         } else {
-            mStepClient.queryRealTimeLoc(locStepRequest, entityListener);
+            mClient.queryRealTimeLoc(locStepRequest, entityListener);
         }
     }
 

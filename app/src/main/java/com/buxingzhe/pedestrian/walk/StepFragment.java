@@ -126,12 +126,16 @@ public class StepFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-
+        startStep();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        SharedPreferences preferences = this.getActivity().getSharedPreferences("stupdistance", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putFloat("stupdistanceKey", (long)distance);
+        editor.commit();
     }
 
     private void initListener() {
@@ -224,17 +228,7 @@ public class StepFragment extends BaseFragment {
                     return;
                 }
 
-              /*  LatLng currentLatLng = mapUtil.convertTrace2Map(point.getLocation());
-                if (null == currentLatLng) {
-                    return;
-                }
-                CurrentLocation.locTime = point.getLocTime();
-                CurrentLocation.latitude = currentLatLng.latitude;
-                CurrentLocation.longitude = currentLatLng.longitude;
 
-                if (null != mapUtil) {
-                    mapUtil.updateStatus(currentLatLng, true);
-                }*/
             }
 
             @Override
@@ -388,14 +382,16 @@ public class StepFragment extends BaseFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        // 停止服务
-        trackApp.mClient.stopTrace(trackApp.mStepTrace, mTraceListener);
+
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        stopRealTimeLoc();
+        // 停止服务一直服务运行
+       /* stopStep();
+        trackApp.mClient.stopTrace(trackApp.mStepTrace, mTraceListener);
+        stopRealTimeLoc();*/
     }
 
     static class RealTimeHandler extends Handler {

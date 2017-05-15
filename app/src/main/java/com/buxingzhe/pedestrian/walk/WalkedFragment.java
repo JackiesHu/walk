@@ -249,7 +249,7 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("WalkFragment");
-        startStep();
+
     }
 
     @Override
@@ -313,10 +313,6 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
             @Override
             public void onNext(String jsonStr) {
                 Log.i("jsonStr" + jsonStr);
-               /* Gson gson = new Gson();
-                Object[] datas = JsonParseUtil.getInstance().parseJson(jsonStr, LatestActivityInfo.class);
-                String contentStr=(String) datas[1];
-                walkActivitityInfo = gson.fromJson(contentStr, WalkActivityInfo.class);*/
                 Gson gson2 = new Gson();
                 info = gson2.fromJson(jsonStr, LatestActivityInfo.class);
                 LatestActivityInfo.ContentBean content = info.getContent();
@@ -806,13 +802,6 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
                 walkActivitityInfo.setIsOutDate(content.getIsOutDate());
                 walkActivitityInfo.setTitle(content.getTitle());
 
-             /*   walkActivitityInfo.setCreateTimestamp((int)content.getCreateTimestamp());
-                walkActivitityInfo.setEndTimestamp((int)content.getEndTimestamp());
-                PublisherBean publisher=new PublisherBean();
-                publisher.setAvatarUrl(content.getPublisher().getAvatar());
-                publisher.setId(content.getPublisher().getId());
-                publisher.setNickName(content.getPublisher().getNickName());
-                walkActivitityInfo.setPublisher(publisher);*/
                 Intent intent = new Intent();
                 intent.setClass(mContext, CommActInfoActivity.class);
                 intent.putExtra(CommActFragment.WALKACTIVITYINFO, walkActivitityInfo);
@@ -858,9 +847,9 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
     public void onDestroy() {
         super.onDestroy();
 
-        if (isBind) {
-            mContext.unbindService(conn);
-        }
-        stopStep();
+        /*if (isBind) {
+            mContext.unbindService(conn); 震动计步
+        }*/
+
     }
 }

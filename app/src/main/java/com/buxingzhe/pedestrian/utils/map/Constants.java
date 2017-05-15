@@ -19,7 +19,7 @@ public final class Constants {
     /**
      * 轨迹分析查询间隔时间（1分钟）
      */
-    public static final int ANALYSIS_QUERY_INTERVAL = 60;
+    public static final int ANALYSIS_QUERY_INTERVAL = 20;
 
     /**
      * 停留点默认停留时间（1分钟）
