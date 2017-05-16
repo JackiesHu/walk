@@ -147,17 +147,25 @@ public class SplashActivity extends BaseActivity {
      * 申请读写/手机状态／定位权限
      */
     private void openPermission(Activity context) {
+
         RxPermissions rxPermissions = new RxPermissions(context);
         rxPermissions.requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.CAMERA,
                 Manifest.permission.ACCESS_COARSE_LOCATION)
                 .subscribe(new Action1<Permission>() {
+                    public int i=0;
+
                     @Override
                     public void call(Permission permission) {
                         if (permission.granted) {
                             // 用户已经同意该权限
-                            checkOverLayWindow();
+
+                            i++;
+                            if(i==3){
+                                checkOverLayWindow();
+                            }
+
                             Log.e("Permission : " + permission.name + " is granted!");
                         } else if (permission.shouldShowRequestPermissionRationale) {
                             // 用户拒绝了该权限，没有选中『不再询问』（Never ask again）,那么下次再次启动时，还会提示请求权限的对话框
@@ -193,6 +201,7 @@ public class SplashActivity extends BaseActivity {
 
     private void switchActivity() {
         Intent intent=new Intent(SplashActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 }

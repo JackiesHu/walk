@@ -448,6 +448,7 @@
                             android:textSize="14sp"/>
 
                         <TextView
+                            android:id="@+id/aveStepCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
@@ -475,6 +476,7 @@
                             android:textSize="14sp"/>
 
                         <TextView
+                            android:id="@+id/refreshTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="18：59"

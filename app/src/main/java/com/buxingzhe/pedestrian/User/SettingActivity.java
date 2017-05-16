@@ -53,7 +53,9 @@ public class SettingActivity extends BaseActivity {
                 break;
             case R.id.exitTv:
                 Intent intent1 = new Intent(SettingActivity.this, LoginActivity.class);
+                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);  //注意本行的FLAG设置
                 startActivity(intent1);
+                this.finish();
                 break;
         }
     }

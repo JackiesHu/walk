@@ -420,4 +420,19 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         super.onDestroy();
         isShowPwd = false;
     }
+
+    private long mExitTime = 0;
+    @Override
+    public void onBackPressed() {
+        //TODO something
+
+        if ((System.currentTimeMillis() - mExitTime) > 2000) {
+            Toast.makeText(this,"再按一次退出", Toast.LENGTH_SHORT).show();
+            mExitTime = System.currentTimeMillis();
+        } else {
+            LoginActivity.this.finish();
+        }
+
+    }
+
 }

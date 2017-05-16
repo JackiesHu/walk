@@ -132,9 +132,9 @@ public class StepFragment extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        SharedPreferences preferences = this.getActivity().getSharedPreferences("stupdistance", Context.MODE_PRIVATE);
+        SharedPreferences preferences = this.getActivity().getSharedPreferences("stepdistance", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putFloat("stupdistanceKey", (long)distance);
+        editor.putFloat("stepdistanceKey", (float) distance);
         editor.commit();
     }
 

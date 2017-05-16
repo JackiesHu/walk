@@ -94,7 +94,7 @@ public class PDApplication extends Application {
         if (today == null) {
             today = new Date();
         }
-        distance = this.getSharedPreferences("stupdistance", Context.MODE_PRIVATE).getLong("stupdistanceKey", 0);
+        distance = this.getSharedPreferences("stepdistance", Context.MODE_PRIVATE).getFloat("stepdistanceKey", 0);
 
         PDConfig.getInstance().init(this);
         SDKInitializer.initialize(this);
@@ -171,8 +171,9 @@ public class PDApplication extends Application {
 
             @Override
             public void onReceiveLocation(BDLocation location) {
-                if (location != null) {
-                    String city = location.getCity();
+                String city = location.getCity();
+                if (city != null) {
+
                     city = city.replaceAll("市", "");
                     setCityName(city);
                 } else {
