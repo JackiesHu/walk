@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.widget.TitleBarLinstener;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
 import com.umeng.analytics.MobclickAgent;
@@ -94,6 +95,10 @@ public class BaseActivity extends AppCompatActivity implements TitleBarLinstener
     @Override
     protected void onResume() {
         super.onResume();
+        if(GlobalParams.TOKEN==null){
+            GlobalParams.TOKEN= mContext.getSharedPreferences("token", Context.MODE_PRIVATE).getString("token", "");
+            GlobalParams.USER_ID=mContext.getSharedPreferences("userid", Context.MODE_PRIVATE).getString("userid", "");
+        }
         String contextString = mContext.toString();
         MobclickAgent.onPageStart(contextString); //统计页面(仅有Activity的应用中SDK自动调用，不需要单独写。"SplashScreen"为页面名称，可自定义)
         MobclickAgent.onResume(this);          //统计时长

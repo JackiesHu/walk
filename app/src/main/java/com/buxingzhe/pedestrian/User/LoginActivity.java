@@ -2,7 +2,9 @@ package com.buxingzhe.pedestrian.User;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -330,6 +332,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                         GlobalParams.TOKEN = resultInfo.getToken();
                         GlobalParams.USER_ID = resultInfo.getId();
                         GlobalParams.mUserLoginResultInfo = resultInfo;
+
+
+                        SharedPreferences preferences = getSharedPreferences("token", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putString("token", GlobalParams.TOKEN);
+                        editor.commit();
+                        SharedPreferences preferencesId = getSharedPreferences("userid", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editorId = preferencesId.edit();
+                        editorId.putString("userid", GlobalParams.USER_ID);
+                        editorId.commit();
 
                         //TODO 跳转Main
                         EnterActUtils.enterMainActivity(LoginActivity.this);

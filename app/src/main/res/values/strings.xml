@@ -16,7 +16,7 @@
     <string name="walk_data_week">周</string>
     <string name="walk_data_month">月</string>
     <string name="walk_data_year">年</string>
-    <string name="walk_data_average">日平均值：</string>
+    <string name="walk_data_average">平均值：</string>
     <string-array name="walk_spinner">
         <item>步数</item>
         <item>联盟排名</item>

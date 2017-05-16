@@ -588,7 +588,7 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
             }
 
         }
-        aveStepCount.setText(aveCount+"");
+        aveStepCount.setText(aveCount+"/日");
         setFreshTime();
         setChartData();
     }
@@ -645,7 +645,7 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
                         XDatas.add(d+"日");
                     }
                 }
-                aveStepCount.setText((int)(aveCount/7)+"");
+                aveStepCount.setText((int)(aveCount/7)+"/日");
                 setFreshTime();
                 setChartData();
             }
@@ -726,7 +726,7 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
                         XDatas.add(d+"日");
                     }
                 }
-                aveStepCount.setText((int)(aveCount/30)+"");
+                aveStepCount.setText((int)(aveCount/30)+"/日");
                 setFreshTime();
                 setChartData();
             }
@@ -774,7 +774,7 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
                         XDatas.add(d+"月");
                     }
                 }
-                aveStepCount.setText((int)(aveCount/12)+"");
+                aveStepCount.setText((int)(aveCount/12)+"/月");
                 setFreshTime();
                 setChartData();
             }
