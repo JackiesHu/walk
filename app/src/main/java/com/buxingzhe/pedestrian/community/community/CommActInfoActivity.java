@@ -3,16 +3,10 @@ package com.buxingzhe.pedestrian.community.community;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -21,13 +15,8 @@ import android.widget.Toast;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
-import com.buxingzhe.pedestrian.activity.BaseAdapter;
-import com.buxingzhe.pedestrian.activity.ILoadCallback;
-import com.buxingzhe.pedestrian.activity.LoadMoreAdapterWrapper;
 import com.buxingzhe.pedestrian.activity.MainActivity;
-import com.buxingzhe.pedestrian.activity.OnLoad;
 import com.buxingzhe.pedestrian.application.PDApplication;
-import com.buxingzhe.pedestrian.bean.activity.WalkActivitiesInfo;
 import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordsByActivity;
 import com.buxingzhe.pedestrian.common.GlobalParams;
@@ -68,10 +57,11 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
     private ImageView iv_banner;
     private TextView tv_attend;
     private RelativeLayout introductionRL;
-    private TextView tv_introduction;
+    private TextView tv_introduction_simple;
+    private TextView tv_introduction_all;
     private ImageView iv_up;
     private ImageView iv_down;
-    private String simple_introdution = "";
+    private int isShowAll;
 
 
     @Override
@@ -112,21 +102,21 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onRightImageListener(View v) {
 
-        UMImage thumb=null;
-        if(walkActivityInfo.getBanner()==null){
-             thumb =  new UMImage(this, walkActivityInfo.getBanner());
-        }else{
-           thumb =  new UMImage(this, R.mipmap.ic_launcher);
+        UMImage thumb = null;
+        if (walkActivityInfo.getBanner() == null) {
+            thumb = new UMImage(this, walkActivityInfo.getBanner());
+        } else {
+            thumb = new UMImage(this, R.mipmap.ic_launcher);
         }
 
         UMWeb web = new UMWeb("http://www.bxzlm.com/?from=singlemessage&isappinstalled=1");
         web.setTitle(walkActivityInfo.getTitle());//标题
         web.setThumb(thumb);  //缩略图
-        final ShareContent sharecontent= new ShareContent();
+        final ShareContent sharecontent = new ShareContent();
         sharecontent.mText = walkActivityInfo.getIntroduction();
         sharecontent.mMedia = web;
         new ShareAction(CommActInfoActivity.this).withText("hello")
-                .setDisplayList(SHARE_MEDIA.WEIXIN_CIRCLE,SHARE_MEDIA.WEIXIN)
+                .setDisplayList(SHARE_MEDIA.WEIXIN_CIRCLE, SHARE_MEDIA.WEIXIN)
 
                 .setShareboardclickCallback(new ShareBoardlistener() {
                     @Override
@@ -146,6 +136,7 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
         public void onStart(SHARE_MEDIA platform) {
             //分享开始的回调
         }
+
         @Override
         public void onResult(SHARE_MEDIA platform) {
 
@@ -155,14 +146,14 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
 
         @Override
         public void onError(SHARE_MEDIA platform, Throwable t) {
-            Toast.makeText(CommActInfoActivity.this,platform + " 分享失败啦", Toast.LENGTH_SHORT).show();
-            if(t!=null){
+            Toast.makeText(CommActInfoActivity.this, platform + " 分享失败啦", Toast.LENGTH_SHORT).show();
+            if (t != null) {
             }
         }
 
         @Override
         public void onCancel(SHARE_MEDIA platform) {
-            Toast.makeText(CommActInfoActivity.this,platform + " 分享取消了", Toast.LENGTH_SHORT).show();
+            Toast.makeText(CommActInfoActivity.this, platform + " 分享取消了", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -177,7 +168,8 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
         iv_banner = (ImageView) headView.findViewById(R.id.iv_banner);
         tv_attend = (TextView) headView.findViewById(R.id.tv_attend);
         introductionRL = (RelativeLayout) headView.findViewById(R.id.introductionRL);
-        tv_introduction = (TextView) headView.findViewById(R.id.tv_introduction);
+        tv_introduction_simple = (TextView) headView.findViewById(R.id.tv_introduction_simple);
+        tv_introduction_all = (TextView) headView.findViewById(R.id.tv_introduction_all);
         iv_up = (ImageView) headView.findViewById(R.id.iv_up);
         iv_down = (ImageView) headView.findViewById(R.id.iv_down);
 
@@ -192,7 +184,7 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
         }
         if (!TextUtils.isEmpty(walkActivityInfo.getBanner())) {
             PicassManager.getInstance().load(mContext, walkActivityInfo.getBanner(), iv_banner);
-        }else{
+        } else {
             iv_banner.setImageResource(R.mipmap.ic_shequ_tupian_moren);
         }
         if (!TextUtils.isEmpty(walkActivityInfo.getIsOutDate())) {
@@ -208,6 +200,8 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
 //                tv_attend.setOnClickListener(null);
             }
         }
+
+        introductionRL.setOnClickListener(this);
         if (!TextUtils.isEmpty(walkActivityInfo.getIntroduction())) {
             setContentText(walkActivityInfo.getIntroduction());
         } else {
@@ -224,7 +218,6 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
                 PDApplication myApp = (PDApplication) getApplication();
                 //设置名字
                 myApp.setActId(walkActivityInfo.getId());
-
                 Intent it = new Intent(CommActInfoActivity.this, MainActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("fragId", 2);
@@ -234,11 +227,8 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
                 finish();
 
                 break;
-            case R.id.iv_up:
-                isShowAllIntro(false);
-                break;
-            case R.id.iv_down:
-                isShowAllIntro(true);
+            case R.id.introductionRL:
+                isShowAllIntro(isShowAll);
                 break;
         }
 
@@ -258,30 +248,47 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
         int linecount = tvWidth / textsize;
 
         if (str.length() > linecount * 3) {
-            newstr = str.substring(0, linecount * 3);
-            simple_introdution = newstr + "...\n";
-            isShowAllIntro(false);
+//            newstr = str.substring(0, linecount * 3);
+//            simple_introdution = newstr + "...\n";
+//            isShowAllIntro(false);
+
+            isShowAllIntro(2);
+
         } else {
-            tv_introduction.setText(walkActivityInfo.getIntroduction());
-            iv_up.setVisibility(View.GONE);
-            iv_down.setVisibility(View.GONE);
+            isShowAllIntro(0);
+
         }
     }
 
     /**
      * 是否展示所有的介绍
-     *
      * @param isFlag
+     * 0 不够三行
+     * 1 显示全部
+     * 2 显示部分
      */
-    private void isShowAllIntro(boolean isFlag) {
-        if (isFlag) {
-            if (!TextUtils.isEmpty(walkActivityInfo.getIntroduction())) {
-                tv_introduction.setText(walkActivityInfo.getIntroduction());
-            }
-        } else {
+    private void isShowAllIntro(int isFlag) {
+        if (isFlag==0) {
+            isShowAll = 0;
+            iv_up.setVisibility(View.GONE);
+            iv_down.setVisibility(View.GONE);
+            tv_introduction_simple.setVisibility(View.VISIBLE);
+            tv_introduction_all.setVisibility(View.GONE);
+            tv_introduction_simple.setText(walkActivityInfo.getIntroduction());
+        } if (isFlag==1) {
+            isShowAll = 2;
+            iv_up.setVisibility(View.VISIBLE);
+            iv_down.setVisibility(View.GONE);
+            tv_introduction_simple.setVisibility(View.GONE);
+            tv_introduction_all.setVisibility(View.VISIBLE);
+            tv_introduction_all.setText(walkActivityInfo.getIntroduction());
+        } else if(isFlag==2){
+            isShowAll = 1;
             iv_up.setVisibility(View.GONE);
             iv_down.setVisibility(View.VISIBLE);
-            tv_introduction.setText(simple_introdution);
+            tv_introduction_simple.setVisibility(View.VISIBLE);
+            tv_introduction_all.setVisibility(View.GONE);
+            tv_introduction_simple.setText(walkActivityInfo.getIntroduction());
         }
     }
 

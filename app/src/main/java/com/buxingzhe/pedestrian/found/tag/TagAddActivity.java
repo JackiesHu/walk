@@ -9,17 +9,26 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import com.alibaba.fastjson.JSON;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.bean.HotUserTag;
+import com.buxingzhe.pedestrian.bean.RequestResultInfo;
+import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.SwipeRefreshProperty;
 import com.buxingzhe.pedestrian.found.bean.HotTagBean;
+import com.buxingzhe.pedestrian.found.bean.Tag;
+import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.listen.SwpipeListViewOnScrollListener;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import rx.Subscriber;
 
 /**
  * 评价
@@ -33,6 +42,7 @@ public class TagAddActivity extends BaseActivity implements View.OnClickListener
     private AddTagAdapter addTagAdapter;
     private String checkTag = "";
     private RelativeLayout vAddTagRL;
+    private List<Tag> tags;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +68,8 @@ public class TagAddActivity extends BaseActivity implements View.OnClickListener
     public void loadData() {
         addTagAdapter = new AddTagAdapter(mContext);
         mListView.setAdapter(addTagAdapter);
-        getHotTag(true, checkTag);
+        loadTag();
+
     }
     public void addListen() {
         mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -66,7 +77,7 @@ public class TagAddActivity extends BaseActivity implements View.OnClickListener
             public void onRefresh() {
                 //刷新数据操作
                 currentIndex = 1;
-                getHotTag(true, checkTag);
+                loadTag();
             }
         });
 
@@ -95,37 +106,59 @@ public class TagAddActivity extends BaseActivity implements View.OnClickListener
 
     private void addTag() {
         Intent intent = new Intent();
-        ArrayList<HotUserTag> hotSelectTags = new ArrayList<>();
+        ArrayList<Tag> hotSelectTags = new ArrayList<>();
         if (addTagAdapter != null){
-            ArrayList<HotUserTag> hotUserTags = addTagAdapter.getHotUserTags();
+            ArrayList<Tag> hotUserTags = addTagAdapter.getHotUserTags();
             for (int i=0;i<hotUserTags.size();i++){
-               HotUserTag tag = hotUserTags.get(i);
-               if (tag.isSelect){
+                Tag tag = hotUserTags.get(i);
+               if (tag.isSelect()){
                    hotSelectTags.add(tag);
                }
             }
         }
-        HotTagBean tagBean = new HotTagBean();
-        tagBean.hotSelectTags = hotSelectTags;
-        intent.putExtra("data",tagBean);
+        intent.putExtra("data",hotSelectTags);
         setResult(RESULT_OK, intent);
         EnterActUtils.finishActivity(mActivity);
     }
 
+    private void loadTag() {
+        Map<String,String> paramsMap = new HashMap<>();
+        paramsMap.put("userId", GlobalParams.USER_ID);
+        paramsMap.put("code","1");
 
-    private void getHotTag(final boolean isClean,String checkTag){
-        List<HotUserTag> hotUserTags = new ArrayList<>();
-        HotUserTag tag1 = new HotUserTag();
-        tag1.tag = "极美的";
-        hotUserTags.add(tag1);
-        HotUserTag tag2 = new HotUserTag();
-        tag2.tag = "大家都喜欢";
-        hotUserTags.add(tag2);
-        HotUserTag tag3 = new HotUserTag();
-        tag3.tag = "天天跑步";
-        hotUserTags.add(tag3);
+        Subscriber mSubscriber = new Subscriber<String>(){
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(final String jsonStr) {
+                // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+                RequestResultInfo resultInfo = JSON.parseObject(jsonStr, RequestResultInfo.class);
+                if ("0".equals(resultInfo.getCode())) {
+                    Object o = resultInfo.getContent();
+                    if (o != null) {
+                        tags = JSON.parseArray(o.toString(),Tag.class);
+                        getHotTag(true, tags);
+                    }
+                }
+            }
+        };
+
+        NetRequestManager.getInstance().queryTag(paramsMap,mSubscriber);
+    }
+
+    private void getHotTag(final boolean isClean, List<Tag> tags){
+
         if (addTagAdapter != null){
-            addTagAdapter.setHotUserTagDatas(isClean,hotUserTags);
+            addTagAdapter.setHotUserTagDatas(isClean,tags);
         }
         stopRefresh();
 
@@ -157,8 +190,8 @@ public class TagAddActivity extends BaseActivity implements View.OnClickListener
                 if (resultCode == RESULT_OK) {
                     String tag = data.getStringExtra("createTag");
                     if (!TextUtils.isEmpty(tag)) {
-                        HotUserTag hotUserTags = new HotUserTag();
-                        hotUserTags.tag = tag;
+                        Tag hotUserTags = new Tag();
+                        hotUserTags.setName(tag);
                         if (addTagAdapter != null) {
                             addTagAdapter.getHotUserTags().add(0, hotUserTags);
                             addTagAdapter.notifyDataSetChanged();

@@ -86,7 +86,7 @@ public class WalkRecordInfo implements Parcelable {
         createTime = in.readString();
         user = in.readParcelable(UserBaseInfo.class.getClassLoader());
         stepCount = in.readInt();
-        distance = in.readInt();
+        distance = in.readDouble();
         duration = in.readString();
         altitudeAsend = in.readString();
         altitudeHigh = in.readString();
@@ -161,7 +161,7 @@ public class WalkRecordInfo implements Parcelable {
         return distance;
     }
 
-    public void setDistance(int distance) {
+    public void setDistance(double distance) {
         this.distance = distance;
     }
 
