@@ -1,18 +1,14 @@
 package com.buxingzhe.pedestrian.found;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -25,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -51,7 +46,6 @@ import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.TextOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.SearchResult;
-import com.baidu.mapapi.search.geocode.GeoCodeOption;
 import com.baidu.mapapi.search.geocode.GeoCodeResult;
 import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
@@ -59,7 +53,6 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.buxingzhe.pedestrian.R;
-import com.buxingzhe.pedestrian.activity.MainActivity;
 import com.buxingzhe.pedestrian.bean.RequestResultInfo;
 import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
 import com.buxingzhe.pedestrian.found.bean.Streets;
@@ -98,12 +91,12 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     private MyLocationConfiguration.LocationMode mCurrentMode;
     private Marker prevMarker;
     private LinearLayout vTraffic;
+    private LinearLayout linear_center;
 
     private boolean isCloseTraffic;
     private ImageView vImageTraffic;
     public static LatLng ll;
     private PopupWindow popupWindow;
-    private Marker marker;
 
     private List<Marker> overlays = new ArrayList<>();
     private List<Marker> lines = new ArrayList<>();
@@ -143,7 +136,6 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         findViewId(view);
         onClick();
         initBaiduMap();
-//        searchRouteProcess();
         initCenterLat();
         return view;
     }
@@ -204,6 +196,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                         .fromScreenLocation(new Point(getResources().getDisplayMetrics().widthPixels / 2,vMapView.getHeight()/2));
                 loadStreets(centerLatLng);
                 loadNearByPoint(centerLatLng);
+                showMarker(centerLatLng);
             }
 
             @Override
@@ -313,6 +306,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         vMunuSearch.setOnClickListener(this);
         mBaidumap.setOnMarkerClickListener(markerClickListener);
         vTraffic.setOnClickListener(this);
+        linear_center.setOnClickListener(this);
     }
 
     public void findViewId(View view) {
@@ -321,6 +315,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         vMapView = (MapView) view.findViewById(R.id.map);
         vTraffic = (LinearLayout)view.findViewById(R.id.traffic);
         vImageTraffic = (ImageView) view.findViewById(R.id.iv_traffic);
+        linear_center = (LinearLayout) view.findViewById(R.id.linear_center);
         mBaidumap = vMapView.getMap();
         toolbar.setTitle("发现");
 
@@ -333,21 +328,6 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         MapStatusUpdate u = MapStatusUpdateFactory.zoomTo(20);
         mBaidumap.animateMapStatus(u);
         initLocation();
-        mBaidumap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
-
-            @Override
-            public void onMapClick(LatLng latLng) {
-                remarkPoint = null;
-                showMarker(latLng);
-            }
-
-            @Override
-            public boolean onMapPoiClick(MapPoi mapPoi) {
-
-                return false;
-            }
-
-        });
 
         setTraffic();
     }
@@ -358,23 +338,6 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
 
         mGeoSearch.setOnGetGeoCodeResultListener(geoListener);
         mGeoSearch.reverseGeoCode(new ReverseGeoCodeOption().location(latLng));
-        if (marker == null){
-            MarkerOptions clickMarker = new MarkerOptions().icon(click)
-                    .zIndex(9).draggable(false).flat(true);
-            clickMarker.position(latLng);
-
-            marker = (Marker) mBaidumap.addOverlay(clickMarker);
-        }
-        //创建InfoWindow展示的view
-        TextView button = new TextView(mContext);
-        button.setText("点击这里标记");
-        button.setBackgroundColor(Color.WHITE);
-        button.setPadding(20,20,20,20);
-        //创建InfoWindow , 传入 view， 地理坐标， y 轴偏移量
-        InfoWindow mInfoWindow = new InfoWindow(button, latLng, -click.getBitmap().getHeight());
-        //显示InfoWindow
-        mBaidumap.showInfoWindow(mInfoWindow);
-        marker.setPosition(latLng);
     }
 
     public void initOverlay(List<RemarkPoint> suggLocas) {
@@ -435,21 +398,18 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     BaiduMap.OnMarkerClickListener markerClickListener = new BaiduMap.OnMarkerClickListener() {
         @Override
         public boolean onMarkerClick(Marker marker) {
-            if (marker.isFlat()){
-                showPop();
-            }else {
-                RemarkPoint remarkPoint = marker.getExtraInfo().getParcelable("data");
-                int height = marker.getIcon().getBitmap().getHeight();
-                ImageView view = createView();
-                InfoWindow mInfoWindow = new InfoWindow(view, new LatLng(remarkPoint.getLatitude(), remarkPoint.getLongitude()), -height + 20);
-                mBaidumap.showInfoWindow(mInfoWindow);
-                marker.setIcon(bdPre);
-                if (prevMarker != null) {
-                    prevMarker.setIcon(bdnor);
-                }
-                prevMarker = marker;
-                goWalkDetail(remarkPoint);
+
+            RemarkPoint remarkPoint = marker.getExtraInfo().getParcelable("data");
+            int height = marker.getIcon().getBitmap().getHeight();
+            ImageView view = createView();
+            InfoWindow mInfoWindow = new InfoWindow(view, new LatLng(remarkPoint.getLatitude(), remarkPoint.getLongitude()), -height + 20);
+            mBaidumap.showInfoWindow(mInfoWindow);
+            marker.setIcon(bdPre);
+            if (prevMarker != null) {
+                prevMarker.setIcon(bdnor);
             }
+            prevMarker = marker;
+            goWalkDetail(remarkPoint);
             return false;
         }
     };
@@ -511,6 +471,9 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
             case R.id.traffic:
                 isCloseTraffic = !isCloseTraffic;
                 setTraffic();
+                break;
+            case R.id.linear_center:
+                showPop();
                 break;
         }
     }

@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.bean.HotUserTag;
+import com.buxingzhe.pedestrian.found.bean.Tag;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 public class AddTagAdapter extends BaseAdapter{
     private Context mContext;
-    private ArrayList<HotUserTag> hotUserTags = new ArrayList<>();
+    private ArrayList<Tag> hotUserTags = new ArrayList<>();
 
     public AddTagAdapter(Context mContext){
         this.mContext = mContext;
@@ -34,7 +35,7 @@ public class AddTagAdapter extends BaseAdapter{
     }
 
     @Override
-    public HotUserTag getItem(int position) {
+    public Tag getItem(int position) {
 //        position -- ;
 //        if (position<0){
 //            position = 0;
@@ -64,18 +65,18 @@ public class AddTagAdapter extends BaseAdapter{
         }else{
             holder = (Holder) convertView.getTag();
         }
-        final HotUserTag hotUserTag = hotUserTags.get(position);
-        if (!TextUtils.isEmpty(hotUserTag.tag)){
-            holder.tv_tag.setText(hotUserTag.tag);
+        final Tag hotUserTag = hotUserTags.get(position);
+        if (!TextUtils.isEmpty(hotUserTag.getName())){
+            holder.tv_tag.setText(hotUserTag.getName());
         }
         final ImageView tvSelect = holder.tv_select;
         final TextView tvTag = holder.tv_tag;
-        setVisible(holder.tv_select,holder.tv_tag,hotUserTag.isSelect);
+        setVisible(holder.tv_select,holder.tv_tag,hotUserTag.isSelect());
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hotUserTags.get(position).isSelect = !hotUserTags.get(position).isSelect;
-                setVisible(tvSelect,tvTag, hotUserTag.isSelect);
+                hotUserTags.get(position).setSelect(!hotUserTags.get(position).isSelect());
+                setVisible(tvSelect,tvTag, hotUserTag.isSelect());
             }
         });
         return convertView;
@@ -90,15 +91,15 @@ public class AddTagAdapter extends BaseAdapter{
         }
 
     }
-    public void setHotUserTagDatas(boolean isClean,List<HotUserTag> hotUserTags){
+    public void setHotUserTagDatas(boolean isClean,List<Tag> tags){
         if (isClean){
             this.hotUserTags.clear();
         }
-        this.hotUserTags.addAll(hotUserTags);
+        this.hotUserTags.addAll(tags);
         notifyDataSetChanged();
     }
 
-    public ArrayList<HotUserTag> getHotUserTags() {
+    public ArrayList<Tag> getHotUserTags() {
         return hotUserTags;
     }
 }
