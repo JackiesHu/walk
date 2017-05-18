@@ -602,8 +602,8 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         String title = TextUtils.isEmpty(bottom_title.getText().toString()) ? "0" : bottom_title.getText().toString();
         paramsMap.put("title",RequestBody.create(MediaType.parse("multipart/form-data"), title));//记录标题，可空
 
-        paramsMap.put("stepCount", RequestBody.create(MediaType.parse("multipart/form-data"),0+""));//Integer  步数，可空
-        paramsMap.put("distance", RequestBody.create(MediaType.parse("multipart/form-data"),0 + ""));//Integer 距离，可空
+        paramsMap.put("stepCount", RequestBody.create(MediaType.parse("multipart/form-data"),stepCount+""));//Integer  步数，可空
+        paramsMap.put("distance", RequestBody.create(MediaType.parse("multipart/form-data"),distance/1000+ ""));//Integer 距离，可空
         String dura = TextUtils.isEmpty(tv_duration.getText().toString()) ? "0" : tv_duration.getText().toString();
         paramsMap.put("duration", RequestBody.create(MediaType.parse("multipart/form-data"),dura));//Integer 时长，可空
         String altitudeAsend = TextUtils.isEmpty(tv_altitudeAsend.getText().toString()) ? "0" : tv_altitudeAsend.getText().toString();
@@ -625,11 +625,12 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         paramsMap.put("star", RequestBody.create(MediaType.parse("multipart/form-data"),0+""));//Double 星级，可空
 
         int ss=run_bottom_walked_stress_star.getStarSize();
-        paramsMap.put("streetStar", RequestBody.create(MediaType.parse("multipart/form-data"),0+""));//Double 星级，可空
+        paramsMap.put("streetStar", RequestBody.create(MediaType.parse("multipart/form-data"),ss+""));//Double 星级，可空
         int safeStar=run_bottom_walked_safety_star.getStarSize();
-        paramsMap.put("safeStar", RequestBody.create(MediaType.parse("multipart/form-data"),0+""));//Double 星级，可空
+
+        paramsMap.put("safeStar", RequestBody.create(MediaType.parse("multipart/form-data"),safeStar+""));//Double 星级，可空
         int es=run_bottom_walked_environment_star.getStarSize();
-        paramsMap.put("envirStar", RequestBody.create(MediaType.parse("multipart/form-data"),0+""));//Double 星级，可空
+        paramsMap.put("envirStar", RequestBody.create(MediaType.parse("multipart/form-data"),es+""));//Double 星级，可空
 
         String introduction = TextUtils.isEmpty(bottom_intro.getText().toString()) ? "0" : bottom_intro.getText().toString();
         paramsMap.put("introduction", RequestBody.create(MediaType.parse("multipart/form-data"),introduction));//介绍，可空
@@ -665,6 +666,8 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
 
             @Override
             public void onNext(String s) {
+                System.out.println("walk--response"+s);
+
             }
 
         });

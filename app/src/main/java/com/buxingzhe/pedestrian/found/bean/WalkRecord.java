@@ -48,7 +48,7 @@ public class WalkRecord extends RemarkPoint implements Parcelable{
     private UserBaseInfo user;
     private String activity;
     private int stepCount;
-    private int distance;
+    private double distance;
     private String duration;
     private String altitudeAsend;
     private String altitudeHigh;
@@ -81,7 +81,7 @@ public class WalkRecord extends RemarkPoint implements Parcelable{
         user = in.readParcelable(UserBaseInfo.class.getClassLoader());
         activity = in.readString();
         stepCount = in.readInt();
-        distance = in.readInt();
+        distance = in.readDouble();
         duration = in.readString();
         altitudeAsend = in.readString();
         altitudeHigh = in.readString();
@@ -164,11 +164,11 @@ public class WalkRecord extends RemarkPoint implements Parcelable{
         this.stepCount = stepCount;
     }
 
-    public int getDistance() {
+    public double getDistance() {
         return distance;
     }
 
-    public void setDistance(int distance) {
+    public void setDistance(double distance) {
         this.distance = distance;
     }
 
@@ -345,7 +345,7 @@ public class WalkRecord extends RemarkPoint implements Parcelable{
         dest.writeParcelable(user, flags);
         dest.writeString(activity);
         dest.writeInt(stepCount);
-        dest.writeInt(distance);
+        dest.writeDouble(distance);
         dest.writeString(duration);
         dest.writeString(altitudeAsend);
         dest.writeString(altitudeHigh);

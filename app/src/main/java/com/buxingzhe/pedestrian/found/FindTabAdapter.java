@@ -67,12 +67,12 @@ public class FindTabAdapter extends FragmentPagerAdapter {
 
             @Override
             public void onError(Throwable e) {
-
             }
 
             @Override
             public void onNext(final String jsonStr) {
                 // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+
                 RequestResultInfo resultInfo = JSON.parseObject(jsonStr, RequestResultInfo.class);
                 if ("0".equals(resultInfo.getCode())) {
                     Object o = resultInfo.getContent();

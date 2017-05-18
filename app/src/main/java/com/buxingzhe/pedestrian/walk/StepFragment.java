@@ -93,7 +93,7 @@ public class StepFragment extends BaseFragment {
 
     protected double distance = 0;
     private HourStepCache stepCache;
-    private List<HourStep> stepList = new ArrayList<HourStep>();
+    private List<HourStep> stepList = new ArrayList<>();
     private int hourStepCount = 0;
     private String timeStap;
 
@@ -512,7 +512,10 @@ public class StepFragment extends BaseFragment {
             trackApp.setDistance(distance);
             if (!timeStap.equals(s)) {
                 //TODO
-                stepList = stepCache.readStepsList();
+                if(stepCache.readStepsList()!=null){
+                    stepList = stepCache.readStepsList();
+                }
+
                 HourStep hourStep = new HourStep();
                 hourStep.setHour(s+"点");
                 hourStep.setStepCount(hourStepCount);

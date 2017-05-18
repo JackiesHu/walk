@@ -94,12 +94,14 @@ public class CommCircleFragment extends BaseFragment {
 
             @Override
             public void onError(Throwable e) {
+
                 stopRefreshAnimation();
             }
 
             @Override
             public void onNext(String jsonStr) {
                 // 由于服务端的返回数据格式不固定，因此这里采用手动解析
+
                 Object[] datas = JsonParseUtil.getInstance().parseJsonList(jsonStr, WalkRecordsInfo.class);
                 if ((Integer) datas[0] == 0) {
                     WalkRecordsInfo walkRecordsInfo = new Gson().fromJson(datas[1].toString(), WalkRecordsInfo.class);

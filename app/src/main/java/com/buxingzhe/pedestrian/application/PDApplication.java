@@ -171,6 +171,7 @@ public class PDApplication extends Application {
 
             @Override
             public void onReceiveLocation(BDLocation location) {
+
                 String city = location.getCity();
                 if (city != null) {
 

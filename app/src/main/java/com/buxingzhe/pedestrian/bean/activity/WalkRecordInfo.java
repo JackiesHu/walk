@@ -55,7 +55,7 @@ public class WalkRecordInfo implements Parcelable {
     private String createTime;
     private UserBaseInfo user;
     private int stepCount;
-    private int distance;
+    private double distance;
     private String duration;
     private String altitudeAsend;
     private String altitudeHigh;
@@ -157,7 +157,7 @@ public class WalkRecordInfo implements Parcelable {
         this.stepCount = stepCount;
     }
 
-    public int getDistance() {
+    public double getDistance() {
         return distance;
     }
 
@@ -368,7 +368,7 @@ public class WalkRecordInfo implements Parcelable {
         parcel.writeString(createTime);
         parcel.writeParcelable(user, i);
         parcel.writeInt(stepCount);
-        parcel.writeInt(distance);
+        parcel.writeDouble(distance);
         parcel.writeString(duration);
         parcel.writeString(altitudeAsend);
         parcel.writeString(altitudeHigh);
