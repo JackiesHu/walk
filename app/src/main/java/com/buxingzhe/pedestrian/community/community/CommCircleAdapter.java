@@ -111,6 +111,7 @@ public class CommCircleAdapter extends BaseAdapter {
         } else {
             holder.tv_content.setVisibility(View.GONE);
         }
+        holder.viewsLL.removeAllViews();
         if (!TextUtils.isEmpty(walkRecordInfo.getViews())) {
             String[] strings = walkRecordInfo.getViews().split(";");
 //            List<String> views = new ArrayList<>();
