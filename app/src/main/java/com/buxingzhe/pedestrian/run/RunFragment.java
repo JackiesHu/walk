@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -73,6 +74,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
     private PDApplication myApp;
     private PicAdapter adapter;
 
+
     public void setOnInteractionData(OnInteractionData onInteractionData) {
         mOnInteractionData = onInteractionData;
     }
@@ -100,6 +102,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
     private TextView tv_calorie;
     private TextView tv_fat;
     private TextView tv_nutrition;
+    private Button isPublicBtn;
 
     // 底部All View
     private LinearLayout mLLBottomAllView;
@@ -118,12 +121,13 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
     //分享图片
     private AndroidImagePicker mImagePicker;
     private List<String> pics = new ArrayList<>();
-    ;
+
     private List<String> picNames = new ArrayList<>();
-    ;
+
     private List<MultipartBody.Part> picParts = new ArrayList<>();
     private MultipartBody.Part pathPic =null;
     private FullGridView gv_pic ;
+    private int isPublic=1;
 
     private Handler mCountDownHander = new Handler() {
         @Override
@@ -228,6 +232,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         bottom_intro = (EditText) view.findViewById(R.id.run_ll_bottom_intro);
         bottom_title = (EditText) view.findViewById(R.id.run_ll_bottom_title);
         gv_pic = (FullGridView) view.findViewById(R.id.bottom_gv_pic);
+        isPublicBtn=(Button)view.findViewById(R.id.isShareBtn);
 
         mLLBottomData = (LinearLayout) view.findViewById(R.id.run_ll_bottom_data);
         tv_duration = (TextView) view.findViewById(R.id.tv_duration);
@@ -300,7 +305,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         mIVRunState.setOnClickListener(this);
         mIVRunDone.setOnClickListener(this);
         mChronometer.setOnChronometerTickListener(this);
-
+        isPublicBtn.setOnClickListener(this);
 
         if (vTitleBar != null) {
             vTitleBar.setTitleBarLinstener(new MineTitleBarListener());
@@ -389,6 +394,15 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
             case R.id.run_ll_bottom_pick_pic:
                 selectImage();
                 break;
+            case R.id.isShareBtn:
+                if(isPublic==1){
+                    isPublicBtn.setBackground(getActivity().getResources().getDrawable(R.mipmap.switch_off));
+                    isPublic=0;
+                }else{
+                    isPublicBtn.setBackground(getActivity().getResources().getDrawable(R.mipmap.switch_on));
+                    isPublic=1;
+                }
+                break;
 
         }
     }
@@ -445,14 +459,20 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         String ages = userInfo.getAge();
         int userAge = 0;
         try {
-            userAge = Integer.parseInt(ages);
+            if (ages != null) {
+                userAge = Integer.parseInt(ages);
+            }
+
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
         String weights = userInfo.getAge();
         int weight = 0;
         try {
-            weight = Integer.parseInt(weights);
+            if (weights != null) {
+                weight = Integer.parseInt(weights);
+            }
+
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
@@ -559,8 +579,8 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
             if (getTitleRight().equals("完成")) {
                 Toast.makeText(getActivity(), "完成行驶", Toast.LENGTH_SHORT).show();
                 changeLayout();
-
                 uploadRunRecord();
+
             }
 
         }
@@ -580,7 +600,6 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
     }
 
     private void uploadRunRecord() {
-
 
         //得到传来的值
         String actId = myApp.getActId();
@@ -637,6 +656,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         paramsMap.put("tags", RequestBody.create(MediaType.parse("multipart/form-data"),"0"));//记录标签，可空
         paramsMap.put("path", RequestBody.create(MediaType.parse("multipart/form-data")," 0"));//路径点集，可空
         paramsMap.put("location",RequestBody.create(MediaType.parse("multipart/form-data"), "0"));//步行记录位置
+        paramsMap.put("isPublic", RequestBody.create(MediaType.parse("multipart/form-data"), isPublic+""));//是否发到圈子 1为是默认
 
         if (pics != null) {
             for(int i=0;i<pics.size();i++){
@@ -648,9 +668,21 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
 
             }
 
-
         } else {
             picParts = null;
+        }
+
+
+        if (mapFile != null) {
+
+            RequestBody requestFile =
+                    RequestBody.create(MediaType.parse("multipart/form-data"), mapFile);
+
+            pathPic = MultipartBody.Part.createFormData("routePic", mapViewName, requestFile);
+
+
+        } else {
+            pathPic = null;
         }
 
         NetRequestManager.getInstance().uploadWalkRecord(paramsMap, picParts,pathPic,new Subscriber<String>() {
@@ -661,7 +693,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
 
             @Override
             public void onError(Throwable e) {
-
+                System.out.println("walk--response--e" + e.toString());
             }
 
             @Override
@@ -672,6 +704,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
 
         });
     }
+
 
     private void changeLayout() {
         setInitTitle();

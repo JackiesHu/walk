@@ -94,10 +94,13 @@ public class BaseMainActivity extends AppCompatActivity implements TitleBarLinst
     @Override
     protected void onResume() {
         super.onResume();
-        if(GlobalParams.TOKEN==null){
-            GlobalParams.TOKEN= mContext.getSharedPreferences("token", Context.MODE_PRIVATE).getString("token", "");
-            GlobalParams.USER_ID=mContext.getSharedPreferences("userid", Context.MODE_PRIVATE).getString("userid", "");
+        if(GlobalParams.TOKEN!=null){
+            if(GlobalParams.TOKEN.length()==0){
+                GlobalParams.TOKEN= mContext.getSharedPreferences("token", Context.MODE_PRIVATE).getString("token", null);
+                GlobalParams.USER_ID=mContext.getSharedPreferences("userid", Context.MODE_PRIVATE).getString("userid", null);
+            }
         }
+
     }
 
     @Override

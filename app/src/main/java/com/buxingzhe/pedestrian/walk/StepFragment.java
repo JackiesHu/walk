@@ -126,7 +126,7 @@ public class StepFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        startStep();
+      //  startStep();
     }
 
     @Override

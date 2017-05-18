@@ -355,14 +355,20 @@ public class PDApplication extends Application {
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
-        SharedPreferences preferences = getSharedPreferences("token", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("token", GlobalParams.TOKEN);
-        editor.commit();
-        SharedPreferences preferencesId = getSharedPreferences("userid", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editorId = preferencesId.edit();
-        editorId.putString("userid", GlobalParams.USER_ID);
-        editorId.commit();
+        if(GlobalParams.TOKEN!=null){
+            if(GlobalParams.TOKEN.length()!=0){
+                SharedPreferences preferences = getSharedPreferences("token", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("token", GlobalParams.TOKEN);
+                editor.commit();
+                SharedPreferences preferencesId = getSharedPreferences("userid", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editorId = preferencesId.edit();
+                editorId.putString("userid", GlobalParams.USER_ID);
+                editorId.commit();
+            }
+        }
+
+
     }
 
     @Override

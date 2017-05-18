@@ -1,5 +1,6 @@
 package com.buxingzhe.pedestrian.community.community;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -228,7 +229,9 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
                 Bundle bundle = new Bundle();
                 bundle.putInt("fragId", 2);
                 it.putExtras(bundle);
+                it.setFlags( PendingIntent.FLAG_ONE_SHOT);
                 startActivity(it);
+                finish();
 
                 break;
             case R.id.iv_up:

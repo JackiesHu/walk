@@ -83,7 +83,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="35dp"
-            android:paddingLeft="15dp"
+
             android:paddingRight="15dp">
 
             <ImageView
@@ -108,7 +108,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
+
             android:paddingRight="15dp"
             android:layout_marginTop="10dp">
 
@@ -132,7 +132,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
+
             android:paddingRight="15dp"
             android:layout_marginTop="10dp">
 
@@ -156,7 +156,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
+
             android:paddingRight="15dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="15dp">
@@ -209,5 +209,35 @@
             android:hint="说出你的步行体验"
             android:textColor="#BBBBBB"
             android:textSize="14sp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="3dp"
+                android:layout_height="14dp"
+                android:background="#00AE66"></View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="是否分享到圈子"
+                android:textColor="#232323"
+                android:textSize="16sp"/>
+            <Button
+                android:id="@+id/isShareBtn"
+                android:layout_width="42dp"
+                android:layout_height="23dp"
+
+                android:background="@mipmap/switch_on"
+                android:layout_marginLeft="60dp"
+                />
+
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

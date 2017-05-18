@@ -3,24 +3,19 @@ package com.buxingzhe.pedestrian.run;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.OverlayOptions;
-import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.trace.api.entity.OnEntityListener;
 import com.baidu.trace.api.track.DistanceRequest;
@@ -40,11 +35,11 @@ import com.baidu.trace.model.PushMessage;
 import com.baidu.trace.model.StatusCodes;
 import com.baidu.trace.model.TraceLocation;
 import com.baidu.trace.model.TransportMode;
-import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.User.UserInfo;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
 import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.listen.OnInteractionData;
+import com.buxingzhe.pedestrian.utils.FileConfig;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.buxingzhe.pedestrian.utils.map.BitmapUtil;
 import com.buxingzhe.pedestrian.utils.map.CommonUtil;
@@ -52,6 +47,10 @@ import com.buxingzhe.pedestrian.utils.map.Constants;
 import com.buxingzhe.pedestrian.utils.map.MapUtil;
 import com.buxingzhe.pedestrian.utils.map.ViewUtil;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,6 +114,9 @@ public class RunRunFragment extends BaseFragment {
     public static boolean isRecording = false;
     public static boolean isWalking = true;
     boolean isRecodStart = false;
+    protected String mapViewName;
+    protected File mapFile;
+
     public void setOnInteractionData(OnInteractionData onInteractionData) {
         mOnInteractionData = onInteractionData;
     }
@@ -193,6 +195,35 @@ public class RunRunFragment extends BaseFragment {
 */
                 startRefreshThread(false);
 
+                System.out.println("runrun--onStopTraceCallback");
+                getMapView();
+
+            }
+            private void getMapView(){
+                mBaiduMap.snapshot(new BaiduMap.SnapshotReadyCallback() {
+                    @Override
+                    public void onSnapshotReady(Bitmap bitmap) {
+                        System.out.println("runrun--Ready");
+                        mapViewName = System.currentTimeMillis() + ".png";
+                        mapFile = new File(FileConfig.IMAGE_UP_PATH +mapViewName);
+                        FileOutputStream out;
+                        try {
+                            out = new FileOutputStream(mapFile);
+                            if (bitmap.compress(
+                                    Bitmap.CompressFormat.PNG, 100, out)) {
+                                out.flush();
+                                out.close();
+                            }
+                            Toast.makeText(getActivity(),
+                                    "屏幕截图成功，图片存在: " + mapFile.toString(),
+                                    Toast.LENGTH_SHORT).show();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
 
             // 开启采集回调
@@ -222,6 +253,7 @@ public class RunRunFragment extends BaseFragment {
                 /*ViewUtil.showToast(getActivity(),
                         String.format("onStopGatherCallback, errorNo:%d, message:%s ", errorNo, message));
 */
+                System.out.println("runrun--onStopGatherCallback");
             }
 
             // 推送回调
@@ -390,6 +422,7 @@ public class RunRunFragment extends BaseFragment {
     protected void stopRun() {
         // 停止采集
         trackApp.isTraceStarted = false;
+        trackApp.mClient.stopTrace(trackApp.mTrace, mTraceListener);
         trackApp.mClient.stopGather(mTraceListener);
         startRefreshThread(false);
         calculateCar();

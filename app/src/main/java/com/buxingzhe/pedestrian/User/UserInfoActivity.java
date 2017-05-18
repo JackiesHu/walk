@@ -243,6 +243,12 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
     }
 
     @Override
+    protected void onBack() {
+        super.onBack();
+       // finish();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int arg1, Intent arg2) {
         super.onActivityResult(requestCode, arg1, arg2);
         //拍照0

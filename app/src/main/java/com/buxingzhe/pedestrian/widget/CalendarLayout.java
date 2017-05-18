@@ -264,7 +264,7 @@ public class CalendarLayout extends LinearLayout {
     /**
      * 显示日历
      */
-    private void animateShow() {
+    public void animateShow() {
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(contentView,
                 "translationY", contentView.getTranslationY(), 0f);
         objectAnimator.setDuration(150);
@@ -297,7 +297,7 @@ public class CalendarLayout extends LinearLayout {
     /**
      * 隐藏日历
      */
-    private void animateHide() {
+    public void animateHide() {
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(contentView,
                 "translationY", contentView.getTranslationY(), -swipHeight);
         objectAnimator.setDuration(150);

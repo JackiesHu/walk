@@ -333,7 +333,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                         GlobalParams.USER_ID = resultInfo.getId();
                         GlobalParams.mUserLoginResultInfo = resultInfo;
 
-
                         SharedPreferences preferences = getSharedPreferences("token", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putString("token", GlobalParams.TOKEN);
@@ -342,6 +341,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                         SharedPreferences.Editor editorId = preferencesId.edit();
                         editorId.putString("userid", GlobalParams.USER_ID);
                         editorId.commit();
+
+                        GlobalParams.TOKEN= mContext.getSharedPreferences("token", Context.MODE_PRIVATE).getString("token", null);
 
                         //TODO 跳转Main
                         EnterActUtils.enterMainActivity(LoginActivity.this);

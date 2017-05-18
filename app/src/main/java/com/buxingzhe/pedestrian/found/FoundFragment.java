@@ -420,6 +420,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         option.setScanSpan(1000);
         mLocClient.setLocOption(option);
         mLocClient.start();
+
     }
     /**
      * 设置是否显示交通图

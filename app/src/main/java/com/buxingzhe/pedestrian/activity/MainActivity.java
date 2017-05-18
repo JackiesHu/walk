@@ -62,18 +62,22 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
     @Override
     protected void onResume() {
         super.onResume();
+        System.out.println("MainActivity--onResume--");
         MobclickAgent.onResume(this);
         Bundle mBundle = getIntent().getExtras();
         if(mBundle!=null){
+
             if (getIntent().hasExtra("fragId")) {
                 int id = mBundle.getInt("fragId");
                 if(id==2){
+                    System.out.println("MainActivity--onResume--2");
                     main_tab.setVisibility(View.GONE);
                     vRun.setVisibility(View.GONE);
                     vRun.setImageResource(R.mipmap.ic_run_press);
 
                     adapter.switchView(2);
                     mViewPager.setCurrentItem(2,false);
+
                 }
 
 
@@ -149,6 +153,7 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
 
     @Override
     public void onInteraction() {
+
         dealWithTab();
         fragments.set(2,new RunFragment());
         pagerAdapter.notifyDataSetChanged();

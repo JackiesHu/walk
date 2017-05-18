@@ -52,9 +52,13 @@ public class MyWalkActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_walk);
         ButterKnife.bind(this);
+
         initView();
         loadData();
         setOnClick();
+
+
+
     }
 
     private void setOnClick() {

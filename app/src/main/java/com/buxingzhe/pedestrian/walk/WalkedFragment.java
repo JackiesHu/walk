@@ -144,6 +144,7 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
 
     private List<String> XDatas=new ArrayList<>();
     private List<Integer> YDatas=new ArrayList<>();
+    private boolean isExpand=true;
 
     /**
      * 从service服务中拿到步数
@@ -792,7 +793,14 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.walk_title_calendar://title calendar
-                mCalendarLayout.skipTodayCalendar();
+                if(isExpand){
+                    mCalendarLayout.animateHide();
+                    isExpand=false;
+                }else{
+                    mCalendarLayout.animateShow();
+                    isExpand=true;
+                }
+
                 break;
             case R.id.walk_data_day:
                 walkDataDay.setSelected(true);
@@ -869,6 +877,7 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
     private class MineCalendarClickListener implements OnCalendarClickListener {
         @Override
         public void onClickDate(int year, int month, int day) {
+
             mCalendarLayout.setSelectPosition(mCalendarLayout.getPosition(year, month, day));
             mCurrentSelectedDate.setText(mCalendarLayout.getCurrrentSelectedDate());
             String date = year + (String.valueOf(month).length() == 1 ? ("0" + String.valueOf(month)) : String.valueOf(month)) + (String.valueOf(day).length() == 1 ? ("0" + String.valueOf(day)) : String.valueOf(day));
