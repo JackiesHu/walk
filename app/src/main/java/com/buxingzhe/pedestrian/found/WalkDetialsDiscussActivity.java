@@ -19,6 +19,7 @@ import com.buxingzhe.pedestrian.common.StarBarBean;
 import com.buxingzhe.pedestrian.found.adapter.PicAdapter;
 import com.buxingzhe.pedestrian.found.bean.HotTagBean;
 import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
+import com.buxingzhe.pedestrian.found.bean.Tag;
 import com.buxingzhe.pedestrian.found.tag.TagAddActivity;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
@@ -249,12 +250,11 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
         switch (requestCode){
             case 1:
                 if (resultCode == RESULT_OK) {
-                    HotTagBean tagBean = data.getParcelableExtra("data");
-                    if (tagBean != null) {
-                        List<HotUserTag> hotSelectTags = tagBean.hotSelectTags;
+                    ArrayList<Tag> tags = (ArrayList<Tag>) data.getSerializableExtra("data");
+                    if (tags != null) {
                         StringBuilder sb = new StringBuilder();
-                        for (HotUserTag tag : hotSelectTags) {
-                            sb.append(tag.tag);
+                        for (Tag tag : tags) {
+                            sb.append(tag.getName());
                             sb.append(";");
                         }
                         if (sb.length() > 0)
