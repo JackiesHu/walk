@@ -17,10 +17,8 @@
         android:layout_weight="1"
         android:scaleType="centerCrop" />
 
-    <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="400dp">
-        <include layout="@layout/fragment_run_done_data"></include>
-    </ScrollView>
+
+        <include layout="@layout/fragment_run_data"></include>
+
 
 </LinearLayout>

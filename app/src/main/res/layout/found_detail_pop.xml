@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#88333333"
+    android:gravity="bottom">
+
+    <LinearLayout
+        android:id="@+id/detail_show_path"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/bxz_20px">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_path" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/bxz_10px"
+            android:text="到这里去"
+            android:textSize="@dimen/bxz_36px_tv" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bxz_1px"
+        android:background="@color/grey_line" />
+
+    <LinearLayout
+        android:id="@+id/detail_show_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/bxz_20px"
+        android:background="@color/white"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="显示详情"
+            android:textSize="@dimen/bxz_36px_tv"
+            android:layout_marginLeft="@dimen/bxz_10px"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/detail_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/bxz_20px"
+        android:layout_marginTop="@dimen/bxz_10px"
+        android:background="@color/white"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/found_cancel"
+            android:textSize="@dimen/bxz_36px_tv"/>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -8,8 +8,8 @@ android {
         applicationId "com.buxingzhe.pedestrian"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 0517
-        versionName "1.1"
+        versionCode 20170518
+        versionName "1.2"
         multiDexEnabled true
     }
     //    配置keystore签名

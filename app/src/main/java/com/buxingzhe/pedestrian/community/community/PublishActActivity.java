@@ -384,7 +384,6 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
 //                }
 
                 String response = new UploadImage_a().post(NetRequestParams.WALK_SERVER_HOST + NetRequestParams.PUBLISHACTIVITY, paramsMap, files);
-                System.out.println("返回结果：" + response);
             }
         }).start();
 

@@ -152,8 +152,6 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
                     JSONObject jsonObject = new JSONObject(str);
                     int code = (int) jsonObject.get("code");
 
-                    System.out.println("eeUserInfo--next" + "code" + code + jsonObject.get("content"));
-
                     JSONObject content = new JSONObject(jsonObject.get("content").toString());
 
                     UserInfo newUserInfo = new UserInfo();

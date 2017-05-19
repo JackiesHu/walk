@@ -693,12 +693,10 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
 
             @Override
             public void onError(Throwable e) {
-                System.out.println("walk--response--e" + e.toString());
             }
 
             @Override
             public void onNext(String s) {
-                System.out.println("walk--response"+s);
 
             }
 
@@ -761,5 +759,6 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
     public void onDestroyView() {
         super.onDestroyView();
         seconds = 0;
+        myApp.setActId("0");
     }
 }

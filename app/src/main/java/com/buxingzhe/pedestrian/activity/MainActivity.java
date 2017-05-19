@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.User.MeFragment;
+import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.community.CommunityFragment;
 import com.buxingzhe.pedestrian.found.FoundFragment;
 import com.buxingzhe.pedestrian.listen.OnInteractionData;
@@ -62,27 +63,22 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println("MainActivity--onResume--");
+
         MobclickAgent.onResume(this);
-        Bundle mBundle = getIntent().getExtras();
-        if(mBundle!=null){
+        PDApplication myApp = (PDApplication) getApplication();
+        //设置名字
+        if(myApp.getActId()!=null){
+            if(myApp.getActId().length()>1) {
+                main_tab.setVisibility(View.GONE);
+                vRun.setVisibility(View.GONE);
+                vRun.setImageResource(R.mipmap.ic_run_press);
 
-            if (getIntent().hasExtra("fragId")) {
-                int id = mBundle.getInt("fragId");
-                if(id==2){
-                    System.out.println("MainActivity--onResume--2");
-                    main_tab.setVisibility(View.GONE);
-                    vRun.setVisibility(View.GONE);
-                    vRun.setImageResource(R.mipmap.ic_run_press);
-
-                    adapter.switchView(2);
-                    mViewPager.setCurrentItem(2,false);
-
-                }
-
+                adapter.switchView(2);
+                mViewPager.setCurrentItem(2,false);
 
             }
         }
+
     }
 
     @Override
@@ -161,11 +157,24 @@ public class MainActivity extends BaseMainActivity implements View.OnClickListen
 
     @Override
     public void onBackPressed() {
-        dealWithTab();
+        PDApplication myApp = (PDApplication) getApplication();
+        //设置名字
+        if(myApp.getActId()!=null){
+            if(myApp.getActId().length()>1) {
+               MainActivity.this.finish();
+                myApp.setActId("0");
+            }else{
+                dealWithTab();
+            }
+        }else{
+            dealWithTab();
+        }
+
 
     }
 
     private void dealWithTab() {
+
         adapter.switchView(0);
         mViewPager.setCurrentItem(0,false);
         main_tab.setVisibility(View.VISIBLE);

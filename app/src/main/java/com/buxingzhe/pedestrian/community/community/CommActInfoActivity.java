@@ -219,12 +219,12 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
                 //设置名字
                 myApp.setActId(walkActivityInfo.getId());
                 Intent it = new Intent(CommActInfoActivity.this, MainActivity.class);
-                Bundle bundle = new Bundle();
+               /* Bundle bundle = new Bundle();
                 bundle.putInt("fragId", 2);
                 it.putExtras(bundle);
-                it.setFlags( PendingIntent.FLAG_ONE_SHOT);
+                it.setFlags( PendingIntent.FLAG_ONE_SHOT);*/
                 startActivity(it);
-                finish();
+
 
                 break;
             case R.id.introductionRL:

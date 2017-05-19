@@ -101,6 +101,32 @@
                 android:textColor="@color/dark_back"
                 />
         </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/ToastRl"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/toast_bg"
+            android:layout_margin="10dp"
+            android:layout_alignParentBottom="true"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/distanceTv"
+                android:paddingLeft="10dp"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="啦啦啦啦啦啦"/>
+
+           <Button
+               android:id="@+id/cancelBtn"
+               android:layout_marginRight="10dp"
+               android:layout_centerInParent="true"
+               android:layout_alignParentRight="true"
+               android:layout_width="20dp"
+               android:layout_height="20dp"
+               android:background="@drawable/ic_cancel"/>
+        </RelativeLayout>
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

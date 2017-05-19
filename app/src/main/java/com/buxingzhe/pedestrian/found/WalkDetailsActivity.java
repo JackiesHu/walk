@@ -248,7 +248,7 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
      */
     public void searchRouteProcess() {
         // 初始化搜索模块，注册事件监听
-        System.out.println("getLocation--searchRouteProcess");
+
         mSearch = RoutePlanSearch.newInstance();
         mSearch.setOnGetRoutePlanResultListener(myGetRoutePlan);
         // 重置浏览节点的路线数据
@@ -441,8 +441,7 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
 
             myLocation = new LatLng(location.getLatitude(),
                     location.getLongitude());
-            System.out.println("getLocation--" + myLocation.toString());
-            searchRouteProcess();
+
 
         }
 

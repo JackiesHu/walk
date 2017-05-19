@@ -7,20 +7,25 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -32,7 +37,6 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.InfoWindow;
-import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
@@ -51,8 +55,19 @@ import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
+import com.baidu.mapapi.search.route.BikingRouteResult;
+import com.baidu.mapapi.search.route.DrivingRouteResult;
+import com.baidu.mapapi.search.route.IndoorRouteResult;
+import com.baidu.mapapi.search.route.MassTransitRouteResult;
+import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
+import com.baidu.mapapi.search.route.PlanNode;
+import com.baidu.mapapi.search.route.RoutePlanSearch;
+import com.baidu.mapapi.search.route.TransitRouteResult;
+import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
+import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.buxingzhe.pedestrian.R;
+import com.buxingzhe.pedestrian.baiduView.WalkingRouteOverlay;
 import com.buxingzhe.pedestrian.bean.RequestResultInfo;
 import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
 import com.buxingzhe.pedestrian.found.bean.Streets;
@@ -97,10 +112,12 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     private ImageView vImageTraffic;
     public static LatLng ll;
     private PopupWindow popupWindow;
+    private PopupWindow markPopupWindow;
 
     private List<Marker> overlays = new ArrayList<>();
     private List<Marker> lines = new ArrayList<>();
-
+    private RoutePlanSearch mSearch;
+    private RemarkPoint desPoint;
     private OnGetGeoCoderResultListener geoListener = new OnGetGeoCoderResultListener() {
         public void onGetGeoCodeResult(GeoCodeResult result) {
             if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
@@ -124,10 +141,31 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     };
     private GeoCoder mGeoSearch;
     private RemarkPoint remarkPoint;
+    private RelativeLayout toastRl;
+    private TextView distanceTv;
+    private Button cancelBtn;
+
+
 
     public FoundFragment() {
 
     }
+    private boolean isDraw=true;
+    private Thread showThread;
+    // handler类接收数据
+    Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            if (msg.what == 1) {
+                if(isDraw){
+
+                    showPathProcess();
+                }else{
+                    showThread=null;
+                }
+
+            }
+        };
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -319,6 +357,20 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         mBaidumap = vMapView.getMap();
         toolbar.setTitle("发现");
 
+        //显示轨迹Toast
+        toastRl = (RelativeLayout) view.findViewById(R.id.ToastRl);
+        distanceTv = (TextView) view.findViewById(R.id.distanceTv);
+        cancelBtn = (Button) view.findViewById(R.id.cancelBtn);
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isDraw=false;
+
+                toastRl.setVisibility(View.GONE);
+                overlay.removeFromMap();
+
+            }
+        });
         setHasOptionsMenu(true);// 标题的文字需在setSupportActionBar之前，不然会无效
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     }
@@ -401,6 +453,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         public boolean onMarkerClick(Marker marker) {
 
             RemarkPoint remarkPoint = marker.getExtraInfo().getParcelable("data");
+            desPoint = remarkPoint;
             int height = marker.getIcon().getBitmap().getHeight();
             ImageView view = createView();
             InfoWindow mInfoWindow = new InfoWindow(view, new LatLng(remarkPoint.getLatitude(), remarkPoint.getLongitude()), -height + 20);
@@ -410,10 +463,181 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                 prevMarker.setIcon(bdnor);
             }
             prevMarker = marker;
-            goWalkDetail(remarkPoint);
+            //TODO
+
+            showRemarkPop();
+
             return false;
         }
     };
+
+    private void showRemarkPop() {
+
+        if (markPopupWindow == null) {
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View view = inflater.inflate(R.layout.found_detail_pop, null);
+            markPopupWindow = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+            markPopupWindow.setBackgroundDrawable(new ColorDrawable());
+            LinearLayout showPath = (LinearLayout) view.findViewById(R.id.detail_show_path);
+            LinearLayout showDetail = (LinearLayout) view.findViewById(R.id.detail_show_detail);
+            LinearLayout linear_cancel = (LinearLayout) view.findViewById(R.id.detail_cancel);
+
+            showPath.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    showPathProcess();
+                    isDraw=true;
+                    markPopupWindow.dismiss();
+                   if(showThread==null){
+                       showThread=new Thread(new ThreadShow());
+                   }
+                    showThread.start();
+
+
+                }
+
+            });
+            showDetail.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    goWalkDetail(desPoint);
+                    markPopupWindow.dismiss();
+                }
+            });
+            linear_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    markPopupWindow.dismiss();
+                }
+            });
+        }
+        markPopupWindow.showAtLocation(markPopupWindow.getContentView(), Gravity.BOTTOM, 0, 0);
+    }
+
+    private void showPathProcess() {
+        toastRl.setVisibility(View.VISIBLE);
+
+        if (overlay != null) {
+
+            overlay.removeFromMap();
+        }
+
+        mSearch = RoutePlanSearch.newInstance();
+        mSearch.setOnGetRoutePlanResultListener(myGetRoutePlan);
+        // 重置浏览节点的路线数据
+        // 设置起终点信息，对于tranist search 来说，城市名无意义
+        PlanNode stNode = PlanNode.withLocation(ll);
+        if (desPoint != null) {
+            double dis=getDistance(ll, desPoint);
+            int times=(int)(dis/1.2);
+            distanceTv.setText("全程: "+(int)dis+"米  大约需要：" +times+"秒");
+            PlanNode enNode = PlanNode.withLocation(new LatLng(desPoint.getLatitude(), desPoint.getLongitude()));
+
+            mSearch.walkingSearch((new WalkingRoutePlanOption())
+                    .from(stNode).to(enNode));
+
+        }
+    }
+
+    private double getDistance(LatLng ll, RemarkPoint desPoint) {
+        // 维度
+        double lat1 = (Math.PI / 180) * ll.latitude;
+        double lat2 = (Math.PI / 180) * desPoint.getLatitude();
+
+        // 经度
+        double lon1 = (Math.PI / 180) * ll.longitude;
+        double lon2 = (Math.PI / 180) * desPoint.getLongitude();
+
+        // 地球半径
+        double R = 6371;
+
+        // 两点间距离 km，如果想要米的话，结果*1000就可以了
+        double d = Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1)) * R;
+
+        return d * 1000;
+    }
+
+
+    private MyWalkingRouteOverlay overlay;
+    OnGetRoutePlanResultListener myGetRoutePlan = new OnGetRoutePlanResultListener() {
+        @Override
+        public void onGetWalkingRouteResult(WalkingRouteResult result) {
+            if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+                Toast.makeText(mContext, "抱歉，未找到结果", Toast.LENGTH_SHORT).show();
+            }
+            if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
+                // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
+                // result.getSuggestAddrInfo()
+                return;
+            }
+            if (result.getRouteLines() != null) {
+                if (result.getRouteLines().size() == 1) {
+                    // 直接显示
+                    overlay = new MyWalkingRouteOverlay(mBaidumap);
+                    mBaidumap.setOnMarkerClickListener(overlay);
+                    overlay.setData(result.getRouteLines().get(0));
+                    overlay.addToMap();
+                    overlay.zoomToSpan();
+
+                }
+                if (result.getRouteLines().size() > 1) {
+
+                } else {
+                    Log.d("route result", "结果数<0");
+                    return;
+                }
+            }
+        }
+
+        @Override
+        public void onGetTransitRouteResult(TransitRouteResult transitRouteResult) {
+
+        }
+
+        @Override
+        public void onGetMassTransitRouteResult(MassTransitRouteResult massTransitRouteResult) {
+
+        }
+
+        @Override
+        public void onGetDrivingRouteResult(DrivingRouteResult drivingRouteResult) {
+
+        }
+
+        @Override
+        public void onGetIndoorRouteResult(IndoorRouteResult indoorRouteResult) {
+
+        }
+
+        @Override
+        public void onGetBikingRouteResult(BikingRouteResult bikingRouteResult) {
+
+        }
+    };
+
+    private class MyWalkingRouteOverlay extends WalkingRouteOverlay {
+
+        public MyWalkingRouteOverlay(BaiduMap baiduMap) {
+            super(baiduMap);
+        }
+
+        @Override
+        public BitmapDescriptor getStartMarker() {
+           /* if (useDefaultIcon) {*/
+            return BitmapDescriptorFactory.fromResource(R.mipmap.ic_luxian_start);
+            /*}
+            return null;*/
+        }
+
+        @Override
+        public BitmapDescriptor getTerminalMarker() {
+           /* if (useDefaultIcon) {*/
+            return BitmapDescriptorFactory.fromResource(R.mipmap.ic_luxian_end);
+            /*}
+            return null;*/
+        }
+    }
 
     /**
      * 定位SDK监听函数
@@ -443,6 +667,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                 builder.target(ll).zoom(18.0f);
                 mBaidumap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
                 showMarker(new LatLng(location.getLatitude(),location.getLongitude()));
+
             }
         }
 
@@ -554,6 +779,27 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
         bdnor.recycle();
     }
 
+    // 线程类
+    class ThreadShow implements Runnable {
+
+        @Override
+        public void run() {
+            // TODO Auto-generated method stub
+            while (isDraw) {
+                try {
+                    Thread.sleep(8000);
+                    Message msg = new Message();
+                    msg.what = 1;
+                    handler.sendMessage(msg);
+
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+
+                }
+            }
+        }
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {

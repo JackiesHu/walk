@@ -12,7 +12,6 @@ public class GsonService {
         } catch (Exception e) {
             // TODO: handle exception
             e.printStackTrace();
-            System.out.println("解析json失败");
         }
         return t;
 
