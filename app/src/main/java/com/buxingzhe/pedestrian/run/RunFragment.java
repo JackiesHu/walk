@@ -1,6 +1,8 @@
 package com.buxingzhe.pedestrian.run;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -577,9 +579,8 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
 
             }
             if (getTitleRight().equals("完成")) {
-                Toast.makeText(getActivity(), "完成行驶", Toast.LENGTH_SHORT).show();
-                changeLayout();
-                uploadRunRecord();
+                showDialog();
+
 
             }
 
@@ -697,10 +698,34 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
 
             @Override
             public void onNext(String s) {
-
+                Toast.makeText(getActivity(), "完成行驶", Toast.LENGTH_SHORT).show();
+                changeLayout();
             }
 
         });
+    }
+
+    private void showDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("是否分享到圈子？");
+        builder.setTitle("提示");
+        builder.setPositiveButton("确认分享", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                isPublic=1;
+                uploadRunRecord();
+            }
+        });
+        builder.setNegativeButton("仅自己可见", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                isPublic=0;
+                uploadRunRecord();
+            }
+        });
+        builder.create().show();
     }
 
 

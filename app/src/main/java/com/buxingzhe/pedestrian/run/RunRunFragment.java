@@ -195,7 +195,6 @@ public class RunRunFragment extends BaseFragment {
 */
                 startRefreshThread(false);
 
-                System.out.println("runrun--onStopTraceCallback");
                 getMapView();
 
             }
@@ -214,9 +213,9 @@ public class RunRunFragment extends BaseFragment {
                                 out.flush();
                                 out.close();
                             }
-                            Toast.makeText(getActivity(),
+                           /* Toast.makeText(getActivity(),
                                     "屏幕截图成功，图片存在: " + mapFile.toString(),
-                                    Toast.LENGTH_SHORT).show();
+                                    Toast.LENGTH_SHORT).show();*/
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         } catch (IOException e) {

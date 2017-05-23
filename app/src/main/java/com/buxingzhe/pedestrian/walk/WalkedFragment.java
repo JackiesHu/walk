@@ -76,7 +76,7 @@ import rx.Subscriber;
 /**
  * Created by quanjing on 2017/2/23.
  */
-public class WalkedFragment extends StepFragment implements Handler.Callback, View.OnClickListener {
+public class WalkedFragment extends StepCountFragment implements Handler.Callback, View.OnClickListener {
 
     @BindView(R.id.walk_data_day)
     TextView walkDataDay;
@@ -188,7 +188,7 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        trackApp.setToday(new Date());
+
         delayHandler = new Handler(this);
        // checkSensor();
         stepCache=new HourStepCache(getActivity());
@@ -326,6 +326,7 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
 
                 if (null != content) {
                     walkActionTitle.setText(content.getTitle());
+
                     SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
                     Long time = new Long(info.getContent().getStartTimeStamp());
                     String d = format.format(time);

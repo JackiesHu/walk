@@ -45,40 +45,30 @@ import rx.Subscription;
 public class PDApplication extends Application {
     private Subscription mSubscription;
     private String activityId;
-    private double distance;
-    private Date today;
 
 
     private String cityName;
 
 
     public SharedPreferences trackConf = null;
-    public SharedPreferences trackStepConf = null;
 
     public LBSTraceClient mClient = null;//轨迹客户端
-  //  public LBSTraceClient mStepClient = null;//轨迹客户端
 
     public Trace mTrace = null;//轨迹服务
-    public Trace mStepTrace = null;//轨迹服务
 
     public long serviceId = 138866;//轨迹服务ID
 
     public String entityName = "myTrace";// Entity标识
-    public String entityStepName = "myStepTrace";// Entity标识
     private LocRequest locRequest = null;
-    private LocRequest locStepRequest = null;
 
     public boolean isTraceStarted = false;//服务是否开启标识
-    public boolean isStepTraceStarted = false;//服务是否开启标识
 
     public boolean isGatherStarted = false;//isGatherStarted
-    public boolean isStepGatherStarted = false;//isGatherStarted
     public Context mContext = null;
     public static int screenWidth = 0;
 
     public static int screenHeight = 0;
     private AtomicInteger mSequenceGenerator = new AtomicInteger();
-    private AtomicInteger mStepSequenceGenerator = new AtomicInteger();
 
     {
         // umeng                      appid + appkey
@@ -91,30 +81,21 @@ public class PDApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (today == null) {
-            today = new Date();
-        }
-        distance = this.getSharedPreferences("stepdistance", Context.MODE_PRIVATE).getFloat("stepdistanceKey", 0);
 
         PDConfig.getInstance().init(this);
         SDKInitializer.initialize(this);
         MobclickAgent.openActivityDurationTrack(false);
         mContext = getApplicationContext();
         entityName = CommonUtil.getImei(this);
-        entityStepName = CommonUtil.getImei(this) + "step";
         // 若为创建独立进程，则不初始化成员变量
         if ("com.baidu.track:remote".equals(CommonUtil.getCurProcessName(mContext))) {
             return;
         }
 
         mClient = new LBSTraceClient(mContext);
-      //  mStepClient = new LBSTraceClient(mContext);
         mTrace = new Trace(serviceId, entityName);
-        mStepTrace = new Trace(serviceId, entityStepName);
         trackConf = getSharedPreferences("track_conf", MODE_PRIVATE);
-        trackStepConf = getSharedPreferences("step_conf", MODE_PRIVATE);
         locRequest = new LocRequest(serviceId);
-        locStepRequest = new LocRequest(serviceId);
 
         mClient.setOnCustomAttributeListener(new OnCustomAttributeListener() {
             @Override
@@ -125,29 +106,13 @@ public class PDApplication extends Application {
                 return map;
             }
         });
-/*
-        mStepClient.setOnCustomAttributeListener(new OnCustomAttributeListener() {
-            @Override
-            public Map<String, String> onTrackAttributeCallback() {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("key1", "value1");
-                map.put("key2", "value2");
-                return map;
-            }
-        });*/
+
 
         clearTraceStatus();
-        clearStepTraceStatus();
+
         getScreenSize();
         // umeng
         UMShareAPI.get(this);
-
-        Date newDate = new Date();
-        if (newDate != today) {
-            upLoadDistance();
-            today = newDate;
-            distance = 0;
-        }
 
         getLocalCityName(this);
 
@@ -187,38 +152,6 @@ public class PDApplication extends Application {
 
     }
 
-    private void upLoadDistance() {
-        double distanceUp = distance / 1000;
-        int stepCount = (int) (distance / 0.4);
-
-
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-        String s = format.format(today);
-        Map<String, String> params = new HashMap<>();
-        params.put("distance", distanceUp + " ");
-        params.put("stepCount", stepCount + " ");
-        params.put("publishDate", s);
-        params.put("userId", GlobalParams.USER_ID);
-        params.put("token", GlobalParams.TOKEN);
-        mSubscription = NetRequestManager.getInstance().publishWalkRecord(params, new Subscriber<String>() {
-            @Override
-            public void onCompleted() {
-                Log.i("onCompleted");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.i(e.getMessage());
-            }
-
-            @Override
-            public void onNext(String jsonStr) {
-                Log.i("walk--jsonStr" + jsonStr);
-
-            }
-
-        });
-    }
 
     public String getActId() {
         return activityId;
@@ -228,21 +161,6 @@ public class PDApplication extends Application {
         this.activityId = activityId;
     }
 
-    public double getDistance() {
-        return distance;
-    }
-
-    public void setDistance(double distance) {
-        this.distance = distance;
-    }
-
-    public Date getToday() {
-        return today;
-    }
-
-    public void setToday(Date today) {
-        this.today = today;
-    }
 
     public String getCityName() {
         return cityName;
@@ -271,10 +189,6 @@ public class PDApplication extends Application {
         request.setServiceId(serviceId);
     }
 
-    public void initStepRequest(BaseRequest request) {
-        request.setTag(getStepTag());
-        request.setServiceId(serviceId);
-    }
 
 
     /**
@@ -298,24 +212,6 @@ public class PDApplication extends Application {
         }
     }
 
-    public void getStepCurrentLocation(OnEntityListener entityListener, OnTrackListener trackListener) {
-        // 网络连接正常，开启服务及采集，则查询纠偏后实时位置；否则进行实时定位
-        if (NetUtil.isNetWorkConnectted(getApplicationContext())
-                && trackStepConf.contains("is_trace_started")
-                && trackStepConf.contains("is_gather_started")
-                && trackStepConf.getBoolean("is_trace_started", false)
-                && trackStepConf.getBoolean("is_gather_started", false)) {
-            LatestPointRequest request = new LatestPointRequest(getStepTag(), serviceId, entityStepName);
-            ProcessOption processOption = new ProcessOption();
-            processOption.setNeedDenoise(true);
-            processOption.setRadiusThreshold(100);
-            request.setProcessOption(processOption);
-            mClient.queryLatestPoint(request, trackListener);
-        } else {
-            mClient.queryRealTimeLoc(locStepRequest, entityListener);
-        }
-    }
-
     /**
      * 获取请求标识
      *
@@ -325,9 +221,6 @@ public class PDApplication extends Application {
         return mSequenceGenerator.incrementAndGet();
     }
 
-    public int getStepTag() {
-        return mStepSequenceGenerator.incrementAndGet();
-    }
 
     /**
      * 清除Trace状态：初始化app时，判断上次是正常停止服务还是强制杀死进程，根据trackConf中是否有is_trace_started字段进行判断。
@@ -343,14 +236,7 @@ public class PDApplication extends Application {
         }
     }
 
-    private void clearStepTraceStatus() {
-        if (trackStepConf.contains("is_trace_started") || trackStepConf.contains("is_gather_started")) {
-            SharedPreferences.Editor editor = trackStepConf.edit();
-            editor.remove("is_trace_started");
-            editor.remove("is_gather_started");
-            editor.apply();
-        }
-    }
+
 
     @Override
     public void onTrimMemory(int level) {
