@@ -426,7 +426,7 @@ public class WalkedFragment extends StepFragment implements Handler.Callback, Vi
             return;
         }
         mWeatherAddress.setText(content.getCityName());
-        mWeather.setText(content.getWeather() + "  " + content.getWindDirection() + content.getWindDegree()+content.getSportSuggest());
+        mWeather.setText(content.getWeather() + "  " + content.getWindDirection() + content.getWindDegree()+"  "+content.getSportSuggest());
         mWeatherAirQuality.setText(content.getAirQuality());
         mWeatherWearSuggest.setText(content.getWearSuggest());
         mWeatherSportSuggest.setText(content.getSportSuggest());

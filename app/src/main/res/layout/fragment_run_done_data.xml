@@ -137,7 +137,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="分钟"
+                    android:text="分"
                     android:textColor="#464646"
                     android:textSize="12sp"/>
             </LinearLayout>
@@ -170,7 +170,7 @@
                 android:layout_height="wrap_content"
                 android:text="海拔上升"
                 android:textColor="#BBBBBB"
-                android:textSize="12sp"/>
+                android:textSize="12sp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -185,14 +185,14 @@
                     android:text="0.00"
                     android:textColor="#464646"
                     android:textSize="21sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="米"
                     android:textColor="#464646"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp" />
             </LinearLayout>
 
         </LinearLayout>
@@ -200,7 +200,7 @@
         <View
             android:layout_width="0.5dp"
             android:layout_height="match_parent"
-            android:background="#EEEEEE"/>
+            android:background="#EEEEEE" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -216,7 +216,7 @@
                 android:layout_height="wrap_content"
                 android:text="最高海拔"
                 android:textColor="#BBBBBB"
-                android:textSize="12sp"/>
+                android:textSize="12sp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -231,14 +231,14 @@
                     android:text="0.00"
                     android:textColor="#464646"
                     android:textSize="21sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="米"
                     android:textColor="#464646"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp" />
             </LinearLayout>
 
         </LinearLayout>
@@ -246,7 +246,7 @@
         <View
             android:layout_width="0.5dp"
             android:layout_height="match_parent"
-            android:background="#EEEEEE"/>
+            android:background="#EEEEEE" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -262,7 +262,7 @@
                 android:layout_height="wrap_content"
                 android:text="最低海拔"
                 android:textColor="#BBBBBB"
-                android:textSize="12sp"/>
+                android:textSize="12sp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -277,14 +277,14 @@
                     android:text="0.00"
                     android:textColor="#464646"
                     android:textSize="21sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="米"
                     android:textColor="#464646"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp" />
             </LinearLayout>
 
         </LinearLayout>
@@ -299,14 +299,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="22dp"
-        android:layout_marginTop="20dp"
+
         android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="22dp"
+            android:layout_marginTop="15dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -349,10 +351,16 @@
                     android:textSize="12sp"/>
             </LinearLayout>
         </LinearLayout>
-
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="#EEEEEE" />
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="22dp"
+            android:layout_marginTop="15dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -397,11 +405,17 @@
                     android:textSize="12sp"/>
             </LinearLayout>
         </LinearLayout>
-
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="#EEEEEE" />
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="22dp"
+            android:layout_marginTop="15dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -448,5 +462,5 @@
 
     <include
         layout="@layout/fragment_run_done_pic"
-        android:visibility="visible"/>
+        android:visibility="visible" />
 </LinearLayout>
