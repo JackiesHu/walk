@@ -132,6 +132,8 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
     }
 
     private void setData() {
+        System.out.println("splash--Me"+"GlobalParams.TOKEN"+GlobalParams.TOKEN+"GlobalParams.USER_ID"+GlobalParams.USER_ID);
+
         NetRequestManager.getInstance().getUserInfo(GlobalParams.USER_ID, GlobalParams.TOKEN, new Subscriber<String>() {
             @Override
             public void onCompleted() {

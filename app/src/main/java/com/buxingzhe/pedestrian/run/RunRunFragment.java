@@ -102,7 +102,7 @@ public class RunRunFragment extends BaseFragment {
     private OnInteractionData mOnInteractionData;
     private RefreshThread refreshThread = null;  //刷新地图线程以获取实时点
 
-    public double distance=0;
+    public double distance=0;//以千米为单位
     public int stepCount=0;
     public List<Integer> height=new ArrayList<>();
 
@@ -213,10 +213,13 @@ public class RunRunFragment extends BaseFragment {
                                 out.flush();
                                 out.close();
                             }
-                           /* Toast.makeText(getActivity(),
+                            Toast.makeText(getActivity(),
                                     "屏幕截图成功，图片存在: " + mapFile.toString(),
-                                    Toast.LENGTH_SHORT).show();*/
+                                    Toast.LENGTH_SHORT).show();
                         } catch (FileNotFoundException e) {
+                            Toast.makeText(getActivity(),
+                                    "屏幕截图不成功，无法上传路线图 ",
+                                    Toast.LENGTH_SHORT).show();
                             e.printStackTrace();
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -325,6 +328,7 @@ public class RunRunFragment extends BaseFragment {
                 super.onDistanceCallback(response);
                 if (StatusCodes.SUCCESS == response.getStatus()) {
                     distance=response.getDistance();
+                    distance=distance/1000;
                 } else {
                 }
 
@@ -466,16 +470,17 @@ public class RunRunFragment extends BaseFragment {
 
         // 设置需要纠偏
         distanceRequest.setProcessed(true);
-
+        historyTrackRequest.setProcessed(true);
         ProcessOption processOption = new ProcessOption();// 创建纠偏选项实例
 
         processOption.setNeedDenoise(true);// 设置需要去噪
-
-        processOption.setNeedMapMatch(true);// 设置需要绑路
-
+        processOption.setNeedVacuate(true);// 设置需要绑路
+        processOption.setNeedMapMatch(true);
+        processOption.setRadiusThreshold(100);
         processOption.setTransportMode(TransportMode.walking);// 设置交通方式为驾车
 
         distanceRequest.setProcessOption(processOption);// 设置纠偏选项
+        historyTrackRequest.setProcessOption(processOption);// 设置纠偏选项
 
         if(isWalking){
             distanceRequest.setSupplementMode(SupplementMode.walking);// 设置里程填充方式为步行

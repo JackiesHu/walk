@@ -116,7 +116,7 @@ public class WalkedFragment extends StepCountFragment implements Handler.Callbac
     private CalendarLayout mCalendarLayout;
 
     private String[] WALK_SPINNER_DATA;
-    private HourStepCache stepCache;
+
     //天气
     @BindView(R.id.walk_weather_tv_address)
     TextView mWeatherAddress;
@@ -191,7 +191,7 @@ public class WalkedFragment extends StepCountFragment implements Handler.Callbac
 
         delayHandler = new Handler(this);
        // checkSensor();
-        stepCache=new HourStepCache(getActivity());
+
 
     }
 
@@ -576,20 +576,26 @@ public class WalkedFragment extends StepCountFragment implements Handler.Callbac
         YDatas.clear();
         int aveCount=0;
         List<HourStep> dayList= stepCache.readStepsList();
-        int size=dayList.size();
-        for(int i=0;i<size;i++){
-            XDatas.add(dayList.get(i).getHour());
-            YDatas.add(dayList.get(i).getStepCount());
-            aveCount=aveCount+dayList.get(i).getStepCount();
-        }
-        if(XDatas.size()==0){
-            Toast.makeText(getActivity(),"暂无数据",Toast.LENGTH_SHORT).show();
-            for(int i=0;i<11;i++){
-                XDatas.add(i+"时");
-                YDatas.add(1);
-            }
+        if(dayList!=null){
 
+            int size=dayList.size();
+            for(int i=0;i<size;i++){
+                XDatas.add(dayList.get(i).getHour());
+                YDatas.add(dayList.get(i).getStepCount());
+                aveCount=aveCount+dayList.get(i).getStepCount();
+            }
+            if(XDatas.size()==0){
+                Toast.makeText(getActivity(),"暂无数据",Toast.LENGTH_SHORT).show();
+                for(int i=0;i<11;i++){
+                    XDatas.add(i+"时");
+                    YDatas.add(1);
+                }
+
+            }
+        }else{
+            Toast.makeText(getActivity(),"暂无数据",Toast.LENGTH_SHORT).show();
         }
+
         aveStepCount.setText(aveCount+"/日");
         setFreshTime();
         setChartData();

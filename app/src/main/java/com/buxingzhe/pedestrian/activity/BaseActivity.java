@@ -95,6 +95,7 @@ public class BaseActivity extends AppCompatActivity implements TitleBarLinstener
     @Override
     protected void onResume() {
         super.onResume();
+
         if(null!=GlobalParams.TOKEN){
             if(GlobalParams.TOKEN.length()==0){
                 GlobalParams.TOKEN= mContext.getSharedPreferences("token", Context.MODE_PRIVATE).getString("token",null);

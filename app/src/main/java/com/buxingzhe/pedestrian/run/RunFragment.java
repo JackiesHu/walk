@@ -61,6 +61,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Subscriber;
 
+import static com.buxingzhe.pedestrian.R.id.map;
 import static com.buxingzhe.pedestrian.R.id.run_iv_start;
 
 /**
@@ -534,7 +535,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         chronometer.setText(str);
         mTVBottomSmallTime.setText(str);
 
-        mTVRunDistance.setText((int) distance + " ");
+        mTVRunDistance.setText((float) distance + " ");
         stepCount=(int)(distance / 0.4) ;
         mTVRunWalkNum.setText((int) stepCount + " ");
         mTVRunCalorie.setText((int) calories + " ");
@@ -674,13 +675,11 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         }
 
 
-        if (mapFile != null) {
-
+        if (mapFile != null&&mapFile.exists()) {
             RequestBody requestFile =
                     RequestBody.create(MediaType.parse("multipart/form-data"), mapFile);
 
             pathPic = MultipartBody.Part.createFormData("routePic", mapViewName, requestFile);
-
 
         } else {
             pathPic = null;
@@ -694,10 +693,12 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
 
             @Override
             public void onError(Throwable e) {
+                System.out.println("Run--e"+e.toString());
             }
 
             @Override
             public void onNext(String s) {
+                System.out.println("Run--s"+s);
                 Toast.makeText(getActivity(), "完成行驶", Toast.LENGTH_SHORT).show();
                 changeLayout();
             }

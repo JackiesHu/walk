@@ -15,6 +15,7 @@ import android.location.LocationProvider;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.TextView;
@@ -50,7 +51,7 @@ public class StepCountFragment extends BaseFragment {
     private Location oldLocation;
     private RefreshThread refreshThread = null;  //手动获取位置
     //记录
-    private HourStepCache stepCache;
+    protected HourStepCache stepCache;
     private List<HourStep> stepList = new ArrayList<>();
     private int hourStepCount = 0;
     private String timeStap;
@@ -64,7 +65,6 @@ public class StepCountFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         trackApp = (PDApplication) getActivity().getApplicationContext();
         stepCache = new HourStepCache(getActivity());
-        stepCache.saveStepsList(stepList);
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("HH");
         timeStap = format.format(date);
@@ -87,6 +87,11 @@ public class StepCountFragment extends BaseFragment {
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("todaydate", newDay);
                 editor.commit();
+
+                //清除按小时计算的步数
+
+                stepCache.celarStepsList();
+                stepCache.saveStepsList(stepList);
             }
         }
 
@@ -126,13 +131,15 @@ public class StepCountFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+
+
         distance = getActivity().getSharedPreferences("stepdistance", Context.MODE_PRIVATE).getFloat("stepdistanceKey", 0);
         checkUpLoadDistance();
         lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         // 判断GPS是否正常启动
 
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (ContextCompat.checkSelfPermission(trackApp, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(getActivity(), "请开启GPS导航...", Toast.LENGTH_SHORT).show();
             // 返回开启GPS导航设置界面
@@ -166,6 +173,7 @@ public class StepCountFragment extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
+        lm.removeUpdates(locationListener);
         SharedPreferences preferences = this.getActivity().getSharedPreferences("stepdistance", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat("stepdistanceKey", (float) distance);
@@ -211,7 +219,7 @@ public class StepCountFragment extends BaseFragment {
          * GPS开启时触发
          */
         public void onProviderEnabled(String provider) {
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(trackApp, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
                 // here to request the missing permissions, and then overriding
@@ -245,7 +253,7 @@ public class StepCountFragment extends BaseFragment {
                 case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
                     Log.i(TAG, "卫星状态改变");
                     // 获取当前状态
-                    if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(trackApp, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         // TODO: Consider calling
                         //    ActivityCompat#requestPermissions
                         // here to request the missing permissions, and then overriding
@@ -292,15 +300,23 @@ public class StepCountFragment extends BaseFragment {
             if (oldLocation != null) {
                 Double d = getDistance(oldLocation, location);
                 if (d < 0.01) {
-                    distance = distance + getDistance(oldLocation, location);
+                    distance = distance + d;
                     hourStepCount = hourStepCount + (int) (d / 0.0004);
                 }
-
+                oldLocation=location;
             }
 
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
 
-            distanceTv.setText(distance + " ");
-            stepCountTv.setText(hourStepCount + " ");
+                    distanceTv.setText((float)distance + " ");
+                    int totalCount=(int)(distance/0.0004);
+                    stepCountTv.setText(totalCount + " ");
+                }
+            });
+
+
         } else {
             // 不更新EditText对象
             /*distanceTv.setText(0 + " ");
@@ -385,7 +401,7 @@ public class StepCountFragment extends BaseFragment {
         public void run() {
 
             while (refresh) {
-                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(trackApp, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
                     // here to request the missing permissions, and then overriding
@@ -437,5 +453,7 @@ public class StepCountFragment extends BaseFragment {
     public void onDestroy() {
         super.onDestroy();
         lm.removeUpdates(locationListener);
+        lm.removeGpsStatusListener(listener);
+        startRefreshThread(false);
     }
 }

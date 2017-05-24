@@ -28,6 +28,13 @@ public class HourStepCache {
         write(getCacheFilePath(),datas);
     }
 
+    public void celarStepsList(){clear(getCacheFilePath());}
+
+    private void clear(String fileName) {
+        File file=new File(fileName);
+        file.delete();
+    }
+
     public List<HourStep> readStepsList() {
         return read(getCacheFilePath());
     }
