@@ -43,7 +43,7 @@
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
     <uses-permission android:name="android.permission.READ_LOGS" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
 
     <uses-feature android:name="android.hardware.sensor.accelerometer" />
     <uses-feature
@@ -271,6 +271,17 @@
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="xeIomh5jkgzIQPOxpp1USqHElTARQ2Hd" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.buxingzhe.pedestrian.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+
     </application>
 
 </manifest>

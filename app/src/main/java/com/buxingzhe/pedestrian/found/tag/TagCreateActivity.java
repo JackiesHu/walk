@@ -49,7 +49,7 @@ public class TagCreateActivity extends BaseActivity {
             ProgressUtils.showDialog(mActivity,"标签不能为空",2);
             return false;
         }
-        if (tag.length() > 20){
+        if (tag!=null&&tag.length() > 20){
             ProgressUtils.showDialog(mActivity,"标签不能超过20个字",2);
             return false;
         }

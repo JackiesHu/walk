@@ -8,9 +8,14 @@ android {
         applicationId "com.buxingzhe.pedestrian"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 20170518
-        versionName "1.2"
+        versionCode 20170713
+        versionName "1.4"
         multiDexEnabled true
+
+        ndk {
+            // 设置支持的SO库架构
+            abiFilters 'armeabi'// , 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+        }
     }
     //    配置keystore签名
     signingConfigs {
@@ -73,4 +78,7 @@ dependencies {
     compile 'com.android.support:support-v4:24.2.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile 'com.umeng.analytics:analytics:latest.integration'
+
+    compile 'com.tencent.bugly:crashreport:latest.release'
+    compile 'com.tencent.bugly:nativecrashreport:latest.release'
 }

@@ -139,8 +139,9 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
             if (msg.what == 0) {
                 if (countDownNum > 0) {
                     mTVCountDown.setText("" + (countDownNum--));
+                    System.out.println("mTVCountDown--倒计时--"+countDownNum);
                 } else {
-                    getActivity().getWindowManager().removeViewImmediate(mTVCountDown);
+                 //   getActivity().getWindowManager().removeViewImmediate(mTVCountDown);
                     timer.cancel();
                     timer = null;
                     countDownNum = 3;
@@ -276,14 +277,14 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
      * 初始化倒计时TextView
      */
     private void initCountDownTV() {
-        mTVCountDown = new TextView(getContext());
-        mTVCountDown.setBackgroundColor(Color.parseColor("#B3000000"));
-        mTVCountDown.setTextSize(TypedValue.COMPLEX_UNIT_PX, 360.0f);
-        mTVCountDown.setTextColor(Color.parseColor("#FFFFFF"));
-        mTVCountDown.setGravity(Gravity.CENTER);
-        mTVCountDown.setFocusable(true);
-        RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        mTVCountDown.setLayoutParams(param);
+      //  mTVCountDown = new TextView(getContext());
+     //   mTVCountDown.setBackgroundColor(Color.parseColor("#B3000000"));
+//        mTVCountDown.setTextSize(TypedValue.COMPLEX_UNIT_PX, 360.0f);
+//        mTVCountDown.setTextColor(Color.parseColor("#000000"));
+//        mTVCountDown.setGravity(Gravity.CENTER);
+//        mTVCountDown.setFocusable(true);
+//        RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+//        mTVCountDown.setLayoutParams(param);
     }
 
     private void setInitTitle() {
@@ -416,9 +417,10 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         mTVRunStart.setVisibility(View.GONE);
         mTVCountDown.setVisibility(View.VISIBLE);
 
+        System.out.println("mTVCountDown--startRun");
         //TODO 此时倒计时需要全凭
 
-        WindowManager windowManager = getActivity().getWindowManager();
+       /* WindowManager windowManager = getActivity().getWindowManager();
         int[] screenAttr = SystemUtils.getDisplayWidth(getContext());
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(screenAttr[0], screenAttr[1]);
         params.gravity = Gravity.CENTER;
@@ -427,7 +429,10 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         params.y = 0;
         params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
         params.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
-        windowManager.addView(mTVCountDown, params);
+        windowManager.addView(mTVCountDown, params);*/
+/*
+        RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        mTVCountDown.setLayoutParams(param);*/
 
         if (timer == null) {
             timer = new Timer();

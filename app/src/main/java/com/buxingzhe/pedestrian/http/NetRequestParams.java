@@ -7,10 +7,10 @@ package com.buxingzhe.pedestrian.http;
 public class NetRequestParams {
 
     //*************************** Server ****************************
-    public static final String WALK_SERVER_HOST = "http://115.28.109.174:8282/"; // http://222.128.13.159:8585/walkman //http://115.28.109.174:8282/walkman/
+   // public static final String WALK_SERVER_HOST = "http://115.28.109.174:8282/"; // http://222.128.13.159:8585/walkman //http://115.28.109.174:8282/walkman/
 //    public static final String WALK_SERVER_HOST = "http://pacers.yjxtech.com/api/";
 
-
+    public static final String WALK_SERVER_HOST = "http://api.bxzlm.com:8080/";
     //*************************** User ****************************
     /** 手机号登陆 */
     public static final String WALK_USER_LOGIN_PHONE = "walkman/wmUser/mobileLogin";

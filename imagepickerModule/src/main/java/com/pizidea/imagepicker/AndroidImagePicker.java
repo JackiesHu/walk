@@ -25,9 +25,11 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 
 import com.pizidea.imagepicker.bean.ImageItem;
@@ -469,8 +471,18 @@ public class AndroidImagePicker {
             //File photoFile = createImageFile();
             File photoFile = createImageSaveFile(ctx);
             // Continue only if the File was successfully created
+
+            Uri uri = null;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                uri = Uri.fromFile(photoFile);
+            } else {
+                //通过FileProvider创建一个content类型的Uri(android 7.0需要)
+                uri = FileProvider.getUriForFile(ctx, "com.buxingzhe.pedestrian", photoFile);
+                takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+
+            }
             if (photoFile != null) {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
             }
         }
         if (ctx instanceof Activity) {
@@ -493,10 +505,20 @@ public class AndroidImagePicker {
             //File photoFile = createImageFile();
             File photoFile = createImageSaveFile(fragment.getActivity());
             // Continue only if the File was successfully created
-            if (photoFile != null) {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-                Log.i(TAG, "=====file ready to take photo:" + photoFile.getAbsolutePath());
+
+            Uri uri = null;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                uri = Uri.fromFile(photoFile);
+            } else {
+                //通过FileProvider创建一个content类型的Uri(android 7.0需要)
+                uri = FileProvider.getUriForFile(fragment.getActivity(), "com.buxingzhe.pedestrian", photoFile);
+                takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+
             }
+            if (photoFile != null) {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            }
+
         }
         fragment.startActivityForResult(takePictureIntent, requestCode);
 

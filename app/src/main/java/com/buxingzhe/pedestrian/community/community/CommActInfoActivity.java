@@ -247,7 +247,7 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
         int textsize = SystemUtils.sp2px(mContext, 14);
         int linecount = tvWidth / textsize;
 
-        if (str.length() > linecount * 3) {
+        if (str!=null&&str.length() > linecount * 3) {
 //            newstr = str.substring(0, linecount * 3);
 //            simple_introdution = newstr + "...\n";
 //            isShowAllIntro(false);

@@ -31,10 +31,12 @@
             </android.support.design.widget.AppBarLayout>
 
             <RelativeLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <com.baidu.mapapi.map.MapView
+
                     android:id="@+id/run_map_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -376,7 +378,7 @@
         android:layout_centerInParent="true"
         android:background="#B3000000"
         android:gravity="center"
-        android:text=""
+        android:text="1"
         android:textColor="#FFFFFF"
         android:textSize="180sp"
         android:visibility="gone"/>

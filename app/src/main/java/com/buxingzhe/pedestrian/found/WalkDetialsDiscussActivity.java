@@ -257,7 +257,7 @@ public class WalkDetialsDiscussActivity extends BaseActivity implements View.OnC
                             sb.append(tag.getName());
                             sb.append(";");
                         }
-                        if (sb.length() > 0)
+                        if (sb!=null&&sb.length() > 0)
                             sb.deleteCharAt(sb.length()-1);
                         vAddTag.setText(sb.toString());
                     }

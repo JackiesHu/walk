@@ -183,18 +183,20 @@ public class SplashActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 11) {
-            if (isFloatWindowOpAllowed(this)) {//已经开启
+            switchActivity();
+           /* if (isFloatWindowOpAllowed(this)) {//已经开启
                 switchActivity();
             } else {
                 Toast.makeText(this,"开启悬浮窗失败,会影响计步使用,导致程序崩溃",Toast.LENGTH_SHORT).show();
-            }
+            }*/
         } else if (requestCode == 12) {
             if (Build.VERSION.SDK_INT >= 23) {
-                if (!Settings.canDrawOverlays(SplashActivity.this)) {
+                switchActivity();
+               /* if (!Settings.canDrawOverlays(SplashActivity.this)) {
                     Toast.makeText(this,"开启悬浮窗失败,会影响计步使用,导致程序崩溃",Toast.LENGTH_SHORT).show();
                 } else {
                     switchActivity();
-                }
+                }*/
             }
         }
 

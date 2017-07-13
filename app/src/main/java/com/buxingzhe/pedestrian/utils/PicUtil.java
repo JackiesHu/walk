@@ -9,8 +9,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 
 import java.io.File;
@@ -88,7 +90,17 @@ public class PicUtil {
         }
         takePicturePath = FileConfig.IMAGE_UP_PATH + System.currentTimeMillis() + ".jpg";
         File image = new File(takePicturePath);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(image));
+        Uri uri=null;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            uri = Uri.fromFile(image);
+        } else {
+            //通过FileProvider创建一个content类型的Uri(android 7.0需要)
+            uri = FileProvider.getUriForFile(activity, "com.buxingzhe.pedestrian", image);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+
+        }
+
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         activity.startActivityForResult(intent, TAKEPHOTO_PIC_CODE);
     }
 
@@ -106,8 +118,18 @@ public class PicUtil {
         if (picPath == null) {
             return;
         }
-        Uri uri = Uri.fromFile(new File(picPath));
+
+
+
         Intent intent = new Intent("com.android.camera.action.CROP");
+        Uri uri=null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {//7.0通过FileProvider授权访问
+            uri = FileProvider.getUriForFile(activity, "com.buxingzhe.pedestrian", new File(picPath));
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+
+        } else {
+            uri = Uri.fromFile(new File(picPath));
+        }
         intent.setDataAndType(uri, "image/*");
         // 下面这个crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
         intent.putExtra("crop", "true");
@@ -125,7 +147,7 @@ public class PicUtil {
         }
         // 裁剪后图片保存地址
         cutPicPath = path + System.currentTimeMillis() + ".jpg";
-        intent.putExtra("output", Uri.fromFile(new File(cutPicPath)));
+        intent.putExtra("output", uri);
         intent.putExtra("return-data", true);
         activity.startActivityForResult(intent, CUT_PIC_CODE);
     }

@@ -142,7 +142,7 @@ public class EditInfoActiviy extends BaseActivity implements View.OnClickListene
         super.onRightListener(v);
         if(findViewById(R.id.ll_edit_sex).getVisibility()==View.GONE){
             String content = et_editInfo_content.getText().toString().trim();
-            if (content.length() < 1) {
+            if (content==null||content.length() < 1) {
                 ProgressUtils.showDialog(this, "请输入信息！", 2);
                 return;
             }

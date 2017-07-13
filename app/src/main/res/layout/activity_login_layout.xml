@@ -7,10 +7,10 @@
     <LinearLayout
         android:layout_width="@dimen/bxz_530px"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -43,7 +43,8 @@
                     android:textColor="#FFFFFF"
                     android:textColorHint="#EEEEEE"
                     android:textSize="@dimen/bxz_32px_tv"
-                    android:text="13051699580"/>
+                    />
+               <!-- android:text="13051699580"-->
 
                 <ImageView
                     android:id="@+id/login_iv_phone_del"
@@ -92,7 +93,8 @@
                     android:textColor="#FFFFFF"
                     android:textColorHint="#EEEEEE"
                     android:textSize="@dimen/bxz_32px_tv"
-                    android:text="123456"/>
+                    />
+               <!-- android:text="123456"-->
 
                 <ImageView
                     android:id="@+id/login_iv_pwd_show"

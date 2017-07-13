@@ -116,3 +116,5 @@
 
     -keep class com.linkedin.** { *; }
     -keepattributes Signature
+-dontwarn com.tencent.bugly.**
+-keep public class com.tencent.bugly.**{*;}

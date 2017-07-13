@@ -431,7 +431,10 @@ public class MapFragment extends BaseFragment {
         }
         String mapX = "", mapY = "";
 
-        sTotalString = sTotalString.substring(1, sTotalString.length() - 1);
+        if(sTotalString!=null&&sTotalString.length()>1){
+            sTotalString = sTotalString.substring(1, sTotalString.length() - 1);
+        }
+
         String[] results = sTotalString.split("\\,");
         if (results.length == 3) {
             if (results[0].split("\\:")[1].equals("0")) {
