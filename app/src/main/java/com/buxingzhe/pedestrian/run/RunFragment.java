@@ -139,7 +139,6 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
             if (msg.what == 0) {
                 if (countDownNum > 0) {
                     mTVCountDown.setText("" + (countDownNum--));
-                    System.out.println("mTVCountDown--倒计时--"+countDownNum);
                 } else {
                  //   getActivity().getWindowManager().removeViewImmediate(mTVCountDown);
                     timer.cancel();
