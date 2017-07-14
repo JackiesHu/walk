@@ -164,7 +164,8 @@ public class SplashActivity extends BaseActivity {
 
                             i++;
                             if(i==3){
-                                checkOverLayWindow();
+                                //checkOverLayWindow();
+                                switchActivity();
                             }
 
                             Log.e("Permission : " + permission.name + " is granted!");
