@@ -3,6 +3,8 @@ package com.buxingzhe.pedestrian.application;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 import android.util.DisplayMetrics;
 
 import com.baidu.location.BDLocation;
@@ -43,7 +45,7 @@ import rx.Subscription;
 /**
  * Created by Administrator on 2016/5/9.
  */
-public class PDApplication extends Application {
+public class PDApplication extends MultiDexApplication {
     private Subscription mSubscription;
     private String activityId;
 
@@ -78,6 +80,12 @@ public class PDApplication extends Application {
     }
 
     private LocationClient mLocationClient;
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 
     @Override
     public void onCreate() {
