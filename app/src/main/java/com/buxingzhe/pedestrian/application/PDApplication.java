@@ -48,10 +48,9 @@ import rx.Subscription;
 public class PDApplication extends MultiDexApplication {
     private Subscription mSubscription;
     private String activityId;
-
+    private static PDApplication pdAPP;
 
     private String cityName;
-
 
     public SharedPreferences trackConf = null;
 
@@ -90,7 +89,7 @@ public class PDApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        pdAPP=this;
         PDConfig.getInstance().init(this);
         SDKInitializer.initialize(this);
         MobclickAgent.openActivityDurationTrack(false);
@@ -128,7 +127,12 @@ public class PDApplication extends MultiDexApplication {
         CrashReport.initCrashReport(getApplicationContext(), "b35d3acf04", false);
 
     }
-
+    public static PDApplication getInstance() {
+        return pdAPP;
+    }
+    public static PDApplication getApp() {
+        return pdAPP;
+    }
     private void getLocalCityName(Context context) {
         LocationClientOption option = new LocationClientOption();
         option.setOpenGps(true);// 打开GPS

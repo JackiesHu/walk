@@ -1,5 +1,6 @@
 package com.pizidea.imagepicker;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
@@ -8,9 +9,11 @@ import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 
 /**
@@ -34,6 +37,60 @@ public class FileUtil {
     public static String getSDPath() {
         return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
+
+    public static File getSmallBitmap(Context context, String fileSrc) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(fileSrc, options);
+        options.inSampleSize = calculateInSampleSize(options, 480, 800);
+        options.inJustDecodeBounds = false;
+        Bitmap img = BitmapFactory.decodeFile(fileSrc, options);
+        String filename = context.getFilesDir()+ File.separator + "video-" + img.hashCode() + ".jpg";
+        saveBitmap2File(img, filename);
+        return new File(filename);
+
+    }
+    /**
+     * 保存bitmap到文件
+     *
+     * @param bmp
+     * @param filename
+     * @return
+     */
+    public static boolean saveBitmap2File(Bitmap bmp, String filename) {
+        Bitmap.CompressFormat format = Bitmap.CompressFormat.JPEG;
+        int quality = 50;
+        OutputStream stream = null;
+        try {
+            stream = new FileOutputStream(filename);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return bmp.compress(format, quality, stream);
+    }
+
+    /**
+     * 设置压缩的图片的大小设置的参数
+     *
+     * @param options
+     * @param reqWidth
+     * @param reqHeight
+     * @return
+     */
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        int height = options.outHeight;
+        int width = options.outWidth;
+        int inSampleSize = 1;
+        if (height > reqHeight || width > reqWidth) {
+            int heightRatio = Math.round(height) / reqHeight;
+            int widthRatio = Math.round(width) / reqWidth;
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+        return inSampleSize;
+    }
+
 
     /**
      * -- 复制文件
@@ -340,7 +397,9 @@ public class FileUtil {
         }
         // 这次再真正地生成一个有像素的，经过缩放了的bitmap
         options.inJustDecodeBounds = false;
+        System.out.println("oldFilePath"+oldFilePath);
         bitmap = BitmapFactory.decodeFile(oldFilePath, options);
+        System.out.println("---2"+bitmap);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int quality = 100; // 个人喜欢从80开始,
         bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);

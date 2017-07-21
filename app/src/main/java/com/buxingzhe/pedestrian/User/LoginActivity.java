@@ -342,6 +342,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                         editorId.putString("userid", GlobalParams.USER_ID);
                         editorId.commit();
 
+                        SharedPreferences preferencesH = getSharedPreferences("height", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editorH = preferencesH.edit();
+                        editorH.putString("height", resultInfo.getHeight());
+                        editorH.commit();
+                        SharedPreferences preferencesIdW = getSharedPreferences("weight", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editorW = preferencesIdW.edit();
+                        editorW.putString("weight", resultInfo.getWeight());
+                        editorW.commit();
+
+
                         GlobalParams.TOKEN= mContext.getSharedPreferences("token", Context.MODE_PRIVATE).getString("token", null);
 
                         //TODO 跳转Main
@@ -351,6 +361,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
 
                 } else {
                     Toast.makeText(LoginActivity.this, datas[2].toString(), Toast.LENGTH_SHORT).show();
+                    AwesomeDialogUtil.getInstance().create(LoginActivity.this).dismissDialog();
                 }
             }
         };

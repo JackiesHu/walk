@@ -4,26 +4,21 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,13 +56,12 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Subscriber;
 
-import static com.buxingzhe.pedestrian.R.id.map;
 import static com.buxingzhe.pedestrian.R.id.run_iv_start;
 
 /**
  * Created by quanjing on 2017/2/23.
  */
-public class RunFragment extends RunRunFragment implements View.OnClickListener, Chronometer.OnChronometerTickListener, AndroidImagePicker.OnPictureTakeCompleteListener,AndroidImagePicker.OnImagePickCompleteListener {
+public class RunFragment extends RunRunFragment implements View.OnClickListener, Chronometer.OnChronometerTickListener, AndroidImagePicker.OnPictureTakeCompleteListener, AndroidImagePicker.OnImagePickCompleteListener {
 
     private OnInteractionData mOnInteractionData;
     double calories = 0;
@@ -128,9 +122,10 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
     private List<String> picNames = new ArrayList<>();
 
     private List<MultipartBody.Part> picParts = new ArrayList<>();
-    private MultipartBody.Part pathPic =null;
-    private FullGridView gv_pic ;
-    private int isPublic=1;
+    private MultipartBody.Part pathPic = null;
+    private FullGridView gv_pic;
+    private int isPublic = 1;
+    private Double stepDistance=0.0004;//千米为单位
 
     private Handler mCountDownHander = new Handler() {
         @Override
@@ -140,7 +135,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
                 if (countDownNum > 0) {
                     mTVCountDown.setText("" + (countDownNum--));
                 } else {
-                 //   getActivity().getWindowManager().removeViewImmediate(mTVCountDown);
+                    //   getActivity().getWindowManager().removeViewImmediate(mTVCountDown);
                     timer.cancel();
                     timer = null;
                     countDownNum = 3;
@@ -167,6 +162,12 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         super.onCreate(savedInstanceState);
         myApp = (PDApplication) getActivity().getApplication();
         mImagePicker = AndroidImagePicker.getInstance();
+        String height= mContext.getSharedPreferences("height", Context.MODE_PRIVATE).getString("height", null);
+        if(height!=null&&!height.equals("0")){
+            stepDistance= Double.valueOf(height)*0.4*0.00001;
+        }else{
+            Toast.makeText(getActivity(),"请去个人页面设置身高体重，否则影响数据准确性",Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -214,7 +215,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         mTVBottomSmallTime = (TextView) view.findViewById(R.id.run_tv_time_small);
 
         // 底部Data View
-        run_done_scroll=(ScrollView)view.findViewById(R.id.run_done_data);
+        run_done_scroll = (ScrollView) view.findViewById(R.id.run_done_data);
         mLLBottomDataPic = (LinearLayout) view.findViewById(R.id.run_ll_bottom_data_pic);
         mLLBottomPickPic = (ImageView) view.findViewById(R.id.run_ll_bottom_pick_pic);
         run_bottom_walked_stress_star = (MWTStarBar) view.findViewById(R.id.run_bottom_walked_stress_star);
@@ -235,7 +236,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         bottom_intro = (EditText) view.findViewById(R.id.run_ll_bottom_intro);
         bottom_title = (EditText) view.findViewById(R.id.run_ll_bottom_title);
         gv_pic = (FullGridView) view.findViewById(R.id.bottom_gv_pic);
-        isPublicBtn=(Button)view.findViewById(R.id.isShareBtn);
+        isPublicBtn = (Button) view.findViewById(R.id.isShareBtn);
 
         mLLBottomData = (LinearLayout) view.findViewById(R.id.run_ll_bottom_data);
         tv_duration = (TextView) view.findViewById(R.id.tv_duration);
@@ -276,8 +277,8 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
      * 初始化倒计时TextView
      */
     private void initCountDownTV() {
-      //  mTVCountDown = new TextView(getContext());
-     //   mTVCountDown.setBackgroundColor(Color.parseColor("#B3000000"));
+        //  mTVCountDown = new TextView(getContext());
+        //   mTVCountDown.setBackgroundColor(Color.parseColor("#B3000000"));
 //        mTVCountDown.setTextSize(TypedValue.COMPLEX_UNIT_PX, 360.0f);
 //        mTVCountDown.setTextColor(Color.parseColor("#000000"));
 //        mTVCountDown.setGravity(Gravity.CENTER);
@@ -398,12 +399,12 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
                 selectImage();
                 break;
             case R.id.isShareBtn:
-                if(isPublic==1){
+                if (isPublic == 1) {
                     isPublicBtn.setBackground(getActivity().getResources().getDrawable(R.mipmap.switch_off));
-                    isPublic=0;
-                }else{
+                    isPublic = 0;
+                } else {
                     isPublicBtn.setBackground(getActivity().getResources().getDrawable(R.mipmap.switch_on));
-                    isPublic=1;
+                    isPublic = 1;
                 }
                 break;
 
@@ -416,7 +417,6 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         mTVRunStart.setVisibility(View.GONE);
         mTVCountDown.setVisibility(View.VISIBLE);
 
-        System.out.println("mTVCountDown--startRun");
         //TODO 此时倒计时需要全凭
 
        /* WindowManager windowManager = getActivity().getWindowManager();
@@ -458,8 +458,12 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
             tv_altitudeHigh.setText(height.get(1) + "");
             tv_altitudeLow.setText((height.get(1) - height.get(0)) + " ");
         }
-        tv_distance.setText((int) distance + " ");
-        stepCount=(int) (distance / 0.4);
+
+        java.text.DecimalFormat myformat=new java.text.DecimalFormat("0.00");
+        String str = myformat.format(distance);
+
+        tv_distance.setText(str);
+        stepCount = (int) (distance / stepDistance);
         tv_stepCount.setText(stepCount + " ");
         UserInfo userInfo = new UserInfo();
         userInfo.getUserInfo(getActivity());
@@ -478,13 +482,15 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         try {
             if (weights != null) {
                 weight = Integer.parseInt(weights);
+            }else{
+                Toast.makeText(getActivity(),"请设置体重身高，否则影响卡路里计算",Toast.LENGTH_SHORT).show();
             }
 
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
         if (distance > 0) {
-            calories = (((double) userAge * 0.2017 + (double) weight * 0.09036 + distance / 1000.0 * 3600 * 1.8) - 55.0969) * seconds / 6.34;
+            calories = (((double) userAge * 0.2017 + (double) weight * 0.09036 + distance * 3600 * 1.8) - 55.0969) * seconds / 6.34;
 
         } else {
             calories = 0;
@@ -539,8 +545,11 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         chronometer.setText(str);
         mTVBottomSmallTime.setText(str);
 
-        mTVRunDistance.setText((float) distance + " ");
-        stepCount=(int)(distance / 0.4) ;
+        java.text.DecimalFormat myformat=new java.text.DecimalFormat("0.00");
+        String strCurrent = myformat.format(distance);
+
+        mTVRunDistance.setText(strCurrent);
+        stepCount = (int) (distance /stepDistance);
         mTVRunWalkNum.setText((int) stepCount + " ");
         mTVRunCalorie.setText((int) calories + " ");
     }
@@ -609,67 +618,67 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
 
         //得到传来的值
         String actId = myApp.getActId();
-        if(actId==null){
-            actId="0";
+        if (actId == null) {
+            actId = "0";
         }
         //TODO 发送数据到服务端
         Map<String, RequestBody> paramsMap = new HashMap<String, RequestBody>();
-        paramsMap.put("userId", RequestBody.create(MediaType.parse("multipart/form-data"),GlobalParams.USER_ID));//用户ID ,不可空
-        paramsMap.put("token", RequestBody.create(MediaType.parse("multipart/form-data"),GlobalParams.TOKEN));//访问凭证 不可空
+        paramsMap.put("userId", RequestBody.create(MediaType.parse("multipart/form-data"), GlobalParams.USER_ID));//用户ID ,不可空
+        paramsMap.put("token", RequestBody.create(MediaType.parse("multipart/form-data"), GlobalParams.TOKEN));//访问凭证 不可空
         if (isWalking) {
-            paramsMap.put("type", RequestBody.create(MediaType.parse("multipart/form-data"),"0"));//类型 : 0 步行，1骑行 ,不可空	type
+            paramsMap.put("type", RequestBody.create(MediaType.parse("multipart/form-data"), "0"));//类型 : 0 步行，1骑行 ,不可空	type
         } else {
-            paramsMap.put("type", RequestBody.create(MediaType.parse("multipart/form-data"),"1"));//类型 : 0 步行，1骑行 ,不可空	type
+            paramsMap.put("type", RequestBody.create(MediaType.parse("multipart/form-data"), "1"));//类型 : 0 步行，1骑行 ,不可空	type
         }
 
-        paramsMap.put("activity", RequestBody.create(MediaType.parse("multipart/form-data"),actId));//活动Id, 可空
+        paramsMap.put("activity", RequestBody.create(MediaType.parse("multipart/form-data"), actId));//活动Id, 可空
 
         String title = TextUtils.isEmpty(bottom_title.getText().toString()) ? "0" : bottom_title.getText().toString();
-        paramsMap.put("title",RequestBody.create(MediaType.parse("multipart/form-data"), title));//记录标题，可空
+        paramsMap.put("title", RequestBody.create(MediaType.parse("multipart/form-data"), title));//记录标题，可空
 
-        paramsMap.put("stepCount", RequestBody.create(MediaType.parse("multipart/form-data"),stepCount+""));//Integer  步数，可空
-        paramsMap.put("distance", RequestBody.create(MediaType.parse("multipart/form-data"),distance/1000+ ""));//Integer 距离，可空
+        paramsMap.put("stepCount", RequestBody.create(MediaType.parse("multipart/form-data"), stepCount + ""));//Integer  步数，可空
+        paramsMap.put("distance", RequestBody.create(MediaType.parse("multipart/form-data"), distance + ""));//Integer 距离，可空
         String dura = TextUtils.isEmpty(tv_duration.getText().toString()) ? "0" : tv_duration.getText().toString();
-        paramsMap.put("duration", RequestBody.create(MediaType.parse("multipart/form-data"),dura));//Integer 时长，可空
+        paramsMap.put("duration", RequestBody.create(MediaType.parse("multipart/form-data"), dura));//Integer 时长，可空
         String altitudeAsend = TextUtils.isEmpty(tv_altitudeAsend.getText().toString()) ? "0" : tv_altitudeAsend.getText().toString();
-        paramsMap.put("altitudeAsend",RequestBody.create(MediaType.parse("multipart/form-data"), altitudeAsend));//海拔上升，可空
+        paramsMap.put("altitudeAsend", RequestBody.create(MediaType.parse("multipart/form-data"), altitudeAsend));//海拔上升，可空
         String altitudeHigh = TextUtils.isEmpty(tv_altitudeHigh.getText().toString()) ? "0" : tv_altitudeHigh.getText().toString();
-        paramsMap.put("altitudeHigh", RequestBody.create(MediaType.parse("multipart/form-data"),altitudeHigh));//最高海拔，可空
+        paramsMap.put("altitudeHigh", RequestBody.create(MediaType.parse("multipart/form-data"), altitudeHigh));//最高海拔，可空
         String altitudeLow = TextUtils.isEmpty(tv_altitudeLow.getText().toString()) ? "0" : tv_altitudeLow.getText().toString();
-        paramsMap.put("altitudeLow", RequestBody.create(MediaType.parse("multipart/form-data"),altitudeLow));//最低海拔，可空
+        paramsMap.put("altitudeLow", RequestBody.create(MediaType.parse("multipart/form-data"), altitudeLow));//最低海拔，可空
         String calorie = TextUtils.isEmpty(tv_calorie.getText().toString()) ? "0" : tv_calorie.getText().toString();
 
-        paramsMap.put("calorie",RequestBody.create(MediaType.parse("multipart/form-data"), calorie));//卡路里，可空
+        paramsMap.put("calorie", RequestBody.create(MediaType.parse("multipart/form-data"), calorie));//卡路里，可空
         String fat = TextUtils.isEmpty(tv_fat.getText().toString()) ? "0" : tv_fat.getText().toString();
 
-        paramsMap.put("fat", RequestBody.create(MediaType.parse("multipart/form-data"),fat));//脂肪，可空
+        paramsMap.put("fat", RequestBody.create(MediaType.parse("multipart/form-data"), fat));//脂肪，可空
         String nutrition = TextUtils.isEmpty(tv_nutrition.getText().toString()) ? "0" : tv_nutrition.getText().toString();
 
-        paramsMap.put("nutrition", RequestBody.create(MediaType.parse("multipart/form-data"),nutrition));//蛋白质，可空
+        paramsMap.put("nutrition", RequestBody.create(MediaType.parse("multipart/form-data"), nutrition));//蛋白质，可空
 
-        paramsMap.put("star", RequestBody.create(MediaType.parse("multipart/form-data"),0+""));//Double 星级，可空
+        paramsMap.put("star", RequestBody.create(MediaType.parse("multipart/form-data"), 0 + ""));//Double 星级，可空
 
-        int ss=run_bottom_walked_stress_star.getStarSize();
-        paramsMap.put("streetStar", RequestBody.create(MediaType.parse("multipart/form-data"),ss+""));//Double 星级，可空
-        int safeStar=run_bottom_walked_safety_star.getStarSize();
+        int ss = run_bottom_walked_stress_star.getStarSize();
+        paramsMap.put("streetStar", RequestBody.create(MediaType.parse("multipart/form-data"), ss + ""));//Double 星级，可空
+        int safeStar = run_bottom_walked_safety_star.getStarSize();
 
-        paramsMap.put("safeStar", RequestBody.create(MediaType.parse("multipart/form-data"),safeStar+""));//Double 星级，可空
-        int es=run_bottom_walked_environment_star.getStarSize();
-        paramsMap.put("envirStar", RequestBody.create(MediaType.parse("multipart/form-data"),es+""));//Double 星级，可空
+        paramsMap.put("safeStar", RequestBody.create(MediaType.parse("multipart/form-data"), safeStar + ""));//Double 星级，可空
+        int es = run_bottom_walked_environment_star.getStarSize();
+        paramsMap.put("envirStar", RequestBody.create(MediaType.parse("multipart/form-data"), es + ""));//Double 星级，可空
 
         String introduction = TextUtils.isEmpty(bottom_intro.getText().toString()) ? "0" : bottom_intro.getText().toString();
-        paramsMap.put("introduction", RequestBody.create(MediaType.parse("multipart/form-data"),introduction));//介绍，可空
-        paramsMap.put("tags", RequestBody.create(MediaType.parse("multipart/form-data"),"0"));//记录标签，可空
-        paramsMap.put("path", RequestBody.create(MediaType.parse("multipart/form-data")," 0"));//路径点集，可空
-        paramsMap.put("location",RequestBody.create(MediaType.parse("multipart/form-data"), "0"));//步行记录位置
-        paramsMap.put("isPublic", RequestBody.create(MediaType.parse("multipart/form-data"), isPublic+""));//是否发到圈子 1为是默认
+        paramsMap.put("introduction", RequestBody.create(MediaType.parse("multipart/form-data"), introduction));//介绍，可空
+        paramsMap.put("tags", RequestBody.create(MediaType.parse("multipart/form-data"), "0"));//记录标签，可空
+        paramsMap.put("path", RequestBody.create(MediaType.parse("multipart/form-data"), " 0"));//路径点集，可空
+        paramsMap.put("location", RequestBody.create(MediaType.parse("multipart/form-data"), "0"));//步行记录位置
+        paramsMap.put("isPublic", RequestBody.create(MediaType.parse("multipart/form-data"), isPublic + ""));//是否发到圈子 1为是默认
 
         if (pics != null) {
-            for(int i=0;i<pics.size();i++){
+            for (int i = 0; i < pics.size(); i++) {
                 RequestBody requestFile =
                         RequestBody.create(MediaType.parse("multipart/form-data"), pics.get(i));
 
-                MultipartBody.Part  filePart = MultipartBody.Part.createFormData("viewUrls", picNames.get(i), requestFile);
+                MultipartBody.Part filePart = MultipartBody.Part.createFormData("viewUrls", picNames.get(i), requestFile);
                 picParts.add(filePart);
 
             }
@@ -679,7 +688,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         }
 
 
-        if (mapFile != null&&mapFile.exists()) {
+        if (mapFile != null && mapFile.exists()) {
             RequestBody requestFile =
                     RequestBody.create(MediaType.parse("multipart/form-data"), mapFile);
 
@@ -689,7 +698,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
             pathPic = null;
         }
 
-        NetRequestManager.getInstance().uploadWalkRecord(paramsMap, picParts,pathPic,new Subscriber<String>() {
+        NetRequestManager.getInstance().uploadWalkRecord(paramsMap, picParts, pathPic, new Subscriber<String>() {
             @Override
             public void onCompleted() {
 
@@ -697,12 +706,10 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
 
             @Override
             public void onError(Throwable e) {
-                System.out.println("Run--e"+e.toString());
             }
 
             @Override
             public void onNext(String s) {
-                System.out.println("Run--s"+s);
                 Toast.makeText(getActivity(), "完成行驶", Toast.LENGTH_SHORT).show();
                 changeLayout();
             }
@@ -718,7 +725,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                isPublic=1;
+                isPublic = 1;
                 uploadRunRecord();
             }
         });
@@ -726,7 +733,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                isPublic=0;
+                isPublic = 0;
                 uploadRunRecord();
             }
         });
@@ -751,7 +758,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         mTVRunStart.setVisibility(View.VISIBLE);
         mImagePicker.clear();
         pics.clear();
-        if(adapter!=null){
+        if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
 
@@ -759,7 +766,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         mLLBottomPickPic.setVisibility(View.VISIBLE);
     }
 
-    private void selectImage(){
+    private void selectImage() {
 
         mImagePicker.setOnImagePickCompleteListener(this);
         mImagePicker.setSelectMode(AndroidImagePicker.Select_Mode.MODE_MULTI);
@@ -770,16 +777,17 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         EnterActUtils.startAct(mActivity, intent);
 
     }
+
     @Override
     public void onImagePickComplete(List<ImageItem> items) {
         pics.clear();
         if (items != null && items.size() > 0) {
-            for (ImageItem item : items){
+            for (ImageItem item : items) {
                 pics.add(item.path);
                 picNames.add(item.name);
             }
         }
-         adapter = new PicAdapter(mContext,pics,R.layout.item_pic);
+        adapter = new PicAdapter(mContext, pics, R.layout.item_pic);
         gv_pic.setAdapter(adapter);
         gv_pic.setVisibility(View.VISIBLE);
         mLLBottomPickPic.setVisibility(View.GONE);

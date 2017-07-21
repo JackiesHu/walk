@@ -1,10 +1,8 @@
 package com.buxingzhe.pedestrian.activity;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,7 +16,6 @@ import com.buxingzhe.pedestrian.community.CommunityFragment;
 import com.buxingzhe.pedestrian.found.FoundFragment;
 import com.buxingzhe.pedestrian.listen.OnInteractionData;
 import com.buxingzhe.pedestrian.run.RunFragment;
-import com.buxingzhe.pedestrian.run.RunRunFragment;
 import com.buxingzhe.pedestrian.walk.WalkedFragment;
 import com.buxingzhe.pedestrian.widget.MWTTabBar;
 import com.umeng.analytics.MobclickAgent;

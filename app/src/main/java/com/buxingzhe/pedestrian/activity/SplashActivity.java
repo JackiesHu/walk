@@ -208,18 +208,15 @@ public class SplashActivity extends BaseActivity {
         GlobalParams.USER_ID=mContext.getSharedPreferences("userid", Context.MODE_PRIVATE).getString("userid", null);
         if(GlobalParams.TOKEN!=null){
             if(GlobalParams.TOKEN.length()==0|GlobalParams.USER_ID.length()==0){
-                System.out.println("splash--!=null--lengh==0");
                 Intent intent=new Intent(SplashActivity.this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }else{
-                System.out.println("splash--!=null--lengh!=0"+"GlobalParams.TOKEN"+GlobalParams.TOKEN+"GlobalParams.USER_ID"+GlobalParams.USER_ID);
                 Intent intent=new Intent(SplashActivity.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
         }else{
-            System.out.println("splash--==null");
             Intent intent=new Intent(SplashActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);

@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.buxingzhe.lib.util.Log;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
+import com.buxingzhe.pedestrian.activity.SplashActivity;
 import com.buxingzhe.pedestrian.bean.user.UserLoginResultInfo;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
@@ -132,7 +133,6 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
     }
 
     private void setData() {
-        System.out.println("splash--Me"+"GlobalParams.TOKEN"+GlobalParams.TOKEN+"GlobalParams.USER_ID"+GlobalParams.USER_ID);
 
         NetRequestManager.getInstance().getUserInfo(GlobalParams.USER_ID, GlobalParams.TOKEN, new Subscriber<String>() {
             @Override
@@ -181,8 +181,14 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
 
                 } else  if ((Integer) datas[0] == 2){
                     Toast.makeText(getActivity(), datas[2].toString(), Toast.LENGTH_SHORT).show();
+                    Intent intent=new Intent(getActivity(), LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
                 }else{
                     Toast.makeText(getActivity(), datas[2].toString(), Toast.LENGTH_SHORT).show();
+                    Intent intent=new Intent(getActivity(), LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
                 }
             }
 

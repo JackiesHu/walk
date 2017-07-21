@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.buxingzhe.lib.util.Log;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
+import com.buxingzhe.pedestrian.activity.MainActivity;
 import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
@@ -45,9 +46,11 @@ public class StepCountFragment extends BaseFragment {
     protected PDApplication trackApp = null;
     protected TextView distanceTv;
     protected TextView stepCountTv;
+    protected TextView stepCount;
     private LocationManager lm;
     private static final String TAG = "StepCountFragment";
-    protected double distance = 0;
+    protected double distance = 0;//以千米为单位
+    private double stepDistance=0.0004;//以km 为单位
     private Location oldLocation;
     private RefreshThread refreshThread = null;  //手动获取位置
     //记录
@@ -60,14 +63,22 @@ public class StepCountFragment extends BaseFragment {
 
     private String today;
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         trackApp = (PDApplication) getActivity().getApplicationContext();
         stepCache = new HourStepCache(getActivity());
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("HH");
         timeStap = format.format(date);
+        String height= mContext.getSharedPreferences("height", Context.MODE_PRIVATE).getString("height", null);
+        if(height!=null&&!height.equals("0")){
+            stepDistance= Double.valueOf(height)*0.4*0.00001;
+        }else{
+            Toast.makeText(getActivity(),"请去个人页面设置身高体重，否则影响数据准确性",Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void checkUpLoadDistance() {
@@ -76,37 +87,30 @@ public class StepCountFragment extends BaseFragment {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             Date date=new Date();
             today=sdf.format(date);
+            SharedPreferences preferences = this.getActivity().getSharedPreferences("todaydate", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("todaydate", today);
+            editor.commit();
         }else{
-
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             Date newDate=new Date();
             String newDay=sdf.format(newDate);
             if (!newDay .equals(today)) {
-                upLoadDistance();
-                SharedPreferences preferences = this.getActivity().getSharedPreferences("todaydate", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("todaydate", newDay);
-                editor.commit();
+                upLoadDistance(newDay);
 
-                //清除按小时计算的步数
-
-                stepCache.celarStepsList();
-                stepCache.saveStepsList(stepList);
             }
         }
 
     }
 
-    private void upLoadDistance() {
-        double distanceUp = distance / 1000;
-        int stepCount = (int) (distance / 0.4);
+    private void upLoadDistance(final String newDay) {
+        double distanceUp = distance;
+        final int stepCount = (int) (distance / stepDistance);
 
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-        String s = format.format(today);
         Map<String, String> params = new HashMap<>();
         params.put("distance", distanceUp + " ");
         params.put("stepCount", stepCount + " ");
-        params.put("publishDate", s);
+        params.put("publishDate", today);
         params.put("userId", GlobalParams.USER_ID);
         params.put("token", GlobalParams.TOKEN);
         mSubscription = NetRequestManager.getInstance().publishWalkRecord(params, new Subscriber<String>() {
@@ -123,6 +127,14 @@ public class StepCountFragment extends BaseFragment {
             @Override
             public void onNext(String jsonStr) {
                 distance = 0;
+                SharedPreferences preferences = getActivity().getSharedPreferences("todaydate", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("todaydate", newDay);
+                editor.commit();
+
+                //清除按小时计算的步数
+                stepCache.celarStepsList();
+                stepList.clear();
             }
 
         });
@@ -131,8 +143,6 @@ public class StepCountFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-
-
         distance = getActivity().getSharedPreferences("stepdistance", Context.MODE_PRIVATE).getFloat("stepdistanceKey", 0);
         checkUpLoadDistance();
         lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -301,7 +311,7 @@ public class StepCountFragment extends BaseFragment {
                 Double d = getDistance(oldLocation, location);
                 if (d < 0.01) {
                     distance = distance + d;
-                    hourStepCount = hourStepCount + (int) (d / 0.0004);
+                    hourStepCount = hourStepCount + (int) (d/ stepDistance);
                 }
                 oldLocation=location;
             }
@@ -310,9 +320,14 @@ public class StepCountFragment extends BaseFragment {
                 @Override
                 public void run() {
 
-                    distanceTv.setText((float)distance + " ");
-                    int totalCount=(int)(distance/0.0004);
+
+                    java.text.DecimalFormat myformat=new java.text.DecimalFormat("0.00");
+                    String str = myformat.format(distance);
+                    distanceTv.setText(str);
+                    int totalCount=(int)(distance/stepDistance);
                     stepCountTv.setText(totalCount + " ");
+                    stepCount.setText(totalCount + " ");
+
                 }
             });
 
@@ -437,14 +452,18 @@ public class StepCountFragment extends BaseFragment {
                 if(stepCache.readStepsList()!=null){
                     stepList = stepCache.readStepsList();
                 }
-
+                for(int i=0;i<stepList.size();i++){
+                    System.out.println(stepList.get(i).getHour()+stepList.get(i).getStepCount());
+                }
+                System.out.println();
                 HourStep hourStep = new HourStep();
-                hourStep.setHour(s+"点");
+                hourStep.setHour(timeStap+"时");
                 hourStep.setStepCount(hourStepCount);
                 stepList.add(hourStep);
                 hourStepCount = 0;
+                timeStap=s;
+                stepCache.celarStepsList();
                 stepCache.saveStepsList(stepList);
-
             }
         }
 

@@ -1,22 +1,36 @@
 package com.buxingzhe.pedestrian.User;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
+import com.buxingzhe.pedestrian.activity.MainActivity;
+import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
+import com.buxingzhe.pedestrian.utils.CropUtils;
 import com.buxingzhe.pedestrian.utils.FileConfig;
 import com.buxingzhe.pedestrian.utils.PicUtil;
+import com.buxingzhe.pedestrian.utils.SelectPicPopupWindow;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.buxingzhe.pedestrian.widget.CircularImageView;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
@@ -80,15 +94,55 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
     private MultipartBody.Part photo;
     private String photoNew;
     private UserInfo userInfo;
-
+    private SelectPicPopupWindow popupWindown;
+    private static final int REQUEST_CODE_ALBUM = 0;
+    private static final int REQUEST_CODE_TAKE_PHOTO = 1;
+    private static final int REQUEST_CODE_CROUP_PHOTO = 2;
+    private Uri uri;
+    private File file; //take photo
+    private String fileSrc;//choose album
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_userinfo);
         ButterKnife.bind(this);
         initView();
+        initPopuWindow();
+
+        initFile();
+
     }
 
+    private void initFile() {
+        file = new File(FileConfig.IMAGE_UP_PATH, "user-avatar.jpg");
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            uri = Uri.fromFile(file);
+        } else {
+            //通过FileProvider创建一个content类型的Uri(android 7.0需要)
+            uri = FileProvider.getUriForFile(PDApplication.getApp(), FileConfig.IMAGE_UP_PATH, file);
+        }
+    }
+
+    private void initPopuWindow() {
+        popupWindown = new SelectPicPopupWindow();
+        popupWindown.setOnclick(itemsOnclickListener);
+        popupWindown.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                setParams(1.0f);
+            }
+        });
+        popupWindown.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+        popupWindown.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    }
+    private void setParams(float f) {
+        WindowManager.LayoutParams params =UserInfoActivity.this.getWindow().getAttributes();
+        params.alpha = f;
+        params.dimAmount = f;
+        UserInfoActivity.this.getWindow().setAttributes(params);
+        UserInfoActivity.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+    }
     private void initView() {
         vTitleBar = (TitleBarView) findViewById(R.id.title_bar);
         setTitle("个人资料");
@@ -213,7 +267,9 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
         switch (view.getId()) {
             case R.id.ll_userHead:
 
-                PicUtil.showPicDialog(this);
+                //PicUtil.showPicDialog(this);
+                popupWindown.showAtLocation(llUserHead, Gravity.CENTER | Gravity.BOTTOM, 0, 0);
+                setParams(0.4f);
                 break;
             case R.id.ll_userName:
 
@@ -246,47 +302,140 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
        // finish();
     }
 
+
     @Override
-    protected void onActivityResult(int requestCode, int arg1, Intent arg2) {
-        super.onActivityResult(requestCode, arg1, arg2);
-        //拍照0
-        if (arg1 != -1) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        /*默认为-1，为0表示用户取消操作，则直接返回*/
+        if (resultCode != -1) {
             return;
         }
-        if (requestCode == PicUtil.CUT_PIC_CODE && arg2 != null) {
-            String picName = System.currentTimeMillis() + ".jpg";
-            String newFileName = FileConfig.IMAGE_UP_PATH + picName;
-
-            try {
-                FileUtil.compressBmpToFile(PicUtil.cutPicPath, newFileName);
-
-                File f = new File(PicUtil.cutPicPath);
-                uploadFile = f;
-
-/*
-                if (f.exists())
-                    f.delete();*/
-                PicUtil.cutPicPath = newFileName;
-                uploadFileName = newFileName;
-
-                if (!TextUtils.isEmpty(newFileName)) {
-                    Glide
-                            .with(UserInfoActivity.this)
-                            .load(newFileName)
-                            .override(SystemUtils.dip2px(this, 67.0f), SystemUtils.dip2px(this, 67.0f))
-                            .centerCrop()
-                            .into((ImageView) findViewById(R.id.sdv_userHead));
-
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (requestCode == REQUEST_CODE_ALBUM && data != null&&resultCode== RESULT_OK) {
+            Uri newUri;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                //将相册的图片的路径转成uri
+                newUri = Uri.parse("file:///" + CropUtils.getPath(UserInfoActivity.this, data.getData()));
+            } else {
+                newUri = data.getData();
             }
-        } else if (requestCode == PicUtil.TAKEPHOTO_PIC_CODE || requestCode == PicUtil.SELECT_PIC_CODE) {
+            if (newUri != null) {
+                cropImageUri(newUri);
 
-            if (arg1 == RESULT_OK) {
-                PicUtil.cutPhotoZoom(arg2, this);
+            } else {
+                Toast.makeText(UserInfoActivity.this, "没有得到相册图片",Toast.LENGTH_SHORT).show();
+            }
+            uploadAvatarFromAlbum(data);
+
+        } else if (requestCode == REQUEST_CODE_TAKE_PHOTO) {
+            startPhotoZoom(uri);
+        } else if (requestCode == REQUEST_CODE_CROUP_PHOTO) {
+
+            upDatePic();
+
+        }
+
+    }
+
+    private void upDatePic() {
+        final File cover = FileUtil.getSmallBitmap(UserInfoActivity.this, file.getPath());
+
+        uploadFile=cover;
+        Glide
+                .with(UserInfoActivity.this)
+                .load(cover.getPath())
+                .override(SystemUtils.dip2px(this, 67.0f), SystemUtils.dip2px(this, 67.0f))
+                .centerCrop()
+                .into((ImageView) findViewById(R.id.sdv_userHead));
+
+
+    }
+
+
+    private View.OnClickListener itemsOnclickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            popupWindown.dismiss();
+            switch (v.getId()) {
+                case R.id.register_set_camera:
+                    uploadAvatarFromPhotoRequest();
+                    break;
+                case R.id.register_take_photo:
+                    //takeSetPhotos();
+                    uploadAvatarFromAlbumRequest();
+                    break;
+                case R.id.register_set_cancle:
+                    popupWindown.dismiss();
+                    break;
+                default:
+                    break;
             }
         }
+    };
+
+    private void uploadAvatarFromAlbumRequest() {
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        photoPickerIntent.setType("image/*");
+        startActivityForResult(photoPickerIntent, REQUEST_CODE_ALBUM);
     }
+
+    public void uploadAvatarFromPhotoRequest() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        startActivityForResult(intent, REQUEST_CODE_TAKE_PHOTO);
+    }
+
+
+    /**
+     * 调用系统相册后进行裁剪图片
+     *
+     * @param orgUri
+     */
+    public void cropImageUri(Uri orgUri) {
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(orgUri, "image/*");
+        intent.putExtra("crop", "true");// crop=true 有这句才能出来最后的裁剪页面.
+        intent.putExtra("aspectX", 1);// 这两项为裁剪框的比例.
+        intent.putExtra("aspectY", 1);// x:y=1:1
+        intent.putExtra("outputX",100);//图片输出大小
+        intent.putExtra("outputY", 100);
+        intent.putExtra("output", Uri.fromFile(file));
+        intent.putExtra("outputFormat", "JPEG");// 返回格式
+        startActivityForResult(intent, REQUEST_CODE_CROUP_PHOTO);
+    }
+
+    /**
+     * 裁剪图片
+     *
+     * @param uri
+     */
+    public void startPhotoZoom(Uri uri) {
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, "image/*");
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.putExtra("crop", "true");// crop=true 有这句才能出来最后的裁剪页面.
+        intent.putExtra("aspectX", 1);// 这两项为裁剪框的比例.
+        intent.putExtra("aspectY", 1);// x:y=1:1
+        intent.putExtra("outputX", 100);//图片输出大小
+        intent.putExtra("outputY", 100);
+        intent.putExtra("output", Uri.fromFile(file));
+        intent.putExtra("outputFormat", "JPEG");// 返回格式
+        startActivityForResult(intent, REQUEST_CODE_CROUP_PHOTO);
+    }
+
+
+    private void uploadAvatarFromAlbum(Intent data) {
+        Cursor cursor =UserInfoActivity.this.getContentResolver().query(data.getData(), null, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            fileSrc = cursor.getString(idx);
+            cursor.close();
+        }
+
+    }
+
+
 }

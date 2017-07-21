@@ -51,7 +51,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="13dp"
-                    android:text="小熊熊"
+                    android:text=""
                     android:textColor="#FFFFFF"
                     android:textSize="19sp"/>
 
@@ -64,7 +64,7 @@
                         android:id="@+id/user_tv_gender"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="女"
+                        android:text=""
                         android:textColor="#FFFFFF"
                         android:textSize="12sp"/>
 
@@ -73,7 +73,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:text="165cm"
+                        android:text=" cm"
                         android:textColor="#FFFFFF"
                         android:textSize="12sp"/>
 
@@ -82,7 +82,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:text="50kg"
+                        android:text=" kg"
                         android:textColor="#FFFFFF"
                         android:textSize="12sp"/>
                 </LinearLayout>
@@ -118,7 +118,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
-                        android:text="256"
+                        android:text="  "
                         android:textColor="#FFFFFF"
                         android:textSize="20sp"
                         android:textStyle="bold"/>
@@ -150,7 +150,7 @@
                     android:id="@+id/user_tv_points"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="3105"
+                    android:text="  "
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
                     android:textStyle="bold"/>

@@ -45,7 +45,9 @@ import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.TextOptions;
 import com.baidu.mapapi.model.LatLng;
@@ -77,8 +79,10 @@ import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import rx.Subscriber;
 
@@ -115,7 +119,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
     private PopupWindow markPopupWindow;
 
     private List<Marker> overlays = new ArrayList<>();
-    private List<Marker> lines = new ArrayList<>();
+    private List<Overlay> lines = new CopyOnWriteArrayList<>();
     private RoutePlanSearch mSearch;
     private RemarkPoint desPoint;
     private OnGetGeoCoderResultListener geoListener = new OnGetGeoCoderResultListener() {
@@ -274,7 +278,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                             if (o != null){
                                 List<Streets> streets = JSON.parseArray(o.toString(), Streets.class);
                                 // 添加普通折线绘制
-                                for (Marker marker : lines){
+                                for (Overlay marker : lines){
                                     marker.remove();
                                 }
                                 lines.clear();
@@ -303,7 +307,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                                                         .position(latLng);
                                             }
 
-                                            lines.add((Marker) mBaidumap.addOverlay(ooText));
+                                            lines.add(mBaidumap.addOverlay(ooText));
                                         }
                                     }
                                     OverlayOptions ooPolyline;
@@ -318,7 +322,7 @@ public class FoundFragment extends Fragment implements View.OnClickListener {
                                         ooPolyline = new PolylineOptions().width(8)
                                                 .color(Color.rgb(42, 202, 142)).points(points);
                                     }
-                                    lines.add((Marker) mBaidumap.addOverlay(ooPolyline));
+                                    lines.add( mBaidumap.addOverlay(ooPolyline));
                                 }
                             }
                         }

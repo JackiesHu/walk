@@ -92,6 +92,8 @@ public class MaterialSpinner extends TextView {
   }
 
   private void init(Context context, AttributeSet attrs) {
+    arrowDrawable = Utils.getDrawable(context, R.drawable.ms__arrow).mutate();
+
     TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.MaterialSpinner);
     int defaultColor = getTextColors().getDefaultColor();
     boolean rtl = Utils.isRtl(context);
