@@ -113,7 +113,7 @@
         <service
             android:name=".service.StepService"
             android:priority="1000"
-            android:process="cn.bluemobi.dylan.step.service">
+            android:process="com.buxingzhe.pedestrian.service.service">
             <intent-filter>
 
                 <!-- 系统启动完成后会调用 -->

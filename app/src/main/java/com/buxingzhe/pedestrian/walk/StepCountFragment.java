@@ -81,6 +81,13 @@ public class StepCountFragment extends BaseFragment {
         }else{
             Toast.makeText(getActivity(),"请去个人页面设置身高体重，否则影响数据准确性",Toast.LENGTH_SHORT).show();
         }
+        distance = getActivity().getSharedPreferences("stepdistance", Context.MODE_PRIVATE).getFloat("stepdistanceKey", 0);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        startLocM();
     }
 
     private void checkUpLoadDistance() {
@@ -147,6 +154,10 @@ public class StepCountFragment extends BaseFragment {
         super.onResume();
      //   distance = getActivity().getSharedPreferences("stepdistance", Context.MODE_PRIVATE).getFloat("stepdistanceKey", 0);
         checkUpLoadDistance();
+
+    }
+
+    private void startLocM() {
         lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         // 判断GPS是否正常启动
@@ -185,7 +196,7 @@ public class StepCountFragment extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        lm.removeUpdates(locationListener);
+       // lm.removeUpdates(locationListener);
        /* SharedPreferences preferences = this.getActivity().getSharedPreferences("stepdistance", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat("stepdistanceKey", (float) distance);
@@ -474,5 +485,9 @@ public class StepCountFragment extends BaseFragment {
         lm.removeUpdates(locationListener);
         lm.removeGpsStatusListener(listener);
         startRefreshThread(false);
+        SharedPreferences preferences = this.getActivity().getSharedPreferences("stepdistance", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putFloat("stepdistanceKey", (float) distance);
+        editor.commit();
     }
 }
