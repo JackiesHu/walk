@@ -50,6 +50,7 @@ public class StepCountFragment extends BaseFragment {
     private LocationManager lm;
     private static final String TAG = "StepCountFragment";
     protected double distance = 0;//以千米为单位
+    private double hourDistance = 0;
     private double stepDistance=0.0004;//以km 为单位
     private Location oldLocation;
     private RefreshThread refreshThread = null;  //手动获取位置
@@ -57,6 +58,7 @@ public class StepCountFragment extends BaseFragment {
     protected HourStepCache stepCache;
     private List<HourStep> stepList = new ArrayList<>();
     private int hourStepCount = 0;
+
     private String timeStap;
     private String bestProvider;
     private Location location;
@@ -143,7 +145,7 @@ public class StepCountFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        distance = getActivity().getSharedPreferences("stepdistance", Context.MODE_PRIVATE).getFloat("stepdistanceKey", 0);
+     //   distance = getActivity().getSharedPreferences("stepdistance", Context.MODE_PRIVATE).getFloat("stepdistanceKey", 0);
         checkUpLoadDistance();
         lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
@@ -184,10 +186,10 @@ public class StepCountFragment extends BaseFragment {
     public void onPause() {
         super.onPause();
         lm.removeUpdates(locationListener);
-        SharedPreferences preferences = this.getActivity().getSharedPreferences("stepdistance", Context.MODE_PRIVATE);
+       /* SharedPreferences preferences = this.getActivity().getSharedPreferences("stepdistance", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat("stepdistanceKey", (float) distance);
-        editor.commit();
+        editor.commit();*/
     }
 
     // 位置监听
@@ -311,6 +313,7 @@ public class StepCountFragment extends BaseFragment {
                 Double d = getDistance(oldLocation, location);
                 if (d < 0.01) {
                     distance = distance + d;
+                    hourDistance=hourDistance+d;
                     hourStepCount = hourStepCount + (int) (d/ stepDistance);
                 }
                 oldLocation=location;
@@ -319,7 +322,6 @@ public class StepCountFragment extends BaseFragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
 
                     java.text.DecimalFormat myformat=new java.text.DecimalFormat("0.00");
                     String str = myformat.format(distance);
@@ -452,15 +454,13 @@ public class StepCountFragment extends BaseFragment {
                 if(stepCache.readStepsList()!=null){
                     stepList = stepCache.readStepsList();
                 }
-                for(int i=0;i<stepList.size();i++){
-                    System.out.println(stepList.get(i).getHour()+stepList.get(i).getStepCount());
-                }
-                System.out.println();
+                int stepCount=(int)(hourDistance/stepDistance);
                 HourStep hourStep = new HourStep();
                 hourStep.setHour(timeStap+"时");
-                hourStep.setStepCount(hourStepCount);
+                hourStep.setStepCount(stepCount);
                 stepList.add(hourStep);
                 hourStepCount = 0;
+                hourDistance=0;
                 timeStap=s;
                 stepCache.celarStepsList();
                 stepCache.saveStepsList(stepList);
