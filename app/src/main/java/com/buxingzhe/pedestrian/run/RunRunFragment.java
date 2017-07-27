@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -23,6 +27,7 @@ import com.baidu.trace.api.track.DistanceResponse;
 import com.baidu.trace.api.track.HistoryTrackRequest;
 import com.baidu.trace.api.track.HistoryTrackResponse;
 import com.baidu.trace.api.track.LatestPoint;
+import com.baidu.trace.api.track.LatestPointRequest;
 import com.baidu.trace.api.track.LatestPointResponse;
 import com.baidu.trace.api.track.OnTrackListener;
 import com.baidu.trace.api.track.SortType;
@@ -35,7 +40,6 @@ import com.baidu.trace.model.PushMessage;
 import com.baidu.trace.model.StatusCodes;
 import com.baidu.trace.model.TraceLocation;
 import com.baidu.trace.model.TransportMode;
-import com.buxingzhe.pedestrian.User.UserInfo;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
 import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.listen.OnInteractionData;
@@ -54,12 +58,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.Context.SENSOR_SERVICE;
+import static com.buxingzhe.pedestrian.utils.map.Constants.DEFAULT_RADIUS_THRESHOLD;
 
-public class RunRunFragment extends BaseFragment {
+
+public class RunRunFragment extends BaseFragment implements SensorEventListener {
 
     private PDApplication trackApp = null;
 
-    private MapUtil mapUtil = null;
+    protected MapUtil mapUtil = null;
     //private RefreshThread refreshThread = null;  //刷新地图线程以获取实时点
 
     /**
@@ -91,6 +98,7 @@ public class RunRunFragment extends BaseFragment {
 
     private HistoryTrackRequest historyTrackRequest = new HistoryTrackRequest();//历史轨迹请求
     private DistanceRequest distanceRequest = new DistanceRequest();
+    private LatestPointRequest latestQequest = new LatestPointRequest();
     private int pageIndex = 1;
 
     private long startTime = CommonUtil.getCurrentTime();//查询轨迹的开始时间
@@ -102,20 +110,23 @@ public class RunRunFragment extends BaseFragment {
     private OnInteractionData mOnInteractionData;
     private RefreshThread refreshThread = null;  //刷新地图线程以获取实时点
 
-    public double distance=0;//以千米为单位
-    public int stepCount=0;
-    public List<Integer> height=new ArrayList<>();
+    public double distance = 0;//以千米为单位
+    public int stepCount = 0;
+    public List<Integer> height = new ArrayList<>();
 
     // 地图View相关
     protected MapView mMapView;
     protected BaiduMap mBaiduMap;
-    protected ImageView  mIVRunStart;
+    protected ImageView mIVRunStart;
     // 轨迹相关
     public static boolean isRecording = false;
     public static boolean isWalking = true;
     boolean isRecodStart = false;
     protected String mapViewName;
     protected File mapFile;
+    private int mCurrentDirection = 0;
+    private Double lastX = 0.0;
+    private SensorManager mSensorManager;
 
     public void setOnInteractionData(OnInteractionData onInteractionData) {
         mOnInteractionData = onInteractionData;
@@ -133,7 +144,9 @@ public class RunRunFragment extends BaseFragment {
         //在使用SDK各组件之前初始化context信息，传入ApplicationContext
         trackApp = (PDApplication) getActivity().getApplicationContext();
         mapUtil = MapUtil.getInstance();
+        mapUtil.setCenter(mCurrentDirection);//设置地图中心点
         initListener();
+        mSensorManager = (SensorManager) trackApp.getSystemService(SENSOR_SERVICE);// 获取传感器管理服务
     }
 
 
@@ -144,10 +157,29 @@ public class RunRunFragment extends BaseFragment {
     }
 
     @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        //每次方向改变，重新给地图设置定位数据，用上一次的经纬度
+        double x = sensorEvent.values[SensorManager.DATA_X];
+        if (Math.abs(x - lastX) > 1.0) {// 方向改变大于1度才设置，以免地图上的箭头转动过于频繁
+            mCurrentDirection = (int) x;
+            if (!CommonUtil.isZeroPoint(CurrentLocation.latitude, CurrentLocation.longitude)) {
+                mapUtil.updateMapLocation(new LatLng(CurrentLocation.latitude, CurrentLocation.longitude), (float) mCurrentDirection);
+            }
+        }
+        lastX = x;
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         mMapView.onResume();
-
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
@@ -170,9 +202,6 @@ public class RunRunFragment extends BaseFragment {
                     editor.putBoolean("is_trace_started", true);
                     editor.apply();
                 }
-               /* ViewUtil.showToast(getActivity(),
-                        String.format("onStartTraceCallback, errorNo:%d, message:%s ", status, message));
-*/
 
                 startRefreshThread(true);
             }
@@ -190,21 +219,20 @@ public class RunRunFragment extends BaseFragment {
                     editor.remove("is_gather_started");
                     editor.apply();
                 }
-               /* ViewUtil.showToast(getActivity(),
-                        String.format("onStopTraceCallback, errorNo:%d, message:%s ", status, message));
-*/
+
                 startRefreshThread(false);
 
                 getMapView();
 
             }
-            private void getMapView(){
+
+            private void getMapView() {
                 mBaiduMap.snapshot(new BaiduMap.SnapshotReadyCallback() {
                     @Override
                     public void onSnapshotReady(Bitmap bitmap) {
-                        System.out.println("runrun--Ready");
+
                         mapViewName = System.currentTimeMillis() + ".png";
-                        mapFile = new File(FileConfig.IMAGE_UP_PATH +mapViewName);
+                        mapFile = new File(FileConfig.IMAGE_UP_PATH + mapViewName);
                         FileOutputStream out;
                         try {
                             out = new FileOutputStream(mapFile);
@@ -237,9 +265,6 @@ public class RunRunFragment extends BaseFragment {
                     editor.putBoolean("is_gather_started", true);
                     editor.apply();
                 }
-              /*  ViewUtil.showToast(getActivity(),
-                        String.format("onStartGatherCallback, errorNo:%d, message:%s ", errorNo, message));
-*/
 
             }
 
@@ -252,10 +277,16 @@ public class RunRunFragment extends BaseFragment {
                     editor.remove("is_gather_started");
                     editor.apply();
                 }
-                /*ViewUtil.showToast(getActivity(),
-                        String.format("onStopGatherCallback, errorNo:%d, message:%s ", errorNo, message));
-*/
-                System.out.println("runrun--onStopGatherCallback");
+
+                if (trackPoints.size() >= 1) {
+                    try {
+                        mapUtil.drawEndPoint(trackPoints.get(trackPoints.size() - 1));
+                    } catch (Exception e) {
+
+                    }
+
+                }
+
             }
 
             // 推送回调
@@ -264,13 +295,13 @@ public class RunRunFragment extends BaseFragment {
             }
         };
 
+
         trackListener = new OnTrackListener() {
 
             @Override
             public void onLatestPointCallback(LatestPointResponse response) {
 
                 if (StatusCodes.SUCCESS != response.getStatus()) {
-
                     return;
                 }
 
@@ -284,13 +315,22 @@ public class RunRunFragment extends BaseFragment {
                 if (null == currentLatLng) {
                     return;
                 }
+
                 CurrentLocation.locTime = point.getLocTime();
                 CurrentLocation.latitude = currentLatLng.latitude;
                 CurrentLocation.longitude = currentLatLng.longitude;
+                if (trackPoints == null) {
+                    return;
+                }
+                trackPoints.add(currentLatLng);
+                //  mapUtil.drawHistoryTrack(trackPoints,sortType);//显示当前位置，并时时动态的画出运动轨迹
+                mapUtil.drawHistoryTrack(trackPoints, false, mCurrentDirection);//显示当前位置，并时时动态的画出运动轨迹
 
                 if (null != mapUtil) {
                     mapUtil.updateStatus(currentLatLng, true);
                 }
+
+
             }
 
             @Override
@@ -299,14 +339,14 @@ public class RunRunFragment extends BaseFragment {
                 if (StatusCodes.SUCCESS != response.getStatus()) {
                     ViewUtil.showToast(getActivity(), response.getMessage());
                 } else if (0 == total) {
-                 //   ViewUtil.showToast(getActivity(), getString(R.string.no_track_data));
+
                 } else {
                     List<TrackPoint> points = response.getTrackPoints();
                     if (null != points) {
                         for (TrackPoint trackPoint : points) {
                             if (!CommonUtil.isZeroPoint(trackPoint.getLocation().getLatitude(),
                                     trackPoint.getLocation().getLongitude())) {
-                                trackPoints.add(MapUtil.convertTrace2Map(trackPoint.getLocation()));
+                                // trackPoints.add(MapUtil.convertTrace2Map(trackPoint.getLocation()));
                             }
                         }
                     }
@@ -317,7 +357,7 @@ public class RunRunFragment extends BaseFragment {
                     queryHistoryTrack();
                 } else {
                     if (trackPoints.size() > 0) {
-                        mapUtil.drawHistoryTrack(trackPoints, sortType);
+                        //   mapUtil.drawHistoryTrack(trackPoints, sortType);
                     }
 
                 }
@@ -327,8 +367,8 @@ public class RunRunFragment extends BaseFragment {
             public void onDistanceCallback(DistanceResponse response) {
                 super.onDistanceCallback(response);
                 if (StatusCodes.SUCCESS == response.getStatus()) {
-                    distance=response.getDistance();
-                    distance=distance/1000;
+                    distance = response.getDistance();
+                    distance = distance / 1000;
                 } else {
                 }
 
@@ -340,7 +380,6 @@ public class RunRunFragment extends BaseFragment {
 
             @Override
             public void onReceiveLocation(TraceLocation location) {
-
 
 
                 if (StatusCodes.SUCCESS != location.getStatus() || CommonUtil.isZeroPoint(location.getLatitude(),
@@ -359,6 +398,8 @@ public class RunRunFragment extends BaseFragment {
 
                 if (null != mapUtil) {
                     mapUtil.updateStatus(currentLatLng, true);
+                    mapUtil.updateMapLocation(currentLatLng, mCurrentDirection);//显示当前位置
+
                 }
             }
 
@@ -402,7 +443,7 @@ public class RunRunFragment extends BaseFragment {
         mapUtil.init(mMapView);
         mapUtil.setCenter(trackApp);
         startRealTimeLoc(Constants.LOC_INTERVAL);
-       // Button startBtn = (Button) view.findViewById(R.id.startBtn);
+
         mIVRunStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -412,14 +453,7 @@ public class RunRunFragment extends BaseFragment {
             }
 
         });
-       /* Button stopBtn = (Button) view.findViewById(R.id.stopBtn);
-        stopBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stopRun();
 
-            }
-        });*/
     }
 
     protected void stopRun() {
@@ -428,28 +462,20 @@ public class RunRunFragment extends BaseFragment {
         trackApp.mClient.stopTrace(trackApp.mTrace, mTraceListener);
         trackApp.mClient.stopGather(mTraceListener);
         startRefreshThread(false);
-        calculateCar();
+        trackPoints.clear();
     }
 
 
     protected void mapStartRun() {
         trackApp.isTraceStarted = true;
         trackApp.mClient.startTrace(trackApp.mTrace, mTraceListener);
+        trackApp.mClient.startGather(mTraceListener);
         if (Constants.DEFAULT_PACK_INTERVAL != packInterval) {
             stopRealTimeLoc();
             startRealTimeLoc(packInterval);
         }
-
-        trackApp.mClient.startGather(mTraceListener);
+        startRefreshThread(true);
         startTime = CommonUtil.getCurrentTime();
-    }
-
-
-
-    private void calculateCar() {
-        UserInfo user = new UserInfo();
-        user = user.getUserInfo(getActivity());
-      //  curCalories = ((userAge*0.2017 + userWeight*0.09036 + v/1000.0*3600*1.8)- 55.0969)*(time / 60.0) / 6.34;
     }
 
 
@@ -457,9 +483,11 @@ public class RunRunFragment extends BaseFragment {
      * 查询历史轨迹
      */
     private void queryHistoryTrack() {
+        initsetting();
         endTime = CommonUtil.getCurrentTime();
         trackApp.initRequest(historyTrackRequest);
         trackApp.initRequest(distanceRequest);
+        trackApp.initRequest(latestQequest);
 
         historyTrackRequest.setEntityName(trackApp.entityName);
         historyTrackRequest.setStartTime(startTime);
@@ -468,32 +496,42 @@ public class RunRunFragment extends BaseFragment {
         historyTrackRequest.setPageSize(Constants.PAGE_SIZE);
         trackApp.mClient.queryHistoryTrack(historyTrackRequest, trackListener);
 
-        // 设置需要纠偏
-        distanceRequest.setProcessed(true);
-        historyTrackRequest.setProcessed(true);
-        ProcessOption processOption = new ProcessOption();// 创建纠偏选项实例
-
-        processOption.setNeedDenoise(true);// 设置需要去噪
-        processOption.setNeedVacuate(true);// 设置需要绑路
-        processOption.setNeedMapMatch(true);
-        processOption.setRadiusThreshold(100);
-        processOption.setTransportMode(TransportMode.walking);// 设置交通方式为驾车
-
-        distanceRequest.setProcessOption(processOption);// 设置纠偏选项
-        historyTrackRequest.setProcessOption(processOption);// 设置纠偏选项
-
-        if(isWalking){
-            distanceRequest.setSupplementMode(SupplementMode.walking);// 设置里程填充方式为步行
-        }else{
-            distanceRequest.setSupplementMode(SupplementMode.riding);// 设置里程填充方式为骑车
-        }
 
         distanceRequest.setEntityName(trackApp.entityName);
         distanceRequest.setStartTime(startTime);
         distanceRequest.setEndTime(endTime);
         trackApp.mClient.queryDistance(distanceRequest, trackListener);
+
+        latestQequest.setEntityName(trackApp.entityName);
+        trackApp.mClient.queryLatestPoint(latestQequest, trackListener);
     }
 
+    private void initsetting() {
+        // 设置需要纠偏
+        distanceRequest.setProcessed(true);
+        historyTrackRequest.setProcessed(true);
+
+        ProcessOption processOption = new ProcessOption();// 创建纠偏选项实例
+        processOption.setNeedDenoise(true);// 设置需要去噪
+        processOption.setNeedVacuate(true);
+        processOption.setNeedMapMatch(true);// 设置需要绑路
+        processOption.setRadiusThreshold(DEFAULT_RADIUS_THRESHOLD);
+        processOption.setTransportMode(TransportMode.walking);// 设置交通方式为
+
+        distanceRequest.setProcessOption(processOption);// 设置纠偏选项
+        historyTrackRequest.setProcessOption(processOption);// 设置纠偏选项
+
+        if (isWalking) {
+            historyTrackRequest.setSupplementMode(SupplementMode.walking);// 设置里程填充方式为步行
+            distanceRequest.setSupplementMode(SupplementMode.walking);// 设置里程填充方式为步行
+        } else {
+            historyTrackRequest.setSupplementMode(SupplementMode.riding);// 设置里程填充方式为骑车
+            distanceRequest.setSupplementMode(SupplementMode.riding);// 设置里程填充方式为骑车
+        }
+
+        //查询服务端纠偏后的最新轨迹点请求参数类
+        latestQequest.setProcessOption(processOption);//设置参数
+    }
 
 
     @Override
@@ -508,8 +546,11 @@ public class RunRunFragment extends BaseFragment {
         super.onDestroy();
         //在activity执行onDestroy时执行mMapView.onDestroy()，实现地图生命周期管理
         mMapView.onDestroy();
-        mapUtil.clear();
+
         stopRealTimeLoc();
+        mSensorManager.unregisterListener(this);
+        trackPoints.clear();
+        trackPoints = null;
     }
 
     static class RealTimeHandler extends Handler {
@@ -554,7 +595,7 @@ public class RunRunFragment extends BaseFragment {
 
     @Override
     public void onActivityResult(int historyTrackRequestCode, int resultCode, Intent data) {
-        if (null == data) {
+      /*  if (null == data) {
             return;
         }
         trackPoints.clear();
@@ -569,11 +610,9 @@ public class RunRunFragment extends BaseFragment {
 
         ProcessOption processOption = new ProcessOption();
         if (data.hasExtra("radius")) {
-            processOption.setRadiusThreshold(data.getIntExtra("radius", Constants.DEFAULT_RADIUS_THRESHOLD));
+            processOption.setRadiusThreshold(data.getIntExtra("radius", DEFAULT_RADIUS_THRESHOLD));
         }
-        if (data.hasExtra("transportMode")) {
-            processOption.setTransportMode(TransportMode.valueOf(data.getStringExtra("transportMode")));
-        }
+        processOption.setTransportMode(TransportMode.walking);
         if (data.hasExtra("denoise")) {
             processOption.setNeedDenoise(data.getBooleanExtra("denoise", true));
         }
@@ -600,7 +639,7 @@ public class RunRunFragment extends BaseFragment {
         }
 
 
-        queryHistoryTrack();
+        queryHistoryTrack();*/
     }
 
     private class RefreshThread extends Thread {
@@ -621,4 +660,5 @@ public class RunRunFragment extends BaseFragment {
         }
 
     }
+
 }

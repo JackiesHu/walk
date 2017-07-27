@@ -122,6 +122,25 @@ public class NetUtil {
         return false;
     }
 
+    /**
+     * 检测网络状态是否联通
+     *
+     * @return
+     */
+    public static boolean isNetworkAvailable(Context context) {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo info = cm.getActiveNetworkInfo();
+            if (null != info && info.isConnected() && info.isAvailable()) {
+                return true;
+            }
+        } catch (Exception e) {
+            android.util.Log.e("net", "current network is not available");
+            return false;
+        }
+        return false;
+    }
+
     public interface NetWorkStatusCallBack{
         void strongNetWork();
         void thinNetWork();

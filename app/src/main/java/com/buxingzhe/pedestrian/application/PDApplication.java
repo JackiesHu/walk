@@ -1,11 +1,11 @@
 package com.buxingzhe.pedestrian.application;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 import android.util.DisplayMetrics;
+import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -19,27 +19,27 @@ import com.baidu.trace.api.entity.OnEntityListener;
 import com.baidu.trace.api.track.LatestPointRequest;
 import com.baidu.trace.api.track.OnTrackListener;
 import com.baidu.trace.model.BaseRequest;
+import com.baidu.trace.model.LocationMode;
 import com.baidu.trace.model.OnCustomAttributeListener;
 import com.baidu.trace.model.ProcessOption;
-import com.buxingzhe.lib.util.Log;
 import com.buxingzhe.lib.util.NetUtil;
 import com.buxingzhe.pedestrian.PDConfig;
 import com.buxingzhe.pedestrian.common.GlobalParams;
-import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.map.CommonUtil;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.Subscriber;
 import rx.Subscription;
+
+import static com.buxingzhe.pedestrian.utils.map.Constants.DEFAULT_GATHER_INTERVAL;
+import static com.buxingzhe.pedestrian.utils.map.Constants.DEFAULT_PACK_INTERVAL;
+import static com.buxingzhe.pedestrian.utils.map.Constants.DEFAULT_RADIUS_THRESHOLD;
 
 
 /**
@@ -62,7 +62,7 @@ public class PDApplication extends MultiDexApplication {
 
     public String entityName = "myTrace";// Entity标识
     private LocRequest locRequest = null;
-
+    public boolean isRegisterReceiver = false;
     public boolean isTraceStarted = false;//服务是否开启标识
 
     public boolean isGatherStarted = false;//isGatherStarted
@@ -71,7 +71,7 @@ public class PDApplication extends MultiDexApplication {
 
     public static int screenHeight = 0;
     private AtomicInteger mSequenceGenerator = new AtomicInteger();
-
+    private static double stepDistance=0.0004;//以km 为单位
     {
         // umeng                      appid + appkey
         PlatformConfig.setWeixin("wx609e5d32a2de0351", "3dfae04eac20da17e00a31ff17dc618d");
@@ -89,21 +89,29 @@ public class PDApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        pdAPP=this;
+        pdAPP = this;
         PDConfig.getInstance().init(this);
         SDKInitializer.initialize(this);
         MobclickAgent.openActivityDurationTrack(false);
         mContext = getApplicationContext();
+
         entityName = CommonUtil.getImei(this);
         // 若为创建独立进程，则不初始化成员变量
         if ("com.baidu.track:remote".equals(CommonUtil.getCurProcessName(mContext))) {
             return;
         }
-
         mClient = new LBSTraceClient(mContext);
         mTrace = new Trace(serviceId, entityName);
         trackConf = getSharedPreferences("track_conf", MODE_PRIVATE);
+        mClient.setLocationMode(LocationMode.High_Accuracy);
         locRequest = new LocRequest(serviceId);
+        /**
+         * 设置采集频率：这里的采集频率指的是轨迹数据的采集频率，和上面显示当前位置的定位频率要区分开
+         最小为2秒，最大为5分钟，否则设置不成功，默认值为5s
+         * 打包上传频率：mClient每隔packInterval时间会自动打包上传
+         * 打包时间间隔必须为采集时间间隔的整数倍，且最大不能超过5分钟，否则设置不成功，默认为30s
+         */
+        mClient.setInterval(DEFAULT_GATHER_INTERVAL, DEFAULT_PACK_INTERVAL);//
 
         mClient.setOnCustomAttributeListener(new OnCustomAttributeListener() {
             @Override
@@ -126,13 +134,33 @@ public class PDApplication extends MultiDexApplication {
 
         CrashReport.initCrashReport(getApplicationContext(), "b35d3acf04", false);
 
+
+        setStepDistance();
     }
+
+    private void setStepDistance() {
+        String height= mContext.getSharedPreferences("height", Context.MODE_PRIVATE).getString("height", null);
+        if(height!=null&&!height.equals("0")){
+            stepDistance= Double.valueOf(height)*0.4*0.00001;
+        }else{
+            Toast.makeText(mContext,"请去个人页面设置身高体重，否则影响数据准确性",Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public static PDApplication getInstance() {
         return pdAPP;
     }
+
     public static PDApplication getApp() {
         return pdAPP;
     }
+
+    public static double getStepDistance() {
+        return stepDistance;
+    }
+
+
+
     private void getLocalCityName(Context context) {
         LocationClientOption option = new LocationClientOption();
         option.setOpenGps(true);// 打开GPS
@@ -205,13 +233,13 @@ public class PDApplication extends MultiDexApplication {
     }
 
 
-
     /**
      * 获取当前位置
      */
     public void getCurrentLocation(OnEntityListener entityListener, OnTrackListener trackListener) {
         // 网络连接正常，开启服务及采集，则查询纠偏后实时位置；否则进行实时定位
-        if (NetUtil.isNetWorkConnectted(getApplicationContext())
+
+        if (NetUtil.isNetworkAvailable(mContext)
                 && trackConf.contains("is_trace_started")
                 && trackConf.contains("is_gather_started")
                 && trackConf.getBoolean("is_trace_started", false)
@@ -219,7 +247,8 @@ public class PDApplication extends MultiDexApplication {
             LatestPointRequest request = new LatestPointRequest(getTag(), serviceId, entityName);
             ProcessOption processOption = new ProcessOption();
             processOption.setNeedDenoise(true);
-            processOption.setRadiusThreshold(100);
+            processOption.setRadiusThreshold(DEFAULT_RADIUS_THRESHOLD);
+            processOption.setNeedMapMatch(true);
             request.setProcessOption(processOption);
             mClient.queryLatestPoint(request, trackListener);
         } else {
@@ -236,7 +265,6 @@ public class PDApplication extends MultiDexApplication {
         return mSequenceGenerator.incrementAndGet();
     }
 
-
     /**
      * 清除Trace状态：初始化app时，判断上次是正常停止服务还是强制杀死进程，根据trackConf中是否有is_trace_started字段进行判断。
      * <p>
@@ -252,12 +280,11 @@ public class PDApplication extends MultiDexApplication {
     }
 
 
-
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
-        if(GlobalParams.TOKEN!=null){
-            if(GlobalParams.TOKEN.length()!=0){
+        if (GlobalParams.TOKEN != null) {
+            if (GlobalParams.TOKEN.length() != 0) {
                 SharedPreferences preferences = getSharedPreferences("token", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("token", GlobalParams.TOKEN);

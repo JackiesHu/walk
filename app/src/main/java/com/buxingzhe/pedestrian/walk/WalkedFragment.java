@@ -26,6 +26,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.buxingzhe.lib.util.Log;
 import com.buxingzhe.pedestrian.R;
+import com.buxingzhe.pedestrian.activity.BaseFragment;
+import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.bean.walk.LatestActivityInfo;
 import com.buxingzhe.pedestrian.bean.walk.WalkHistoryStepEntity;
@@ -36,6 +38,7 @@ import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.community.community.CommActFragment;
 import com.buxingzhe.pedestrian.community.community.CommActInfoActivity;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
+import com.buxingzhe.pedestrian.service.DistanceService;
 import com.buxingzhe.pedestrian.service.StepService;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
@@ -77,7 +80,7 @@ import rx.Subscriber;
 /**
  * Created by quanjing on 2017/2/23.
  */
-public class WalkedFragment extends StepCountFragment implements Handler.Callback, View.OnClickListener {
+public class WalkedFragment extends BaseFragment implements Handler.Callback, View.OnClickListener {
 
     @BindView(R.id.walk_data_day)
     TextView walkDataDay;
@@ -115,6 +118,13 @@ public class WalkedFragment extends StepCountFragment implements Handler.Callbac
 
     private String[] WALK_SPINNER_DATA;
 
+
+    protected PDApplication trackApp = null;
+    protected TextView distanceTv;
+    protected TextView stepCountTv;
+    protected TextView stepCount;
+    protected HourStepCache stepCache;
+    protected double stepDistance=0.0004;//以km 为单位
     //天气
     @BindView(R.id.walk_weather_tv_address)
     TextView mWeatherAddress;
@@ -135,7 +145,7 @@ public class WalkedFragment extends StepCountFragment implements Handler.Callbac
     //计步
     private Handler delayHandler;
     //循环取当前时刻的步数中间的间隔时间
-    private long TIME_INTERVAL = 500;
+    private long TIME_INTERVAL = 5000;
     private boolean isBind = false;
     private Messenger messenger;
     private Messenger mGetReplyMessenger = new Messenger(new Handler(this));
@@ -154,7 +164,7 @@ public class WalkedFragment extends StepCountFragment implements Handler.Callbac
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
             case Constant.MSG_FROM_SERVER:
-                //stepCount.setText(msg.getData().getInt("step")+"");
+                updateView(msg.getData().getDouble("distance"));
                 delayHandler.sendEmptyMessageDelayed(Constant.REQUEST_SERVER, TIME_INTERVAL);
 
                 break;
@@ -172,14 +182,25 @@ public class WalkedFragment extends StepCountFragment implements Handler.Callbac
         return false;
     }
 
+    private void updateView(double distance) {
+        java.text.DecimalFormat myformat=new java.text.DecimalFormat("0.00");
+        String str = myformat.format(distance);
+        distanceTv.setText(str);
+        int totalCount=(int)(distance/stepDistance);
+        stepCountTv.setText(totalCount + " ");
+        stepCount.setText(totalCount + " ");
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_layout_walk, container, false);
-        mContext = getContext();
         ButterKnife.bind(this, view);
         findId(view);
-
+        checkGps();
+        onClick();
+        setData();
+        mCurrentSelectedDate.setText(mCalendarLayout.getCurrrentSelectedDate());
         return view;
     }
 
@@ -188,14 +209,22 @@ public class WalkedFragment extends StepCountFragment implements Handler.Callbac
         super.onCreate(savedInstanceState);
 
         delayHandler = new Handler(this);
+        mContext = getContext();
+        stepCache = new HourStepCache(getActivity());
+        trackApp = (PDApplication) getActivity().getApplicationContext();
+        stepDistance=trackApp.getStepDistance();
        // checkSensor();
-
-        if(!SystemUtils.isOPen(getActivity())){
-            Toast.makeText(getActivity(),"检测到您未打开GPS，将影响计步结果",Toast.LENGTH_SHORT).show();
-        }
 
     }
 
+    private void checkGps() {
+        if(!SystemUtils.isOPen(getActivity())){
+            Toast.makeText(getActivity(),"检测到您未打开GPS，将影响计步结果",Toast.LENGTH_SHORT).show();
+        }
+        Intent intent = new Intent(mContext, DistanceService.class);
+        isBind = mContext.bindService(intent, disCon, Context.BIND_AUTO_CREATE);
+        mContext.startService(intent);
+    }
 
 
     private void checkSensor() {
@@ -216,6 +245,36 @@ public class WalkedFragment extends StepCountFragment implements Handler.Callbac
         mContext.startService(intent);
     }
 
+    ServiceConnection disCon = new ServiceConnection() {
+        /**
+         * 在建立起于Service的连接时会调用该方法，目前Android是通过IBind机制实现与服务的连接。
+         * @param name 实际所连接到的Service组件名称
+         * @param service 服务的通信信道的IBind，可以通过Service访问对应服务
+         */
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            try {
+                messenger = new Messenger(service);
+                Message msg = Message.obtain(null, Constant.MSG_FROM_CLIENT);
+                msg.replyTo = mGetReplyMessenger;
+                messenger.send(msg);
+                Toast.makeText(getActivity(), "开始计步，请保持GPS打开",Toast.LENGTH_SHORT).show();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        /**
+         * 当与Service之间的连接丢失的时候会调用该方法，
+         * 这种情况经常发生在Service所在的进程崩溃或者被Kill的时候调用，
+         * 此方法不会移除与Service的连接，当服务重新启动的时候仍然会调用 onServiceConnected()。
+         * @param name 丢失连接的组件名称
+         */
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 
     ServiceConnection conn = new ServiceConnection() {
         /**
@@ -249,13 +308,6 @@ public class WalkedFragment extends StepCountFragment implements Handler.Callbac
 
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        onClick();
-        setData();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("WalkFragment");
@@ -271,7 +323,7 @@ public class WalkedFragment extends StepCountFragment implements Handler.Callbac
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mCurrentSelectedDate.setText(mCalendarLayout.getCurrrentSelectedDate());
+
     }
 
     private void findId(View view) {

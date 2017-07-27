@@ -125,7 +125,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
     private MultipartBody.Part pathPic = null;
     private FullGridView gv_pic;
     private int isPublic = 1;
-    private Double stepDistance=0.0004;//千米为单位
+    private Double stepDistance = 0.0004;//千米为单位
 
     private Handler mCountDownHander = new Handler() {
         @Override
@@ -162,12 +162,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         super.onCreate(savedInstanceState);
         myApp = (PDApplication) getActivity().getApplication();
         mImagePicker = AndroidImagePicker.getInstance();
-        String height= mContext.getSharedPreferences("height", Context.MODE_PRIVATE).getString("height", null);
-        if(height!=null&&!height.equals("0")){
-            stepDistance= Double.valueOf(height)*0.4*0.00001;
-        }else{
-            Toast.makeText(getActivity(),"请去个人页面设置身高体重，否则影响数据准确性",Toast.LENGTH_SHORT).show();
-        }
+        stepDistance=myApp.getStepDistance();
     }
 
 
@@ -459,7 +454,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
             tv_altitudeLow.setText((height.get(1) - height.get(0)) + " ");
         }
 
-        java.text.DecimalFormat myformat=new java.text.DecimalFormat("0.00");
+        java.text.DecimalFormat myformat = new java.text.DecimalFormat("0.00");
         String str = myformat.format(distance);
 
         tv_distance.setText(str);
@@ -482,15 +477,15 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         try {
             if (weights != null) {
                 weight = Integer.parseInt(weights);
-            }else{
-                Toast.makeText(getActivity(),"请设置体重身高，否则影响卡路里计算",Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), "请设置体重身高，否则影响卡路里计算", Toast.LENGTH_SHORT).show();
             }
 
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
         if (distance > 0) {
-            calories = (((double) userAge * 0.2017 + (double) weight * 0.09036 + distance * 3600 * 1.8) - 55.0969) * seconds / 6.34;
+            calories = (((double) userAge * 0.2017 + (double) weight * 0.09036 + distance * 3600 * 1.8) - 55.0969) * seconds / 6.34 / 3600;
 
         } else {
             calories = 0;
@@ -545,11 +540,11 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         chronometer.setText(str);
         mTVBottomSmallTime.setText(str);
 
-        java.text.DecimalFormat myformat=new java.text.DecimalFormat("0.00");
+        java.text.DecimalFormat myformat = new java.text.DecimalFormat("0.00");
         String strCurrent = myformat.format(distance);
 
         mTVRunDistance.setText(strCurrent);
-        stepCount = (int) (distance /stepDistance);
+        stepCount = (int) (distance / stepDistance);
         mTVRunWalkNum.setText((int) stepCount + " ");
         mTVRunCalorie.setText((int) calories + " ");
     }

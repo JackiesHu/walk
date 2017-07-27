@@ -51,7 +51,7 @@ public class StepCountFragment extends BaseFragment {
     private static final String TAG = "StepCountFragment";
     protected double distance = 0;//以千米为单位
     private double hourDistance = 0;
-    private double stepDistance=0.0004;//以km 为单位
+    protected double stepDistance=0.0004;//以km 为单位
     private Location oldLocation;
     private RefreshThread refreshThread = null;  //手动获取位置
     //记录
@@ -190,7 +190,7 @@ public class StepCountFragment extends BaseFragment {
         // 1秒更新一次，或最小位移变化超过1米更新一次；
         // 注意：此处更新准确度非常低，推荐在service里面启动一个Thread，在run中sleep(10000);然后执行handler.sendMessage(),更新位置
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, locationListener);
-        startRefreshThread(true);
+        startRefreshThread(false);
     }
 
     @Override
