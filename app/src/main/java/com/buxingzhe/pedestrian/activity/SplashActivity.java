@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.buxingzhe.lib.util.Log;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.User.LoginActivity;
+import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.tbruyelle.rxpermissions.Permission;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -33,14 +34,14 @@ import rx.functions.Action1;
 public class SplashActivity extends BaseActivity {
 
     private final static int OVERLAY_REQUEST_CODE = 12;
+    private PDApplication mApp;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spalsh);
+        mApp=PDApplication.getApp();
         //申请权限
-
         openPermission(this);
-
     }
 
     private void checkOverLayWindow() {
@@ -204,8 +205,8 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void switchActivity() {
-        GlobalParams.TOKEN= mContext.getSharedPreferences("token", Context.MODE_PRIVATE).getString("token", null);
-        GlobalParams.USER_ID=mContext.getSharedPreferences("userid", Context.MODE_PRIVATE).getString("userid", null);
+        GlobalParams.TOKEN= mApp.getUserToken();
+        GlobalParams.USER_ID=mApp.getUserId();
         if(GlobalParams.TOKEN!=null){
             if(GlobalParams.TOKEN.length()==0|GlobalParams.USER_ID.length()==0){
                 Intent intent=new Intent(SplashActivity.this, LoginActivity.class);

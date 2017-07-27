@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
+import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.widget.TitleBarLinstener;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
 
@@ -23,13 +24,14 @@ public class BaseFragment extends Fragment implements TitleBarLinstener {
     protected Activity sActivity;
     protected TitleBarView vTitleBar;
 
-
+    protected PDApplication pdApp;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getContext();
         mActivity = getActivity();
+        pdApp=PDApplication.getApp();
     }
 
 

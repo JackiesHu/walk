@@ -68,7 +68,6 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
     private MWTStarBar run_bottom_walked_stress_star, run_bottom_walked_environment_star, run_bottom_walked_safety_star;
     private EditText bottom_intro, bottom_title;
     private ScrollView run_done_scroll;
-    private PDApplication myApp;
     private PicAdapter adapter;
 
 
@@ -160,9 +159,9 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        myApp = (PDApplication) getActivity().getApplication();
+
         mImagePicker = AndroidImagePicker.getInstance();
-        stepDistance=myApp.getStepDistance();
+        stepDistance=pdApp.getStepDistance();
     }
 
 
@@ -285,7 +284,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
     private void setInitTitle() {
         //set title
 
-        setTitle(myApp.getCityName());
+        setTitle(pdApp.getCityName());
 
         if (isWalking) {
             setTitleRight("骑行");
@@ -612,7 +611,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
     private void uploadRunRecord() {
 
         //得到传来的值
-        String actId = myApp.getActId();
+        String actId = pdApp.getActId();
         if (actId == null) {
             actId = "0";
         }
@@ -792,6 +791,6 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
     public void onDestroyView() {
         super.onDestroyView();
         seconds = 0;
-        myApp.setActId("0");
+        pdApp.setActId("0");
     }
 }

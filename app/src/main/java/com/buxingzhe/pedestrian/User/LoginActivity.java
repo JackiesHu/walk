@@ -1,16 +1,10 @@
 package com.buxingzhe.pedestrian.User;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -29,12 +23,13 @@ import com.buxingzhe.lib.util.StringUtil;
 import com.buxingzhe.lib.widget.AwesomeDialogUtil;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
+import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.bean.user.UserLoginResultInfo;
 import com.buxingzhe.pedestrian.common.GlobalParams;
+import com.buxingzhe.pedestrian.common.SPConstant;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
-import com.buxingzhe.pedestrian.utils.SharedPreferencesUtil;
 import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
@@ -67,6 +62,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     //是否显示密码标记. true: 显示密码 false: 隐藏密码
     private boolean isShowPwd = false;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);//无标题
@@ -77,27 +73,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         registerListener();
 
         //自动登陆
-       GlobalParams.TOKEN = SharedPreferencesUtil.getInstance().getSharedPreferences(getApplicationContext())
-                .getString("token", "");
-       GlobalParams.USER_ID = SharedPreferencesUtil.getInstance().getSharedPreferences(getApplicationContext())
-                .getString("uid", "");
-       GlobalParams.LOGIN_TYPE = SharedPreferencesUtil.getInstance().getSharedPreferences(getApplicationContext())
-                .getInt("loginType", 0);
-        if (!TextUtils.isEmpty(GlobalParams.TOKEN)){
-            login(null,GlobalParams.LOGIN_TYPE);
+        GlobalParams.TOKEN = baseApp.getUserToken();
+        GlobalParams.USER_ID = baseApp.getUserId();
+        GlobalParams.LOGIN_TYPE = baseApp.getLoginType();
+        if (!TextUtils.isEmpty(GlobalParams.TOKEN)) {
+            login(null, GlobalParams.LOGIN_TYPE);
         }
 
-        checkPermission();
     }
 
-    private void checkPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int checkCallPhonePermission = ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION);
-            if(checkCallPhonePermission != PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},0x101);
-            }
-        }
-    }
 
     private void registerListener() {
         mIVWechat.setOnClickListener(this);
@@ -185,7 +169,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                     //EditText设置setText()后，光标会自动跑到第一个字符之前。
                     mPassword.setSelection(mPassword.getText().length());
 
-
                 }
                 break;
         }
@@ -241,7 +224,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                 name = data.get("name");
                 iconurl = data.get("iconurl");
                 gender = data.get("gender");
-
             }
 
             switch (platform) {
@@ -289,11 +271,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         //TODO 访问服务端
 
         //show dialog
-      //  AwesomeDialogUtil.getInstance().create(LoginActivity.this, "正在登陆...").showDialog();
+        //  AwesomeDialogUtil.getInstance().create(LoginActivity.this, "正在登陆...").showDialog();
 
-        try{
+        try {
             AwesomeDialogUtil.getInstance().create(LoginActivity.this, "正在登陆...").showDialog();
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
 
@@ -315,7 +297,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             @Override
             public void onNext(String jsonStr) {
                 Log.i(jsonStr);
-               // AwesomeDialogUtil.getInstance().create(LoginActivity.this).dismissDialog();
+                // AwesomeDialogUtil.getInstance().create(LoginActivity.this).dismissDialog();
 
                 // 由于服务端的返回数据格式不固定，因此这里采用手动解析
                 Object[] datas = JsonParseUtil.getInstance().parseJson(jsonStr, UserLoginResultInfo.class);
@@ -327,32 +309,25 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                         //TODO 保存数据
                         UserInfo userInfo = new UserInfo();
                         userInfo.formatUser(resultInfo);
-                        userInfo.saveUserInfo(mContext,userInfo);
+                        userInfo.saveUserInfo(mContext, userInfo);
 
                         GlobalParams.TOKEN = resultInfo.getToken();
                         GlobalParams.USER_ID = resultInfo.getId();
                         GlobalParams.mUserLoginResultInfo = resultInfo;
 
-                        SharedPreferences preferences = getSharedPreferences("token", Context.MODE_PRIVATE);
+                        baseApp.setUserId( GlobalParams.USER_ID);
+                        baseApp.setUserToken( GlobalParams.TOKEN);
+                        baseApp.setStepDistance(resultInfo.getHeight());
+                        SharedPreferences preferences = getSharedPreferences(SPConstant.USER_SP, Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = preferences.edit();
-                        editor.putString("token", GlobalParams.TOKEN);
-                        editor.commit();
-                        SharedPreferences preferencesId = getSharedPreferences("userid", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editorId = preferencesId.edit();
-                        editorId.putString("userid", GlobalParams.USER_ID);
-                        editorId.commit();
+                        editor.putString(SPConstant.USER_SP_TOKEN, GlobalParams.TOKEN);
+                        editor.putString(SPConstant.USER_SP_ID, GlobalParams.USER_ID);
+                        editor.putString(SPConstant.USER_SP_HEIGHT, resultInfo.getHeight());
+                        editor.putString(SPConstant.USER_SP_WEIGHT, resultInfo.getWeight());
+                        editor.putInt(SPConstant.USER_SP_LOGIN_TYPE, loginType);
 
-                        SharedPreferences preferencesH = getSharedPreferences("height", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editorH = preferencesH.edit();
-                        editorH.putString("height", resultInfo.getHeight());
-                        editorH.commit();
-                        SharedPreferences preferencesIdW = getSharedPreferences("weight", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editorW = preferencesIdW.edit();
-                        editorW.putString("weight", resultInfo.getWeight());
-                        editorW.commit();
+                        editor.apply();
 
-
-                        GlobalParams.TOKEN= mContext.getSharedPreferences("token", Context.MODE_PRIVATE).getString("token", null);
 
                         //TODO 跳转Main
                         EnterActUtils.enterMainActivity(LoginActivity.this);
@@ -446,12 +421,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     }
 
     private long mExitTime = 0;
+
     @Override
     public void onBackPressed() {
         //TODO something
 
         if ((System.currentTimeMillis() - mExitTime) > 2000) {
-            Toast.makeText(this,"再按一次退出", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
             mExitTime = System.currentTimeMillis();
         } else {
             LoginActivity.this.finish();

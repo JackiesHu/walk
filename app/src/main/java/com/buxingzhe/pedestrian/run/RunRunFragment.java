@@ -398,6 +398,7 @@ public class RunRunFragment extends BaseFragment implements SensorEventListener 
 
                 if (null != mapUtil) {
                     mapUtil.updateStatus(currentLatLng, true);
+                   // mapUtil.animateMapStatus(currentLatLng);//缩放
                     mapUtil.updateMapLocation(currentLatLng, mCurrentDirection);//显示当前位置
 
                 }
@@ -438,7 +439,7 @@ public class RunRunFragment extends BaseFragment implements SensorEventListener 
         mBaiduMap = mMapView.getMap();
         mMapView.setMinimumHeight(SystemUtils.dip2px(getContext(), 300.0f));
         mMapView.removeViewAt(1); // 去掉百度logo
-        MapStatusUpdate msu = MapStatusUpdateFactory.zoomTo(30.0f);// 17 -- 100米；  20 -- 10米
+        MapStatusUpdate msu = MapStatusUpdateFactory.zoomTo(18.0f);// 17 -- 100米；  20 -- 10米
         mBaiduMap.animateMapStatus(msu);
         mapUtil.init(mMapView);
         mapUtil.setCenter(trackApp);
@@ -592,55 +593,6 @@ public class RunRunFragment extends BaseFragment implements SensorEventListener 
         }
     }
 
-
-    @Override
-    public void onActivityResult(int historyTrackRequestCode, int resultCode, Intent data) {
-      /*  if (null == data) {
-            return;
-        }
-        trackPoints.clear();
-        pageIndex = 1;
-
-        if (data.hasExtra("startTime")) {
-            startTime = data.getLongExtra("startTime", CommonUtil.getCurrentTime());
-        }
-        if (data.hasExtra("endTime")) {
-            endTime = data.getLongExtra("endTime", CommonUtil.getCurrentTime());
-        }
-
-        ProcessOption processOption = new ProcessOption();
-        if (data.hasExtra("radius")) {
-            processOption.setRadiusThreshold(data.getIntExtra("radius", DEFAULT_RADIUS_THRESHOLD));
-        }
-        processOption.setTransportMode(TransportMode.walking);
-        if (data.hasExtra("denoise")) {
-            processOption.setNeedDenoise(data.getBooleanExtra("denoise", true));
-        }
-        if (data.hasExtra("vacuate")) {
-            processOption.setNeedVacuate(data.getBooleanExtra("vacuate", true));
-        }
-        if (data.hasExtra("mapmatch")) {
-            processOption.setNeedMapMatch(data.getBooleanExtra("mapmatch", true));
-        }
-        historyTrackRequest.setProcessOption(processOption);
-
-        if (data.hasExtra("supplementMode")) {
-            historyTrackRequest.setSupplementMode(SupplementMode.valueOf(data.getStringExtra("supplementMode")));
-        }
-        if (data.hasExtra("sortType")) {
-            sortType = SortType.valueOf(data.getStringExtra("sortType"));
-            historyTrackRequest.setSortType(sortType);
-        }
-        if (data.hasExtra("coordTypeOutput")) {
-            historyTrackRequest.setCoordTypeOutput(CoordType.valueOf(data.getStringExtra("coordTypeOutput")));
-        }
-        if (data.hasExtra("processed")) {
-            historyTrackRequest.setProcessed(data.getBooleanExtra("processed", true));
-        }
-
-
-        queryHistoryTrack();*/
-    }
 
     private class RefreshThread extends Thread {
 

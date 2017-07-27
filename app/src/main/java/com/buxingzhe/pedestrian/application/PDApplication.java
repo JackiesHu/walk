@@ -25,6 +25,7 @@ import com.baidu.trace.model.ProcessOption;
 import com.buxingzhe.lib.util.NetUtil;
 import com.buxingzhe.pedestrian.PDConfig;
 import com.buxingzhe.pedestrian.common.GlobalParams;
+import com.buxingzhe.pedestrian.common.SPConstant;
 import com.buxingzhe.pedestrian.utils.map.CommonUtil;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.umeng.analytics.MobclickAgent;
@@ -72,6 +73,10 @@ public class PDApplication extends MultiDexApplication {
     public static int screenHeight = 0;
     private AtomicInteger mSequenceGenerator = new AtomicInteger();
     private static double stepDistance=0.0004;//以km 为单位
+    private static String userId;
+    private static String userToken;
+    private static int loginType;
+    private String userHeight;
     {
         // umeng                      appid + appkey
         PlatformConfig.setWeixin("wx609e5d32a2de0351", "3dfae04eac20da17e00a31ff17dc618d");
@@ -134,19 +139,37 @@ public class PDApplication extends MultiDexApplication {
 
         CrashReport.initCrashReport(getApplicationContext(), "b35d3acf04", false);
 
+        initUserInfo();
 
         setStepDistance();
     }
 
+    private void initUserInfo() {
+        SharedPreferences pref = getSharedPreferences(SPConstant.USER_SP,MODE_PRIVATE);
+        userId=pref.getString(SPConstant.USER_SP_ID,null);
+        userToken=pref.getString(SPConstant.USER_SP_TOKEN,null);
+        userHeight=pref.getString(SPConstant.USER_SP_HEIGHT,"0");
+        loginType=pref.getInt(SPConstant.USER_SP_LOGIN_TYPE,0);
+    }
+
     private void setStepDistance() {
-        String height= mContext.getSharedPreferences("height", Context.MODE_PRIVATE).getString("height", null);
-        if(height!=null&&!height.equals("0")){
-            stepDistance= Double.valueOf(height)*0.4*0.00001;
+      //  String userHeight= mContext.getSharedPreferences("height", Context.MODE_PRIVATE).getString("height", null);
+        if(userHeight!=null&&!userHeight.equals("0")){
+            stepDistance= Double.valueOf(userHeight)*0.4*0.00001;
         }else{
             Toast.makeText(mContext,"请去个人页面设置身高体重，否则影响数据准确性",Toast.LENGTH_SHORT).show();
         }
     }
 
+    public void setStepDistance(String height) {
+        //  String userHeight= mContext.getSharedPreferences("height", Context.MODE_PRIVATE).getString("height", null);
+        userHeight=height;
+        if(userHeight!=null&&!userHeight.equals("0")){
+            stepDistance= Double.valueOf(userHeight)*0.4*0.00001;
+        }else{
+            Toast.makeText(mContext,"请去个人页面设置身高体重，否则影响数据准确性",Toast.LENGTH_SHORT).show();
+        }
+    }
     public static PDApplication getInstance() {
         return pdAPP;
     }
@@ -159,7 +182,22 @@ public class PDApplication extends MultiDexApplication {
         return stepDistance;
     }
 
+    public static String getUserId() {
+        return userId;
+    }
+    public static String getUserToken() {
+        return userToken;
+    }
+    public static void setUserId(String  id) {
+         userId=id;
+    }
+    public static void setUserToken(String token) {
+        userToken=token;
+    }
 
+    public static int getLoginType() {
+        return loginType;
+    }
 
     private void getLocalCityName(Context context) {
         LocationClientOption option = new LocationClientOption();

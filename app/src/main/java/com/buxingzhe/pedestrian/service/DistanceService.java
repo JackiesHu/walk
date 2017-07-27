@@ -29,6 +29,7 @@ import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.bean.StepData;
 import com.buxingzhe.pedestrian.common.Constant;
 import com.buxingzhe.pedestrian.common.GlobalParams;
+import com.buxingzhe.pedestrian.common.SPConstant;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.DbUtils;
 import com.buxingzhe.pedestrian.walk.HourStep;
@@ -102,7 +103,7 @@ public class DistanceService extends Service {
         super.onCreate();
         pdApp = (PDApplication) PDApplication.getApp().getApplicationContext();
         stepCache = new HourStepCache(pdApp);
-        CURRENT_DISTANCE =pdApp.getSharedPreferences("stepdistance", Context.MODE_PRIVATE).getFloat("stepdistanceKey", 0);
+        CURRENT_DISTANCE =pdApp.getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE).getFloat(SPConstant.DISTANCE_SP_TOTAL, 0);
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("HH");
         timeStap = format.format(date);
@@ -154,9 +155,9 @@ public class DistanceService extends Service {
         unregisterReceiver(mBatInfoReceiver);
         lm.removeUpdates(locationListener);
         lm.removeGpsStatusListener(listener);
-        SharedPreferences preferences = pdApp.getSharedPreferences("stepdistance", Context.MODE_PRIVATE);
+        SharedPreferences preferences = pdApp.getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putFloat("stepdistanceKey", (float) CURRENT_DISTANCE);
+        editor.putFloat(SPConstant.DISTANCE_SP_TOTAL, (float) CURRENT_DISTANCE);
         editor.apply();
     }
 
@@ -320,15 +321,16 @@ public class DistanceService extends Service {
      * 监听晚上0点变化初始化数据
      */
     private void isNewDay() {
-        today = pdApp.getSharedPreferences("todaydate", Context.MODE_PRIVATE).getString("todaydate", null);
+        SharedPreferences preferences = pdApp.getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        today = preferences.getString(SPConstant.DISTANCE_SP_DATE, null);
+
         if (today == null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             Date date = new Date();
             today = sdf.format(date);
-            SharedPreferences preferences = pdApp.getSharedPreferences("todaydate", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putString("todaydate", today);
-            editor.commit();
+            editor.putString(SPConstant.DISTANCE_SP_DATE, today);
+            editor.apply();
         } else {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             Date newDate = new Date();
@@ -365,9 +367,9 @@ public class DistanceService extends Service {
             @Override
             public void onNext(String jsonStr) {
                 CURRENT_DISTANCE = 0;
-                SharedPreferences preferences = pdApp.getSharedPreferences("todaydate", Context.MODE_PRIVATE);
+                SharedPreferences preferences = pdApp.getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("todaydate", newDay);
+                editor.putString(SPConstant.DISTANCE_SP_DATE, newDay);
                 editor.commit();
 
                 //清除按小时计算的步数

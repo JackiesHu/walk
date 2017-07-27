@@ -51,7 +51,7 @@ public class MapUtil {
     public BaiduMap baiduMap = null;
 
     public LatLng lastPoint = null;
-    private float mCurrentZoom = 18.0f;
+    private float mCurrentZoom = 20.0f;
     private MyLocationData locData;
     /**
      * 路线覆盖物
@@ -68,7 +68,7 @@ public class MapUtil {
     public void init(MapView view) {
         mapView = view;
         baiduMap = mapView.getMap();
-        mapView.showZoomControls(false);
+        mapView.showZoomControls(true);
 
         baiduMap.setMyLocationConfigeration(new MyLocationConfiguration(MyLocationConfiguration.LocationMode.FOLLOWING,true,null));
         baiduMap.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {//缩放比例变化监听

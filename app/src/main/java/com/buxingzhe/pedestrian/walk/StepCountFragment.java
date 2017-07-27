@@ -26,6 +26,7 @@ import com.buxingzhe.pedestrian.activity.BaseFragment;
 import com.buxingzhe.pedestrian.activity.MainActivity;
 import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.common.GlobalParams;
+import com.buxingzhe.pedestrian.common.SPConstant;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 
 import java.text.SimpleDateFormat;
@@ -43,7 +44,7 @@ import rx.Subscriber;
  */
 
 public class StepCountFragment extends BaseFragment {
-    protected PDApplication trackApp = null;
+
     protected TextView distanceTv;
     protected TextView stepCountTv;
     protected TextView stepCount;
@@ -70,18 +71,12 @@ public class StepCountFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        trackApp = (PDApplication) getActivity().getApplicationContext();
         stepCache = new HourStepCache(getActivity());
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("HH");
         timeStap = format.format(date);
-        String height= mContext.getSharedPreferences("height", Context.MODE_PRIVATE).getString("height", null);
-        if(height!=null&&!height.equals("0")){
-            stepDistance= Double.valueOf(height)*0.4*0.00001;
-        }else{
-            Toast.makeText(getActivity(),"请去个人页面设置身高体重，否则影响数据准确性",Toast.LENGTH_SHORT).show();
-        }
-        distance = getActivity().getSharedPreferences("stepdistance", Context.MODE_PRIVATE).getFloat("stepdistanceKey", 0);
+        stepDistance=pdApp.getStepDistance();
+        distance = getActivity().getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE).getFloat(SPConstant.DISTANCE_SP_TOTAL, 0);
     }
 
     @Override
@@ -91,14 +86,14 @@ public class StepCountFragment extends BaseFragment {
     }
 
     private void checkUpLoadDistance() {
-        today = getActivity().getSharedPreferences("todaydate", Context.MODE_PRIVATE).getString("todaydate", null);
+        today = getActivity().getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE).getString(SPConstant.DISTANCE_SP_DATE, null);
         if (today == null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             Date date=new Date();
             today=sdf.format(date);
-            SharedPreferences preferences = this.getActivity().getSharedPreferences("todaydate", Context.MODE_PRIVATE);
+            SharedPreferences preferences = this.getActivity().getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
-            editor.putString("todaydate", today);
+            editor.putString(SPConstant.DISTANCE_SP_DATE, today);
             editor.commit();
         }else{
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -136,9 +131,9 @@ public class StepCountFragment extends BaseFragment {
             @Override
             public void onNext(String jsonStr) {
                 distance = 0;
-                SharedPreferences preferences = getActivity().getSharedPreferences("todaydate", Context.MODE_PRIVATE);
+                SharedPreferences preferences = getActivity().getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("todaydate", newDay);
+                editor.putString(SPConstant.DISTANCE_SP_DATE, newDay);
                 editor.commit();
 
                 //清除按小时计算的步数
@@ -162,7 +157,7 @@ public class StepCountFragment extends BaseFragment {
 
         // 判断GPS是否正常启动
 
-        if (ContextCompat.checkSelfPermission(trackApp, Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (ContextCompat.checkSelfPermission(pdApp, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(getActivity(), "请开启GPS导航...", Toast.LENGTH_SHORT).show();
             // 返回开启GPS导航设置界面
@@ -242,7 +237,7 @@ public class StepCountFragment extends BaseFragment {
          * GPS开启时触发
          */
         public void onProviderEnabled(String provider) {
-            if (ActivityCompat.checkSelfPermission(trackApp, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(pdApp, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
                 // here to request the missing permissions, and then overriding
@@ -276,7 +271,7 @@ public class StepCountFragment extends BaseFragment {
                 case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
                     Log.i(TAG, "卫星状态改变");
                     // 获取当前状态
-                    if (ActivityCompat.checkSelfPermission(trackApp, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(pdApp, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         // TODO: Consider calling
                         //    ActivityCompat#requestPermissions
                         // here to request the missing permissions, and then overriding
@@ -429,7 +424,7 @@ public class StepCountFragment extends BaseFragment {
         public void run() {
 
             while (refresh) {
-                if (ActivityCompat.checkSelfPermission(trackApp, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(pdApp, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
                     // here to request the missing permissions, and then overriding
@@ -485,9 +480,9 @@ public class StepCountFragment extends BaseFragment {
         lm.removeUpdates(locationListener);
         lm.removeGpsStatusListener(listener);
         startRefreshThread(false);
-        SharedPreferences preferences = this.getActivity().getSharedPreferences("stepdistance", Context.MODE_PRIVATE);
+        SharedPreferences preferences = this.getActivity().getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putFloat("stepdistanceKey", (float) distance);
+        editor.putFloat(SPConstant.DISTANCE_SP_TOTAL, (float) distance);
         editor.commit();
     }
 }

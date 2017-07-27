@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.widget.TitleBarLinstener;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
@@ -23,6 +24,7 @@ public class BaseActivity extends AppCompatActivity implements TitleBarLinstener
     protected Context mContext;
     protected Activity mActivity;
     protected TitleBarView vTitleBar;
+    protected PDApplication baseApp;
     protected void setTitle(String title){
         if (vTitleBar != null){
             vTitleBar.setvTitle(title);
@@ -90,6 +92,7 @@ public class BaseActivity extends AppCompatActivity implements TitleBarLinstener
         super.onCreate(savedInstanceState);
         mContext = this;
         mActivity =this;
+        baseApp=PDApplication.getApp();
     }
 
     @Override
@@ -98,8 +101,8 @@ public class BaseActivity extends AppCompatActivity implements TitleBarLinstener
 
         if(null!=GlobalParams.TOKEN){
             if(GlobalParams.TOKEN.length()==0){
-                GlobalParams.TOKEN= mContext.getSharedPreferences("token", Context.MODE_PRIVATE).getString("token",null);
-                GlobalParams.USER_ID=mContext.getSharedPreferences("userid", Context.MODE_PRIVATE).getString("userid",null);
+                GlobalParams.TOKEN= baseApp.getUserToken();
+                GlobalParams.USER_ID=baseApp.getUserId();
             }
         }
 
