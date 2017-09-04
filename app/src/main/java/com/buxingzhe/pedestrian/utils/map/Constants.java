@@ -34,12 +34,12 @@ public final class Constants {
     /**
      * 默认采集周期
      */
-    public static final int DEFAULT_GATHER_INTERVAL = 1;
+    public static final int DEFAULT_GATHER_INTERVAL = 2;
 
     /**
      * 默认打包周期
      */
-    public static final int DEFAULT_PACK_INTERVAL =1;
+    public static final int DEFAULT_PACK_INTERVAL =2;
 
     /**
      * 实时定位间隔(单位:秒)

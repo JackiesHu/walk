@@ -25,16 +25,15 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.buxingzhe.lib.util.Log;
+import com.buxingzhe.lib.util.NetUtil;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
-import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.bean.walk.LatestActivityInfo;
+import com.buxingzhe.pedestrian.bean.walk.WalkHistoryMonthStepEntity;
 import com.buxingzhe.pedestrian.bean.walk.WalkHistoryStepEntity;
 import com.buxingzhe.pedestrian.bean.walk.WalkWeatherInfo;
-import com.buxingzhe.pedestrian.bean.walk.WalkHistoryMonthStepEntity;
 import com.buxingzhe.pedestrian.common.Constant;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.community.community.CommActFragment;
 import com.buxingzhe.pedestrian.community.community.CommActInfoActivity;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
@@ -59,7 +58,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -75,6 +73,7 @@ import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 import rx.Subscriber;
+import rx.internal.util.ActionSubscriber;
 
 
 /**
@@ -119,12 +118,11 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
     private String[] WALK_SPINNER_DATA;
 
 
-    protected PDApplication trackApp = null;
     protected TextView distanceTv;
     protected TextView stepCountTv;
     protected TextView stepCount;
     protected HourStepCache stepCache;
-    protected double stepDistance=0.0004;//以km 为单位
+    protected double stepDistance = 0.0004;//以km 为单位
     //天气
     @BindView(R.id.walk_weather_tv_address)
     TextView mWeatherAddress;
@@ -150,9 +148,9 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
     private Messenger messenger;
     private Messenger mGetReplyMessenger = new Messenger(new Handler(this));
 
-    private List<String> XDatas=new ArrayList<>();
-    private List<Integer> YDatas=new ArrayList<>();
-    private boolean isExpand=true;
+    private List<String> XDatas = new ArrayList<>();
+    private List<Integer> YDatas = new ArrayList<>();
+    private boolean isExpand = true;
 
     /**
      * 从service服务中拿到步数
@@ -183,10 +181,10 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
     }
 
     private void updateView(double distance) {
-        java.text.DecimalFormat myformat=new java.text.DecimalFormat("0.00");
+        java.text.DecimalFormat myformat = new java.text.DecimalFormat("0.00");
         String str = myformat.format(distance);
         distanceTv.setText(str);
-        int totalCount=(int)(distance/stepDistance);
+        int totalCount = (int) (distance / stepDistance);
         stepCountTv.setText(totalCount + " ");
         stepCount.setText(totalCount + " ");
     }
@@ -198,7 +196,6 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
         ButterKnife.bind(this, view);
         findId(view);
         checkGps();
-        onClick();
         setData();
         mCurrentSelectedDate.setText(mCalendarLayout.getCurrrentSelectedDate());
         return view;
@@ -209,21 +206,21 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
         super.onCreate(savedInstanceState);
 
         delayHandler = new Handler(this);
-        mContext = getContext();
         stepCache = new HourStepCache(getActivity());
-        trackApp = (PDApplication) getActivity().getApplicationContext();
-        stepDistance=trackApp.getStepDistance();
-       // checkSensor();
+        stepDistance = pdApp.getStepDistance();
+        // checkSensor();
 
     }
 
     private void checkGps() {
-        if(!SystemUtils.isOPen(getActivity())){
-            Toast.makeText(getActivity(),"检测到您未打开GPS，将影响计步结果",Toast.LENGTH_SHORT).show();
+        if (!NetUtil.isGPS(getActivity())) {
+            Toast.makeText(getActivity(), "检测到您未打开GPS，将不会计步", Toast.LENGTH_LONG).show();
+        }else{
+            Intent intent = new Intent(mContext, DistanceService.class);
+            isBind = mContext.bindService(intent, disCon, Context.BIND_AUTO_CREATE);
+            mContext.startService(intent);
         }
-        Intent intent = new Intent(mContext, DistanceService.class);
-        isBind = mContext.bindService(intent, disCon, Context.BIND_AUTO_CREATE);
-        mContext.startService(intent);
+
     }
 
 
@@ -258,7 +255,7 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
                 Message msg = Message.obtain(null, Constant.MSG_FROM_CLIENT);
                 msg.replyTo = mGetReplyMessenger;
                 messenger.send(msg);
-                Toast.makeText(getActivity(), "开始计步，请保持GPS打开",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "开始计步，请保持GPS打开", Toast.LENGTH_SHORT).show();
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -306,7 +303,6 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
         }
     };
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -320,16 +316,10 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
         MobclickAgent.onPageEnd("WalkFragment");
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-    }
-
     private void findId(View view) {
-        distanceTv=(TextView) view.findViewById(R.id.walk_licheng);
-        stepCountTv=(TextView) view.findViewById(R.id.walk_number);
-        stepCount=(TextView) view.findViewById(R.id.stepCount);
+        distanceTv = (TextView) view.findViewById(R.id.walk_licheng);
+        stepCountTv = (TextView) view.findViewById(R.id.walk_number);
+        stepCount = (TextView) view.findViewById(R.id.stepCount);
 
         mCurrentSelectedDate = (TextView) view.findViewById(R.id.currentSelectedDate);
         mLineChartView = (LineChartView) view.findViewById(R.id.linechartview);
@@ -341,10 +331,7 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
         walkDataMonth.setSelected(false);
         walkDataWeek.setSelected(false);
         walkDataYear.setSelected(false);
-        getDayData();
-    }
 
-    private void onClick() {
         mLineChartView.setOnValueTouchListener(new MineLineChartOnValueSelectListener());
         mMaterialSpinner.setOnItemSelectedListener(new MineOnItemSelectedListener());
         mCalendarLayout.setOnCalendarClickListener(new MineCalendarClickListener());
@@ -356,12 +343,9 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
         setActionData();
         setSpinnerData();
         getDayData();
-
     }
 
     private void setActionData() {
-
-
         mSubscription = NetRequestManager.getInstance().getLatestActivity(new Subscriber<String>() {
             @Override
             public void onCompleted() {
@@ -380,8 +364,10 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
                 info = gson2.fromJson(jsonStr, LatestActivityInfo.class);
                 LatestActivityInfo.ContentBean content = info.getContent();
 
-                if (null != content) {
-                    walkActionTitle.setText(content.getTitle());
+                if (content == null) {
+                    return;
+                }
+                walkActionTitle.setText(content.getTitle());
 
                     SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
                     Long time = new Long(info.getContent().getStartTimeStamp());
@@ -392,98 +378,61 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
                             .error(R.drawable.default_img)
                             .into(walkActionPic);
                     walkActionContent.setText(content.getIntroduction());
-                }
-
-
             }
-
         });
     }
 
-
-
     private void setWeatherData(boolean isCurrentWeatherData, String date) {
-        String cityName = trackApp.getCityName();//TODO
-        if(cityName==null){
-            cityName="北京";
+        String cityName = pdApp.getCityName();//TODO
+        if (cityName == null) {
+            cityName = "北京";
         }
         if (isCurrentWeatherData) {
-            mSubscription = NetRequestManager.getInstance().getCurrentWeather(cityName, new Subscriber<String>() {
-                @Override
-                public void onCompleted() {
-                    Log.i("onCompleted");
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    Log.i(e.getMessage());
-                }
-
-                @Override
-                public void onNext(String jsonStr) {
-                    Log.i("jsonStr" + jsonStr);
-
-                    // 由于服务端的返回数据格式不固定，因此这里采用手动解析
-                    Object[] datas = JsonParseUtil.getInstance().parseJson(jsonStr, WalkWeatherInfo.class);
-                    if ((Integer) datas[0] == 0) {
-                        Log.i(datas[1].toString());
-
-                        WalkWeatherInfo content = (WalkWeatherInfo) datas[1];
-                        if (content != null) {
-                            Log.i(content.toString());
-                            WalkedFragment.this.setWeatherData(content);
-                        }
-
-                    } else {
-                        Toast.makeText(mContext, datas[2].toString(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-            });
+            mSubscription = NetRequestManager.getInstance().getCurrentWeather(cityName, mSubscriber);
         } else {
-            Log.i(date);
-            mSubscription = NetRequestManager.getInstance().getHistoryWeather(cityName, date, new Subscriber<String>() {
-                @Override
-                public void onCompleted() {
-                    Log.i("onCompleted");
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    Log.i(e.getMessage());
-                }
-
-                @Override
-                public void onNext(String jsonStr) {
-                    Log.i("jsonStr" + jsonStr);
-
-                    // 由于服务端的返回数据格式不固定，因此这里采用手动解析
-                    Object[] datas = JsonParseUtil.getInstance().parseJson(jsonStr, WalkWeatherInfo.class);
-                    if ((Integer) datas[0] == 0) {
-                        Log.i(datas[1].toString());
-
-                        WalkWeatherInfo content = (WalkWeatherInfo) datas[1];
-                        if (content != null) {
-                            Log.i(content.toString());
-                            WalkedFragment.this.setWeatherData(content);
-                        }
-
-                    } else {
-                        Toast.makeText(mContext, datas[2].toString(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-            });
+            mSubscription = NetRequestManager.getInstance().getHistoryWeather(cityName, date, mSubscriber);
         }
     }
 
+    private Subscriber<String> mSubscriber = new Subscriber<String>() {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onNext(String s) {
+            setWeatherData(s);
+        }
+    };
+
+    private void setWeatherData(String jsonStr) {
+        Object[] datas = JsonParseUtil.getInstance().parseJson(jsonStr, WalkWeatherInfo.class);
+        if ((Integer) datas[0] == 0) {
+            Log.i(datas[1].toString());
+
+            WalkWeatherInfo content = (WalkWeatherInfo) datas[1];
+            if (content != null) {
+                Log.i(content.toString());
+                WalkedFragment.this.setWeatherData(content);
+            }
+
+        } else {
+            Toast.makeText(mContext, datas[2].toString(), Toast.LENGTH_SHORT).show();
+        }
+    }
     private void setWeatherData(WalkWeatherInfo content) {
         if (TextUtils.isEmpty(content.getCityName())) {
             content.setCityName("北京");
             return;
         }
         mWeatherAddress.setText(content.getCityName());
-        mWeather.setText(content.getWeather() + "  " + content.getWindDirection() + content.getWindDegree()+"  "+content.getSportSuggest());
+        mWeather.setText(content.getWeather() + "  " + content.getWindDirection() + content.getWindDegree() + "  " + content.getSportSuggest());
         mWeatherAirQuality.setText(content.getAirQuality());
         mWeatherWearSuggest.setText(content.getWearSuggest());
         mWeatherSportSuggest.setText(content.getSportSuggest());
@@ -502,8 +451,8 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
      */
     private void setChartData() {
 
-        XDatas.add(0,"0");
-        YDatas.add(0,0);
+        XDatas.add(0, "0");
+        YDatas.add(0, 0);
         //1. 获取XY轴的标注
         List<AxisValue> mAxisXValue = new ArrayList<AxisValue>();
         for (int i = 0; i < XDatas.size(); i++) {
@@ -588,7 +537,7 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
         //Y轴分割线（就是坐标轴是否显示）
         axisY.setHasSeparationLine(false);
         //填充Y轴坐标上 原点的值
-       // axisY.setValues(mAxisYValue);
+        // axisY.setValues(mAxisYValue);
         //Y轴数值自动生成 (需要在setValues()方法之后调用才起作用)
         axisY.setAutoGenerated(false);
         //Y轴显示的数值在内部显示
@@ -630,40 +579,41 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
 
 
     }
+
     private void getDayData() {
         XDatas.clear();
         YDatas.clear();
-        int aveCount=0;
-        List<HourStep> dayList= stepCache.readStepsList();
-        if(dayList!=null){
+        int aveCount = 0;
+        List<HourStep> dayList = stepCache.readStepsList();
+        if (dayList != null) {
 
-            int size=dayList.size();
-            for(int i=0;i<size;i++){
+            int size = dayList.size();
+            for (int i = 0; i < size; i++) {
                 XDatas.add(dayList.get(i).getHour());
                 YDatas.add(dayList.get(i).getStepCount());
-                aveCount=aveCount+dayList.get(i).getStepCount();
+                aveCount = aveCount + dayList.get(i).getStepCount();
             }
-            if(XDatas.size()==0){
-                Toast.makeText(getActivity(),"暂无数据",Toast.LENGTH_SHORT).show();
-                for(int i=0;i<11;i++){
-                    XDatas.add(i+"时");
+            if (XDatas.size() == 0) {
+                Toast.makeText(getActivity(), "今日暂无步行数据", Toast.LENGTH_SHORT).show();
+                for (int i = 0; i < 11; i++) {
+                    XDatas.add(i + "时");
                     YDatas.add(1);
                 }
 
             }
-        }else{
-            Toast.makeText(getActivity(),"暂无数据",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getActivity(), "暂无数据", Toast.LENGTH_SHORT).show();
         }
 
-        aveStepCount.setText(aveCount+"/日");
+        aveStepCount.setText(aveCount + "/日");
         setFreshTime();
         setChartData();
     }
 
     private void setFreshTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        Date date=new Date();
-        String time=sdf.format(date);
+        Date date = new Date();
+        String time = sdf.format(date);
 
         refreshTime.setText(time);
     }
@@ -676,14 +626,14 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
         Date mBefore;
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.DAY_OF_MONTH,-7);//往上推一天  30推三十天  365推一年
+        calendar.add(Calendar.DAY_OF_MONTH, -7);//往上推一天  30推三十天  365推一年
         mBefore = calendar.getTime();
-        String dateBefore=sdf.format(mBefore);
+        String dateBefore = sdf.format(mBefore);
 
         Map<String, String> params = new HashMap<>();
         params.put("beginDate", dateBefore);
-        params.put("userId", GlobalParams.USER_ID);
-        params.put("token",  GlobalParams.TOKEN);
+        params.put("userId", pdApp.getUserId());
+        params.put("token", pdApp.getUserToken());
         mSubscription = NetRequestManager.getInstance().queryWalkRecordByDay(params, new Subscriber<String>() {
             @Override
             public void onCompleted() {
@@ -697,22 +647,22 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
 
             @Override
             public void onNext(String jsonStr) {
-                int aveCount=0;
+                int aveCount = 0;
                 Gson gson = new Gson();
                 WalkHistoryStepEntity steps = gson.fromJson(jsonStr, WalkHistoryStepEntity.class);
-                if(steps.getCode()==0){
-                    int size=steps.getContent().size();
+                if (steps.getCode() == 0) {
+                    int size = steps.getContent().size();
 
-                    for(int i=0;i<size;i++){
-                        WalkHistoryStepEntity.ContentBean bean=steps.getContent().get(i);
+                    for (int i = 0; i < size; i++) {
+                        WalkHistoryStepEntity.ContentBean bean = steps.getContent().get(i);
                         YDatas.add(bean.getStepCount());
-                        aveCount=aveCount+bean.getStepCount();
-                        String d=stringtoDay(bean.getPublishDate());
+                        aveCount = aveCount + bean.getStepCount();
+                        String d = stringtoDay(bean.getPublishDate());
 
-                        XDatas.add(d+"日");
+                        XDatas.add(d + "日");
                     }
                 }
-                aveStepCount.setText((int)(aveCount/7)+"/日");
+                aveStepCount.setText((int) (aveCount / 7) + "/日");
                 setFreshTime();
                 setChartData();
             }
@@ -722,30 +672,31 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
     }
 
     private String stringtoDay(String publishDate) {
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMdd");//小写的mm表示的是分钟
-        String dstr=publishDate;
-        Date date= null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");//小写的mm表示的是分钟
+        String dstr = publishDate;
+        Date date = null;
         try {
             date = sdf.parse(dstr);
 
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        SimpleDateFormat format =  new SimpleDateFormat("dd");
+        SimpleDateFormat format = new SimpleDateFormat("dd");
         String d = format.format(date);
         return d;
     }
+
     private String stringtoMonth(String publishDate) {
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMM");//小写的mm表示的是分钟
-        String dstr=publishDate;
-        Date date= null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");//小写的mm表示的是分钟
+        String dstr = publishDate;
+        Date date = null;
         try {
             date = sdf.parse(dstr);
 
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        SimpleDateFormat format =  new SimpleDateFormat("MM");
+        SimpleDateFormat format = new SimpleDateFormat("MM");
         String d = format.format(date);
         return d;
     }
@@ -758,14 +709,14 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
         Date mBefore;
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.DAY_OF_MONTH,-30);//往上推一天  30推三十天  365推一年
+        calendar.add(Calendar.DAY_OF_MONTH, -30);//往上推一天  30推三十天  365推一年
         mBefore = calendar.getTime();
-        String dateBefore=sdf.format(mBefore);
+        String dateBefore = sdf.format(mBefore);
 
         Map<String, String> params = new HashMap<>();
         params.put("beginDate", dateBefore);
-        params.put("userId", GlobalParams.USER_ID);
-        params.put("token",  GlobalParams.TOKEN);
+        params.put("userId", pdApp.getUserId());
+        params.put("token", pdApp.getUserToken());
         mSubscription = NetRequestManager.getInstance().queryWalkRecordByDay(params, new Subscriber<String>() {
             @Override
             public void onCompleted() {
@@ -779,28 +730,29 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
 
             @Override
             public void onNext(String jsonStr) {
-                int aveCount=0;
+                int aveCount = 0;
                 Gson gson = new Gson();
                 WalkHistoryStepEntity steps = gson.fromJson(jsonStr, WalkHistoryStepEntity.class);
-                if(steps.getCode()==0){
-                    int size=steps.getContent().size();
-                    for(int i=0;i<size;i++){
-                        WalkHistoryStepEntity.ContentBean bean=steps.getContent().get(i);
+                if (steps.getCode() == 0) {
+                    int size = steps.getContent().size();
+                    for (int i = 0; i < size; i++) {
+                        WalkHistoryStepEntity.ContentBean bean = steps.getContent().get(i);
                         YDatas.add(bean.getStepCount());
-                        aveCount=aveCount+bean.getStepCount();
-                        String d=stringtoDay(bean.getPublishDate());
+                        aveCount = aveCount + bean.getStepCount();
+                        String d = stringtoDay(bean.getPublishDate());
 
-                        XDatas.add(d+"日");
+                        XDatas.add(d + "日");
                     }
                 }
-                aveStepCount.setText((int)(aveCount/30)+"/日");
+                aveStepCount.setText((int) (aveCount / 30) + "/日");
                 setFreshTime();
                 setChartData();
             }
 
         });
     }
-    private void getYearData(){
+
+    private void getYearData() {
         XDatas.clear();
         YDatas.clear();
 
@@ -808,13 +760,13 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
         Date mBefore;
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.YEAR,-1);//往上12个月
+        calendar.add(Calendar.YEAR, -1);//往上12个月
         mBefore = calendar.getTime();
-        String dateBefore=sdf.format(mBefore);
+        String dateBefore = sdf.format(mBefore);
         Map<String, String> params = new HashMap<>();
         params.put("beginMonth", dateBefore);
-        params.put("userId", GlobalParams.USER_ID);
-        params.put("token",  GlobalParams.TOKEN);
+        params.put("userId", pdApp.getUserId());
+        params.put("token", pdApp.getUserToken());
         mSubscription = NetRequestManager.getInstance().queryWalkRecordByMonth(params, new Subscriber<String>() {
             @Override
             public void onCompleted() {
@@ -828,20 +780,20 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
 
             @Override
             public void onNext(String jsonStr) {
-                int aveCount=0;
+                int aveCount = 0;
                 Gson gson = new Gson();
                 WalkHistoryMonthStepEntity steps = gson.fromJson(jsonStr, WalkHistoryMonthStepEntity.class);
-                if(steps.getCode()==0){
-                    int size=steps.getContent().size();
-                    for(int i=0;i<size;i++){
-                        WalkHistoryMonthStepEntity.ContentBean bean=steps.getContent().get(i);
+                if (steps.getCode() == 0) {
+                    int size = steps.getContent().size();
+                    for (int i = 0; i < size; i++) {
+                        WalkHistoryMonthStepEntity.ContentBean bean = steps.getContent().get(i);
                         YDatas.add(bean.getStepCount());
-                        aveCount=aveCount+bean.getStepCount();
-                        String d=stringtoMonth(bean.getPublishDate());
-                        XDatas.add(d+"月");
+                        aveCount = aveCount + bean.getStepCount();
+                        String d = stringtoMonth(bean.getPublishDate());
+                        XDatas.add(d + "月");
                     }
                 }
-                aveStepCount.setText((int)(aveCount/12)+"/月");
+                aveStepCount.setText((int) (aveCount / 12) + "/月");
                 setFreshTime();
                 setChartData();
             }
@@ -859,12 +811,12 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.walk_title_calendar://title calendar
-                if(isExpand){
+                if (isExpand) {
                     mCalendarLayout.animateHide();
-                    isExpand=false;
-                }else{
+                    isExpand = false;
+                } else {
                     mCalendarLayout.animateShow();
-                    isExpand=true;
+                    isExpand = true;
                 }
 
                 break;
@@ -916,8 +868,6 @@ public class WalkedFragment extends BaseFragment implements Handler.Callback, Vi
                 break;
         }
     }
-
-
 
 
     private class MineLineChartOnValueSelectListener implements LineChartOnValueSelectListener {

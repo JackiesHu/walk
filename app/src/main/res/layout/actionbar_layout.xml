@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <LinearLayout
@@ -51,20 +52,13 @@
                 android:layout_centerVertical="true"
                 android:gravity="center_vertical" />
 
-            <TextView
-                android:id="@+id/caption_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_centerVertical="true"
-                android:gravity="center_vertical"
-                android:textColor="@color/white"
-                android:textSize="19sp" />
+
 
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_alignParentRight="true">
+                android:layout_alignParentRight="true"
+               android:id="@+id/rightRl">
 
                 <TextView
                     android:id="@+id/right_text"
@@ -98,6 +92,20 @@
                     android:visibility="gone"
                     android:background="@drawable/selector_bg"/>
             </RelativeLayout>
+
+            <TextView
+                android:id="@+id/caption_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/left_img"
+                android:layout_toLeftOf="@+id/rightRl"
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true"
+                android:gravity="center_horizontal"
+                android:textColor="@color/white"
+                android:textSize="19sp"
+                android:maxLines="2"
+                tools:text="步行者"/>
         </RelativeLayout>
     </LinearLayout>
 </RelativeLayout>

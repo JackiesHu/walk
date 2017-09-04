@@ -16,7 +16,6 @@ import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordInfo;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordsInfo;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.community.community.CommCircleAdapter;
 import com.buxingzhe.pedestrian.community.community.WalkRecordDetailActivity;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
@@ -101,7 +100,7 @@ public class MyWalkActivity extends BaseActivity {
     }
 
     private void loadData() {
-        NetRequestManager.getInstance().getMyWalkRecords(GlobalParams.TOKEN, GlobalParams.USER_ID, mPage, pageSize, new Subscriber<String>() {
+        NetRequestManager.getInstance().getMyWalkRecords(baseApp.getUserToken(), baseApp.getUserId(), mPage, pageSize, new Subscriber<String>() {
             @Override
             public void onCompleted() {
 

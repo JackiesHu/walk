@@ -51,7 +51,7 @@ public class MapUtil {
     public BaiduMap baiduMap = null;
 
     public LatLng lastPoint = null;
-    private float mCurrentZoom = 20.0f;
+    private float mCurrentZoom = 18.0f;
     private MyLocationData locData;
     /**
      * 路线覆盖物
@@ -69,7 +69,7 @@ public class MapUtil {
         mapView = view;
         baiduMap = mapView.getMap();
         mapView.showZoomControls(true);
-
+        baiduMap.setMyLocationEnabled(true);
         baiduMap.setMyLocationConfigeration(new MyLocationConfiguration(MyLocationConfiguration.LocationMode.FOLLOWING,true,null));
         baiduMap.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {//缩放比例变化监听
             @Override
@@ -160,6 +160,7 @@ public class MapUtil {
         if (!CommonUtil.isZeroPoint(CurrentLocation.latitude, CurrentLocation.longitude)) {
             LatLng currentLatLng = new LatLng(CurrentLocation.latitude, CurrentLocation.longitude);
             updateStatus(currentLatLng, false);
+            animateMapStatus(currentLatLng);
             return;
         }
         String lastLocation = trackApp.trackConf.getString(Constants.LAST_LOCATION, null);
@@ -174,6 +175,7 @@ public class MapUtil {
             }
         }
     }
+
 
     /**
      * 设置地图中心：使用已有定位信息；
@@ -198,11 +200,11 @@ public class MapUtil {
             if (screenPoint.y < 200 || screenPoint.y > PDApplication.screenHeight - 500
                     || screenPoint.x < 200 || screenPoint.x > PDApplication.screenWidth - 200
                     || null == mapStatus) {
-                animateMapStatus(currentPoint, 15.0f);
+                animateMapStatus(currentPoint, 18.0f);
             }
         } else if (null == mapStatus) {
             // 第一次定位时，聚焦底图
-            setMapStatus(currentPoint, 15.0f);
+            setMapStatus(currentPoint, 18.0f);
         }
 
         if (showMarker) {
@@ -435,5 +437,25 @@ public class MapUtil {
 
     }
 
+    public void clear() {
+        lastPoint = null;
+        if (null != mMoveMarker) {
+            mMoveMarker.remove();
+            mMoveMarker = null;
+        }
+        if (null != polylineOverlay) {
+            polylineOverlay.remove();
+            polylineOverlay = null;
+        }
+        if (null != baiduMap) {
+            baiduMap.clear();
+            baiduMap = null;
+        }
+        mapStatus = null;
+        if (null != mapView) {
+            mapView.onDestroy();
+            mapView = null;
+        }
+    }
 }
 

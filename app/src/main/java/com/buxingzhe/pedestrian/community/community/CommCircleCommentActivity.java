@@ -8,15 +8,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.baidu.mapapi.model.LatLng;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.bean.RequestResultInfo;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordInfo;
-import com.buxingzhe.pedestrian.bean.activity.WalkRecordsInfo;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.StarBarBean;
-import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.buxingzhe.pedestrian.widget.MWTStarBar;
@@ -100,8 +96,8 @@ public class CommCircleCommentActivity extends BaseActivity {
             return;
         }
         Map<String,String> paramsMap = new HashMap<>();
-        paramsMap.put("userId", GlobalParams.USER_ID);
-        paramsMap.put("token", GlobalParams.TOKEN);
+        paramsMap.put("userId", baseApp.getUserId());
+        paramsMap.put("token", baseApp.getUserToken());
         paramsMap.put("walkRecord", walkRecordInfo.getId());
         paramsMap.put("streetStar",String.valueOf(walked_stress_star.getStarSize()));
         paramsMap.put("envirStar",String.valueOf(walked_environment_star.getStarSize()));

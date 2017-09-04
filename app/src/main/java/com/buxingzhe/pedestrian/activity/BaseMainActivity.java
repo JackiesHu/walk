@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.buxingzhe.pedestrian.application.PDApplication;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.widget.TitleBarLinstener;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
 
@@ -97,13 +96,6 @@ public class BaseMainActivity extends AppCompatActivity implements TitleBarLinst
     @Override
     protected void onResume() {
         super.onResume();
-        if(GlobalParams.TOKEN!=null){
-            if(GlobalParams.TOKEN.length()==0){
-                GlobalParams.TOKEN= baseApp.getUserToken();
-                GlobalParams.USER_ID=baseApp.getUserId();
-            }
-        }
-
     }
 
     @Override

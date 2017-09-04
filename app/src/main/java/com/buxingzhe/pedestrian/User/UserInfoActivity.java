@@ -2,8 +2,6 @@ package com.buxingzhe.pedestrian.User;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,13 +21,10 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
-import com.buxingzhe.pedestrian.activity.MainActivity;
 import com.buxingzhe.pedestrian.application.PDApplication;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.CropUtils;
 import com.buxingzhe.pedestrian.utils.FileConfig;
-import com.buxingzhe.pedestrian.utils.PicUtil;
 import com.buxingzhe.pedestrian.utils.SelectPicPopupWindow;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.buxingzhe.pedestrian.widget.CircularImageView;
@@ -41,7 +36,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -174,8 +168,8 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
         params.put("height ", RequestBody.create(MediaType.parse("multipart/form-data"), userInfo.getHeight()));
         params.put("weight", RequestBody.create(MediaType.parse("multipart/form-data"), userInfo.getWeight()));
         params.put("age", RequestBody.create(MediaType.parse("multipart/form-data"), userInfo.getAge()));
-        params.put("userId", RequestBody.create(MediaType.parse("multipart/form-data"), GlobalParams.USER_ID));
-        params.put("token", RequestBody.create(MediaType.parse("multipart/form-data"), GlobalParams.TOKEN));
+        params.put("userId", RequestBody.create(MediaType.parse("multipart/form-data"), baseApp.getUserId()));
+        params.put("token", RequestBody.create(MediaType.parse("multipart/form-data"), baseApp.getUserToken()));
         MultipartBody.Part filePart;
         if (uploadFile != null) {
             RequestBody requestFile =
@@ -217,8 +211,8 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
                     newUserInfo.setAge(content.get("age").toString());
                     newUserInfo.setCreateTimestamp(content.get("createTimestamp").toString());
                     newUserInfo.setId(content.get("id").toString());
-                    newUserInfo.setToken(GlobalParams.TOKEN);
-                    GlobalParams.USER_ID = content.get("id").toString();
+                    newUserInfo.setToken(baseApp.getUserToken());
+                    baseApp.setUserId(content.get("id").toString());
                     initUser(newUserInfo);
                     newUserInfo.saveUserInfo(UserInfoActivity.this, newUserInfo);
 

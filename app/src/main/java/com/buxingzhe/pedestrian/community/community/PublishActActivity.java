@@ -19,7 +19,6 @@ import com.alibaba.fastjson.JSON;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.bean.RequestResultInfo;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.NetRequestParams;
 import com.buxingzhe.pedestrian.http.imageupload.UploadImage_a;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
@@ -131,14 +130,14 @@ public class PublishActActivity extends BaseActivity implements View.OnClickList
         }
 
         Map<String, RequestBody> paramsMap = new HashMap<>();
-        paramsMap.put("userId", RequestBody.create(MediaType.parse("multipart/form-data"), GlobalParams.USER_ID));
-        paramsMap.put("token", RequestBody.create(MediaType.parse("multipart/form-data"), GlobalParams.TOKEN));
+        paramsMap.put("userId", RequestBody.create(MediaType.parse("multipart/form-data"), baseApp.getUserId()));
+        paramsMap.put("token", RequestBody.create(MediaType.parse("multipart/form-data"), baseApp.getUserToken()));
 
         paramsMap.put("title", RequestBody.create(MediaType.parse("multipart/form-data"), title));
         paramsMap.put("startTimestamp", RequestBody.create(MediaType.parse("multipart/form-data"), startTimestamp.toString()));
         paramsMap.put("endTimestamp", RequestBody.create(MediaType.parse("multipart/form-data"), endTimestamp.toString()));
         paramsMap.put("introduction", RequestBody.create(MediaType.parse("multipart/form-data"), introduction));
-        paramsMap.put("publisher", RequestBody.create(MediaType.parse("multipart/form-data"), GlobalParams.USER_ID));
+        paramsMap.put("publisher", RequestBody.create(MediaType.parse("multipart/form-data"), baseApp.getUserId()));
 
 
 //        initTask(paramsMap);

@@ -7,8 +7,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.ViewGroup;
 
 import com.alibaba.fastjson.JSON;
+import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.bean.RequestResultInfo;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.found.bean.PageContent;
 import com.buxingzhe.pedestrian.found.bean.Tag;
 import com.buxingzhe.pedestrian.found.bean.WalkRecord;
@@ -28,11 +28,12 @@ public class FindTabAdapter extends FragmentPagerAdapter {
     private List<WalkCategoryFragment> list_fragment;                         //fragment列表
     private List<Tag> tags;                              //tab名的列表
     private List<WalkRecord> walkRecords;
-
+    private PDApplication pdApp;
     FindTabAdapter(FragmentManager fm, List<WalkCategoryFragment> list_fragment, List<Tag> tags) {
         super(fm);
         this.list_fragment = list_fragment;
         this.tags = tags;
+        pdApp = PDApplication.getApp();
     }
     @Override
     public Fragment getItem(int position) {
@@ -53,7 +54,7 @@ public class FindTabAdapter extends FragmentPagerAdapter {
 
     private void loadData(final int position, int pageNo) {
         Map<String,String> paramsMap = new HashMap<>();
-        paramsMap.put("userId", GlobalParams.USER_ID);
+        paramsMap.put("userId", pdApp.getUserId());
         paramsMap.put("tag", tags.get(position).getName());
         paramsMap.put("pageNo",String.valueOf(pageNo));
         paramsMap.put("pageSize ","20");

@@ -1,6 +1,7 @@
 package com.buxingzhe.lib.util;
 
 import android.content.Context;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
@@ -145,5 +146,16 @@ public class NetUtil {
         void strongNetWork();
         void thinNetWork();
         void noNetWork();
+    }
+
+    public static boolean isGPS(Context context) {
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        // 判断GPS模块是否开启，如果没有则开启
+        if (!locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
+            return false;
+        } else {
+            return true;
+
+        }
     }
 }

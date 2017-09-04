@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,15 +17,12 @@ import com.bumptech.glide.Glide;
 import com.buxingzhe.lib.util.Log;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
-import com.buxingzhe.pedestrian.activity.SplashActivity;
 import com.buxingzhe.pedestrian.bean.user.UserLoginResultInfo;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.buxingzhe.pedestrian.widget.CircularImageView;
-import com.squareup.picasso.Picasso;
 import com.umeng.analytics.MobclickAgent;
 
 import butterknife.ButterKnife;
@@ -133,8 +129,7 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
     }
 
     private void setData() {
-
-        NetRequestManager.getInstance().getUserInfo(GlobalParams.USER_ID, GlobalParams.TOKEN, new Subscriber<String>() {
+        NetRequestManager.getInstance().getUserInfo(pdApp.getUserId(), pdApp.getUserToken(), new Subscriber<String>() {
             @Override
             public void onCompleted() {
             }
@@ -180,11 +175,13 @@ public class MeFragment extends BaseFragment implements View.OnClickListener {
                     }
 
                 } else  if ((Integer) datas[0] == 2){
+                    System.out.println("user--me1-"+datas[2].toString());
                     Toast.makeText(getActivity(), datas[2].toString(), Toast.LENGTH_SHORT).show();
                     Intent intent=new Intent(getActivity(), LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 }else{
+                    System.out.println("user--me2-"+datas[2].toString());
                     Toast.makeText(getActivity(), datas[2].toString(), Toast.LENGTH_SHORT).show();
                     Intent intent=new Intent(getActivity(), LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

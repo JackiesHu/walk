@@ -8,8 +8,8 @@ android {
         applicationId "com.buxingzhe.pedestrian"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 20170727
-        versionName "2.0.0"
+        versionCode 20170904
+        versionName "2.1.0"
         multiDexEnabled true
 
         ndk {

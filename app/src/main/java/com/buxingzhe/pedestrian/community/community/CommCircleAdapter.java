@@ -3,7 +3,6 @@ package com.buxingzhe.pedestrian.community.community;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +14,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.buxingzhe.pedestrian.R;
-import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
+import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordInfo;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordsInfo;
 import com.buxingzhe.pedestrian.bean.user.UserBaseInfo;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.StarBarBean;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
@@ -45,10 +43,11 @@ public class CommCircleAdapter extends BaseAdapter {
     private Activity mActivity;
     private Context mContext;
     private List<WalkRecordInfo> walkRecordInfos;
-
+    private PDApplication mApp;
     public CommCircleAdapter(Context context, Activity activity) {
         this.mContext = context;
         this.mActivity = activity;
+        mApp = PDApplication.getApp();
     }
 
     @Override
@@ -283,7 +282,7 @@ public class CommCircleAdapter extends BaseAdapter {
         if (walkRecordInfos.get(position).getHasLike()==1){
             return;
         }
-        NetRequestManager.getInstance().walkRecordLike(GlobalParams.USER_ID, GlobalParams.TOKEN, walkRecordInfos.get(position).getId(), new Subscriber<String>() {
+        NetRequestManager.getInstance().walkRecordLike(mApp.getUserId(), mApp.getUserToken(), walkRecordInfos.get(position).getId(), new Subscriber<String>() {
             @Override
             public void onCompleted() {
 

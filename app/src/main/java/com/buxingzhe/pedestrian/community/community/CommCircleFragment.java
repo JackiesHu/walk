@@ -17,7 +17,6 @@ import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordInfo;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordsInfo;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.listen.SwpipeListViewOnScrollListener;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
@@ -86,7 +85,7 @@ public class CommCircleFragment extends BaseFragment {
 
 
     private void loadData() {
-        NetRequestManager.getInstance().getWalkRecords(GlobalParams.USER_ID, mPage, pageSize, new Subscriber<String>() {
+        NetRequestManager.getInstance().getWalkRecords(pdApp.getUserId(), mPage, pageSize, new Subscriber<String>() {
             @Override
             public void onCompleted() {
 

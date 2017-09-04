@@ -15,7 +15,6 @@ import android.location.LocationProvider;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.TextView;
@@ -23,9 +22,6 @@ import android.widget.Toast;
 
 import com.buxingzhe.lib.util.Log;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
-import com.buxingzhe.pedestrian.activity.MainActivity;
-import com.buxingzhe.pedestrian.application.PDApplication;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.SPConstant;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 
@@ -115,8 +111,8 @@ public class StepCountFragment extends BaseFragment {
         params.put("distance", distanceUp + " ");
         params.put("stepCount", stepCount + " ");
         params.put("publishDate", today);
-        params.put("userId", GlobalParams.USER_ID);
-        params.put("token", GlobalParams.TOKEN);
+        params.put("userId", pdApp.getUserId());
+        params.put("token", pdApp.getUserToken());
         mSubscription = NetRequestManager.getInstance().publishWalkRecord(params, new Subscriber<String>() {
             @Override
             public void onCompleted() {
@@ -435,9 +431,9 @@ public class StepCountFragment extends BaseFragment {
                     return;
                 }
                 location = lm.getLastKnownLocation(bestProvider);
-                System.out.println("steps--查询location----");
+
                 if(location!=null){
-                    System.out.println("steps--查询location"+location.getLatitude()+"经度"+location.getLongitude());
+                  //  System.out.println("steps--查询location"+location.getLatitude()+"经度"+location.getLongitude());
                     updateView(location);
                     newHourTodo();
                 }

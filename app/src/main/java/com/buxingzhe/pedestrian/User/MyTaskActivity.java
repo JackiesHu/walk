@@ -12,7 +12,6 @@ import android.widget.Toast;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.bean.activity.WalkActivitiesInfo;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.community.community.CommActAdapter;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.listen.SwpipeListViewOnScrollListener;
@@ -22,7 +21,6 @@ import com.google.gson.Gson;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,8 +53,8 @@ public class MyTaskActivity extends BaseActivity {
     private void loadData() {
 
         Map<String,String> paramsMap = new HashMap<>();
-        paramsMap.put("userId", GlobalParams.USER_ID);
-        paramsMap.put("token", GlobalParams.TOKEN);
+        paramsMap.put("userId", baseApp.getUserId());
+        paramsMap.put("token", baseApp.getUserToken());
         paramsMap.put("pageNo",String.valueOf(mPage));
         paramsMap.put("pageSize",String.valueOf(pageSize));
 

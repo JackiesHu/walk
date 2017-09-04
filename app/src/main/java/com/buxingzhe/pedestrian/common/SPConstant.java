@@ -17,4 +17,5 @@ public class SPConstant {
     public static final  String DISTANCE_SP="distance";
     public static final  String DISTANCE_SP_TOTAL="alldistance";
     public static final  String DISTANCE_SP_DATE="todaydate";
+    public static final  String DISTANCE_SP_HOUR_DISTANCE="hourdistance";
 }

@@ -24,15 +24,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.mapapi.map.MapView;
+import com.buxingzhe.lib.util.NetUtil;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.User.UserInfo;
-import com.buxingzhe.pedestrian.application.PDApplication;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.StarBarBean;
 import com.buxingzhe.pedestrian.found.adapter.PicAdapter;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.listen.OnInteractionData;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
+import com.buxingzhe.pedestrian.utils.MapException;
 import com.buxingzhe.pedestrian.utils.SystemUtils;
 import com.buxingzhe.pedestrian.widget.FullGridView;
 import com.buxingzhe.pedestrian.widget.MWTStarBar;
@@ -283,8 +283,12 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
 
     private void setInitTitle() {
         //set title
+        if (pdApp.getCityName() == null) {
+            setTitle("北京");
+        } else {
+            setTitle(pdApp.getCityName());
+        }
 
-        setTitle(pdApp.getCityName());
 
         if (isWalking) {
             setTitleRight("骑行");
@@ -351,8 +355,18 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
                 //    requestLocation();
                 break;
             case run_iv_start://开始Run
-                startRun();
-                mapStartRun();
+                if(NetUtil.isNetworkAvailable(getActivity())&&NetUtil.isGPS(getActivity())){
+                    startRun();
+                    mapStartRun();
+                }else{
+                    try {
+                        throw new MapException("GPS没有打开");
+                    } catch (MapException e) {
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(getActivity(),"无法启动，请检查网络或者GPS",Toast.LENGTH_LONG).show();
+                }
+
                 break;
             case R.id.run_iv_zoom_zhankai://展开地图 (缩放状态)
 
@@ -380,7 +394,7 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
 
                 // TODO 重新定义Title
                 hideLeftIco();
-                setTitle("2017年1月12日 18:21");
+                setTitle(pdApp.getCityName());
                 setTitleRight("完成");
                 setTitleLeft("取消");
 
@@ -617,8 +631,8 @@ public class RunFragment extends RunRunFragment implements View.OnClickListener,
         }
         //TODO 发送数据到服务端
         Map<String, RequestBody> paramsMap = new HashMap<String, RequestBody>();
-        paramsMap.put("userId", RequestBody.create(MediaType.parse("multipart/form-data"), GlobalParams.USER_ID));//用户ID ,不可空
-        paramsMap.put("token", RequestBody.create(MediaType.parse("multipart/form-data"), GlobalParams.TOKEN));//访问凭证 不可空
+        paramsMap.put("userId", RequestBody.create(MediaType.parse("multipart/form-data"), pdApp.getUserId()));//用户ID ,不可空
+        paramsMap.put("token", RequestBody.create(MediaType.parse("multipart/form-data"), pdApp.getUserToken()));//访问凭证 不可空
         if (isWalking) {
             paramsMap.put("type", RequestBody.create(MediaType.parse("multipart/form-data"), "0"));//类型 : 0 步行，1骑行 ,不可空	type
         } else {

@@ -26,12 +26,9 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.buxingzhe.pedestrian.application.PDApplication;
-import com.buxingzhe.pedestrian.bean.StepData;
 import com.buxingzhe.pedestrian.common.Constant;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.SPConstant;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
-import com.buxingzhe.pedestrian.utils.DbUtils;
 import com.buxingzhe.pedestrian.walk.HourStep;
 import com.buxingzhe.pedestrian.walk.HourStepCache;
 
@@ -46,16 +43,16 @@ import java.util.Map;
 import rx.Subscriber;
 import rx.Subscription;
 
+import static android.os.Build.VERSION.SDK_INT;
+
 /**
  * Created by chinaso on 2017/7/24.
  */
 
 public class DistanceService extends Service {
-    //默认为30秒进行一次存储
-    private static int duration = 50000;
     private BroadcastReceiver mBatInfoReceiver;
     private double CURRENT_DISTANCE = 0.0;
-    private double hourDistance = 0;
+    private double hourDistance = 0.0;
     protected double stepDistance = 0.0004;//以km 为单位
     private static String CURRENTDATE = "";
     private String DB_NAME = "walkdistance";
@@ -101,19 +98,22 @@ public class DistanceService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        initData();
+        isNewDay();
+        initBroadcastReceiver();
+        initManager();
+        startRefreshThread(true);
+    }
+
+    private void initData() {
         pdApp = (PDApplication) PDApplication.getApp().getApplicationContext();
         stepCache = new HourStepCache(pdApp);
-        CURRENT_DISTANCE =pdApp.getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE).getFloat(SPConstant.DISTANCE_SP_TOTAL, 0);
+        CURRENT_DISTANCE = pdApp.getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE).getFloat(SPConstant.DISTANCE_SP_TOTAL, 0);
+        hourDistance = pdApp.getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE).getFloat(SPConstant.DISTANCE_SP_HOUR_DISTANCE, 0);
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("HH");
         timeStap = format.format(date);
-        stepDistance=pdApp.getStepDistance();
-        isNewDay();
-
-        initBroadcastReceiver();
-        initTodayData();
-        initManager();
-        startRefreshThread(true);
+        stepDistance = pdApp.getStepDistance();
     }
 
     private void initManager() {
@@ -155,17 +155,13 @@ public class DistanceService extends Service {
         unregisterReceiver(mBatInfoReceiver);
         lm.removeUpdates(locationListener);
         lm.removeGpsStatusListener(listener);
-        SharedPreferences preferences = pdApp.getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putFloat(SPConstant.DISTANCE_SP_TOTAL, (float) CURRENT_DISTANCE);
-        editor.apply();
+        startRefreshThread(false);
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
         return super.onUnbind(intent);
     }
-
 
     /**
      * 启动刷新线程
@@ -230,14 +226,11 @@ public class DistanceService extends Service {
         // 屏幕亮屏广播
         filter.addAction(Intent.ACTION_SCREEN_ON);
         // 屏幕解锁广播
-//        filter.addAction(Intent.ACTION_USER_PRESENT);
-        // 当长按电源键弹出“关机”对话或者锁屏时系统会发出这个广播
-        // example：有时候会用到系统对话框，权限可能很高，会覆盖在锁屏界面或者“关机”对话框之上，
-        // 所以监听这个广播，当收到时就隐藏自己的对话，如点击pad右下角部分弹出的对话框
+
         filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         //监听日期变化
         filter.addAction(Intent.ACTION_DATE_CHANGED);
-        // filter.addAction(Intent.ACTION_TIME_CHANGED);
+
         filter.addAction(Intent.ACTION_TIME_TICK);
 
         mBatInfoReceiver = new BroadcastReceiver() {
@@ -246,32 +239,24 @@ public class DistanceService extends Service {
                 String action = intent.getAction();
                 if (Intent.ACTION_SCREEN_ON.equals(action)) {
                     Log.d("xf", "screen on");
-                } else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
-                    Log.d("xf", "screen off");
-                    //改为60秒一存储
-                    duration = 60000;
-                } else if (Intent.ACTION_USER_PRESENT.equals(action)) {
-                    Log.d("xf", "screen unlock");
-//                    save();
-                    //改为30秒一存储
-                    duration = 50000;
                 } else if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(intent.getAction())) {
                     Log.i("xf", " receive Intent.ACTION_CLOSE_SYSTEM_DIALOGS");
                     //保存一次
-                    save();
+                    //  save();
                 } else if (Intent.ACTION_SHUTDOWN.equals(intent.getAction())) {
                     Log.i("xf", " receive ACTION_SHUTDOWN");
-                    save();
+                    saveDis();
                 } else if (Intent.ACTION_DATE_CHANGED.equals(action)) {//日期变化步数重置为0
-                    save();
+                    // save();
                     isNewDay();
                 } else if (Intent.ACTION_TIME_CHANGED.equals(action)) {
                     //时间变化步数重置为0
-                    save();
+                    // save();
                     isNewDay();
                 } else if (Intent.ACTION_TIME_TICK.equals(action)) {//日期变化步数重置为0
                     //判断是否为新一个小时
                     newHourTodo();
+                    saveDis();
                 }
             }
         };
@@ -300,22 +285,15 @@ public class DistanceService extends Service {
         }
     }
 
-    private void save() {
-        Double tempDistance = CURRENT_DISTANCE;
+    private void saveDis() {
 
-        List<StepData> list = DbUtils.getQueryByWhere(StepData.class, "today", new String[]{CURRENTDATE});
-        if (list.size() == 0 || list.isEmpty()) {
-            StepData data = new StepData();
-            data.setToday(CURRENTDATE);
-            data.setStep(tempDistance + "");
-            DbUtils.insert(data);
-        } else if (list.size() == 1) {
-            StepData data = list.get(0);
-            data.setStep(tempDistance + "");
-            DbUtils.update(data);
-        } else {
-        }
+        SharedPreferences preferences = pdApp.getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putFloat(SPConstant.DISTANCE_SP_TOTAL, (float) CURRENT_DISTANCE);
+        editor.putFloat(SPConstant.DISTANCE_SP_HOUR_DISTANCE, (float) hourDistance);
+        editor.apply();
     }
+
 
     /**
      * 监听晚上0点变化初始化数据
@@ -324,7 +302,6 @@ public class DistanceService extends Service {
         SharedPreferences preferences = pdApp.getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         today = preferences.getString(SPConstant.DISTANCE_SP_DATE, null);
-
         if (today == null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             Date date = new Date();
@@ -344,6 +321,7 @@ public class DistanceService extends Service {
 
 
     private void upLoadDistance(final String newDay) {
+
         double distanceUp = CURRENT_DISTANCE;
         int stepCount = (int) (CURRENT_DISTANCE / stepDistance);
 
@@ -351,8 +329,8 @@ public class DistanceService extends Service {
         params.put("distance", distanceUp + " ");
         params.put("stepCount", stepCount + " ");
         params.put("publishDate", today);
-        params.put("userId", GlobalParams.USER_ID);
-        params.put("token", GlobalParams.TOKEN);
+        params.put("userId", pdApp.getUserId());
+        params.put("token", pdApp.getUserToken());
         mSubscription = NetRequestManager.getInstance().publishWalkRecord(params, new Subscriber<String>() {
             @Override
             public void onCompleted() {
@@ -366,7 +344,9 @@ public class DistanceService extends Service {
 
             @Override
             public void onNext(String jsonStr) {
+
                 CURRENT_DISTANCE = 0;
+                hourDistance=0;
                 SharedPreferences preferences = pdApp.getSharedPreferences(SPConstant.DISTANCE_SP, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString(SPConstant.DISTANCE_SP_DATE, newDay);
@@ -380,29 +360,6 @@ public class DistanceService extends Service {
         });
     }
 
-    /**
-     * 初始化当天的步数
-     */
-    private void initTodayData() {
-        CURRENTDATE = getTodayDate();
-        DbUtils.createDb(this, DB_NAME);
-        //获取当天的数据，用于展示
-        List<StepData> list = DbUtils.getQueryByWhere(StepData.class, "today", new String[]{CURRENTDATE});
-        if (list.size() == 0 || list.isEmpty()) {
-            CURRENT_DISTANCE = 0.0;
-        } else if (list.size() == 1) {
-            Log.v("xf", "StepData=" + list.get(0).toString());
-            CURRENT_DISTANCE = Double.parseDouble(list.get(0).getStep());
-        } else {
-            Log.v("xf", "出错了！");
-        }
-    }
-
-    private String getTodayDate() {
-        Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(date);
-    }
 
     /**
      * 返回查询条件
@@ -521,7 +478,7 @@ public class DistanceService extends Service {
                         GpsSatellite s = iters.next();
                         count++;
                     }
-                    System.out.println("搜索到：" + count + "颗卫星");
+                    //  System.out.println("搜索到：" + count + "颗卫星");
                     break;
                 // 定位启动
                 case GpsStatus.GPS_EVENT_STARTED:
@@ -539,7 +496,7 @@ public class DistanceService extends Service {
 
 
     /**
-     * 实时更新文本内容
+     * 实时更新距离
      *
      * @param location
      */

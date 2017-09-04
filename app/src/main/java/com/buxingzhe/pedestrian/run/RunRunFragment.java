@@ -40,6 +40,7 @@ import com.baidu.trace.model.PushMessage;
 import com.baidu.trace.model.StatusCodes;
 import com.baidu.trace.model.TraceLocation;
 import com.baidu.trace.model.TransportMode;
+import com.buxingzhe.lib.util.NetUtil;
 import com.buxingzhe.pedestrian.activity.BaseFragment;
 import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.listen.OnInteractionData;
@@ -60,7 +61,7 @@ import java.util.List;
 
 import static android.content.Context.SENSOR_SERVICE;
 import static com.buxingzhe.pedestrian.utils.map.Constants.DEFAULT_RADIUS_THRESHOLD;
-
+import com.buxingzhe.pedestrian.utils.map.ViewUtil;
 
 public class RunRunFragment extends BaseFragment implements SensorEventListener {
 
@@ -127,6 +128,8 @@ public class RunRunFragment extends BaseFragment implements SensorEventListener 
     private int mCurrentDirection = 0;
     private Double lastX = 0.0;
     private SensorManager mSensorManager;
+    private ViewUtil viewUtil = null;
+    private boolean firstLocate = true;
 
     public void setOnInteractionData(OnInteractionData onInteractionData) {
         mOnInteractionData = onInteractionData;
@@ -142,9 +145,10 @@ public class RunRunFragment extends BaseFragment implements SensorEventListener 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //在使用SDK各组件之前初始化context信息，传入ApplicationContext
+        viewUtil = new ViewUtil();
         trackApp = (PDApplication) getActivity().getApplicationContext();
         mapUtil = MapUtil.getInstance();
-        mapUtil.setCenter(mCurrentDirection);//设置地图中心点
+     //   mapUtil.setCenter(mCurrentDirection);//设置地图中心点
         initListener();
         mSensorManager = (SensorManager) trackApp.getSystemService(SENSOR_SERVICE);// 获取传感器管理服务
     }
@@ -203,7 +207,14 @@ public class RunRunFragment extends BaseFragment implements SensorEventListener 
                     editor.apply();
                 }
 
-                startRefreshThread(true);
+                if(StatusCodes.SUCCESS == status ){
+                    startRefreshThread(true);
+                }else{
+                    viewUtil.showToast(getActivity(),
+                            String.format("服务启动失败, errorNo:%d, message:%s --请检查网络和GPS", status, message));
+                }
+
+
             }
 
 
@@ -265,6 +276,11 @@ public class RunRunFragment extends BaseFragment implements SensorEventListener 
                     editor.putBoolean("is_gather_started", true);
                     editor.apply();
                 }
+                if(StatusCodes.SUCCESS != errorNo ){
+                    viewUtil.showToast(getActivity(),
+                            String.format("数据采集失败, errorNo:%d, message:%s 请检查网络和GPS", errorNo, message));
+                }
+
 
             }
 
@@ -315,6 +331,12 @@ public class RunRunFragment extends BaseFragment implements SensorEventListener 
                 if (null == currentLatLng) {
                     return;
                 }
+                if(firstLocate){
+                    currentLatLng=null;
+                    firstLocate = false;
+                    Toast.makeText(getActivity(),"起点获取中，请稍后...",Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 CurrentLocation.locTime = point.getLocTime();
                 CurrentLocation.latitude = currentLatLng.latitude;
@@ -323,12 +345,12 @@ public class RunRunFragment extends BaseFragment implements SensorEventListener 
                     return;
                 }
                 trackPoints.add(currentLatLng);
-                //  mapUtil.drawHistoryTrack(trackPoints,sortType);//显示当前位置，并时时动态的画出运动轨迹
-                mapUtil.drawHistoryTrack(trackPoints, false, mCurrentDirection);//显示当前位置，并时时动态的画出运动轨迹
 
+                mapUtil.drawHistoryTrack(trackPoints, false, mCurrentDirection);//显示当前位置，并时时动态的画出运动轨迹
+/*
                 if (null != mapUtil) {
                     mapUtil.updateStatus(currentLatLng, true);
-                }
+                }*/
 
 
             }
@@ -397,10 +419,9 @@ public class RunRunFragment extends BaseFragment implements SensorEventListener 
                 CurrentLocation.longitude = currentLatLng.longitude;
 
                 if (null != mapUtil) {
-                    mapUtil.updateStatus(currentLatLng, true);
+                   // mapUtil.updateStatus(currentLatLng, true);
                    // mapUtil.animateMapStatus(currentLatLng);//缩放
                     mapUtil.updateMapLocation(currentLatLng, mCurrentDirection);//显示当前位置
-
                 }
             }
 
@@ -463,20 +484,25 @@ public class RunRunFragment extends BaseFragment implements SensorEventListener 
         trackApp.mClient.stopTrace(trackApp.mTrace, mTraceListener);
         trackApp.mClient.stopGather(mTraceListener);
         startRefreshThread(false);
-        trackPoints.clear();
+
     }
 
 
     protected void mapStartRun() {
-        trackApp.isTraceStarted = true;
-        trackApp.mClient.startTrace(trackApp.mTrace, mTraceListener);
-        trackApp.mClient.startGather(mTraceListener);
-        if (Constants.DEFAULT_PACK_INTERVAL != packInterval) {
-            stopRealTimeLoc();
-            startRealTimeLoc(packInterval);
-        }
-        startRefreshThread(true);
-        startTime = CommonUtil.getCurrentTime();
+
+            if(trackPoints!=null){
+                trackPoints.clear();
+            }
+            trackApp.isTraceStarted = true;
+            trackApp.mClient.startTrace(trackApp.mTrace, mTraceListener);
+            trackApp.mClient.startGather(mTraceListener);
+            if (Constants.DEFAULT_PACK_INTERVAL != packInterval) {
+                stopRealTimeLoc();
+                startRealTimeLoc(packInterval);
+            }
+            startRefreshThread(true);
+            startTime = CommonUtil.getCurrentTime();
+
     }
 
 
@@ -552,6 +578,7 @@ public class RunRunFragment extends BaseFragment implements SensorEventListener 
         mSensorManager.unregisterListener(this);
         trackPoints.clear();
         trackPoints = null;
+        mapUtil.clear();
     }
 
     static class RealTimeHandler extends Handler {
@@ -568,7 +595,7 @@ public class RunRunFragment extends BaseFragment implements SensorEventListener 
      */
     class RealTimeLocRunnable implements Runnable {
 
-        private int interval = 0;
+        private int interval = 2;
 
         public RealTimeLocRunnable(int interval) {
             this.interval = interval;

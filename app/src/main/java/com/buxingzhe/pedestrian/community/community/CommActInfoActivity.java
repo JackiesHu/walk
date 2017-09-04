@@ -1,6 +1,5 @@
 package com.buxingzhe.pedestrian.community.community;
 
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,7 +18,6 @@ import com.buxingzhe.pedestrian.activity.MainActivity;
 import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.bean.activity.WalkActivityInfo;
 import com.buxingzhe.pedestrian.bean.activity.WalkRecordsByActivity;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.listen.SwpipeListViewOnScrollListener;
 import com.buxingzhe.pedestrian.utils.JsonParseUtil;
@@ -294,7 +292,7 @@ public class CommActInfoActivity extends BaseActivity implements View.OnClickLis
 
 
     private void loadData() {
-        NetRequestManager.getInstance().getWalkRecordsByActivity(GlobalParams.USER_ID, walkActivityInfo.getId(), mPage, pageSize, new Subscriber<String>() {
+        NetRequestManager.getInstance().getWalkRecordsByActivity(baseApp.getUserId(), walkActivityInfo.getId(), mPage, pageSize, new Subscriber<String>() {
             @Override
             public void onCompleted() {
 

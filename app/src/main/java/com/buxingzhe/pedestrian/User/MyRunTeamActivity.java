@@ -12,7 +12,6 @@ import android.widget.Toast;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.bean.activity.WalkActivitiesInfo;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.community.community.CommActAdapter;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.listen.SwpipeListViewOnScrollListener;
@@ -52,9 +51,9 @@ public class MyRunTeamActivity extends BaseActivity {
 
     private void loadData() {
         Map<String,String> paramsMap = new HashMap<>();
-        paramsMap.put("userId", GlobalParams.USER_ID);
-        paramsMap.put("token", GlobalParams.TOKEN);
-        paramsMap.put("publisher", GlobalParams.USER_ID);
+        paramsMap.put("userId", baseApp.getUserId());
+        paramsMap.put("token", baseApp.getUserToken());
+        paramsMap.put("publisher", baseApp.getUserId());
         paramsMap.put("pageNo",String.valueOf(mPage));
         paramsMap.put("pageSize",String.valueOf(pageSize));
 

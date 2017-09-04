@@ -19,7 +19,6 @@ import com.buxingzhe.lib.util.Log;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.User.LoginActivity;
 import com.buxingzhe.pedestrian.application.PDApplication;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.tbruyelle.rxpermissions.Permission;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
@@ -35,11 +34,12 @@ public class SplashActivity extends BaseActivity {
 
     private final static int OVERLAY_REQUEST_CODE = 12;
     private PDApplication mApp;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spalsh);
-        mApp=PDApplication.getApp();
+        mApp = PDApplication.getApp();
         //申请权限
         openPermission(this);
     }
@@ -52,7 +52,7 @@ public class SplashActivity extends BaseActivity {
         } else {//其他手机
             if (Build.VERSION.SDK_INT >= 23) {
                 if (!Settings.canDrawOverlays(this)) {
-                    Toast.makeText(this,"需要悬浮窗权限打开",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "需要悬浮窗权限打开", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
                     startActivityForResult(intent, OVERLAY_REQUEST_CODE);
                 } else {
@@ -64,13 +64,13 @@ public class SplashActivity extends BaseActivity {
         }
 
 
-}
+    }
 
     private void requestPermission() {
         if (isFloatWindowOpAllowed(SplashActivity.this)) {//已经开启
             switchActivity();
         } else {
-            Toast.makeText(this,"请自行设置悬浮窗权限打开",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "请自行设置悬浮窗权限打开", Toast.LENGTH_SHORT).show();
             openSetting();
         }
     }
@@ -123,7 +123,6 @@ public class SplashActivity extends BaseActivity {
     }
 
 
-
     /**
      * 打开权限设置界面
      */
@@ -144,7 +143,6 @@ public class SplashActivity extends BaseActivity {
     }
 
 
-
     /**
      * 申请读写/手机状态／定位权限
      */
@@ -156,7 +154,7 @@ public class SplashActivity extends BaseActivity {
                 Manifest.permission.CAMERA,
                 Manifest.permission.ACCESS_COARSE_LOCATION)
                 .subscribe(new Action1<Permission>() {
-                    public int i=0;
+                    public int i = 0;
 
                     @Override
                     public void call(Permission permission) {
@@ -164,7 +162,7 @@ public class SplashActivity extends BaseActivity {
                             // 用户已经同意该权限
 
                             i++;
-                            if(i==3){
+                            if (i == 3) {
                                 //checkOverLayWindow();
                                 switchActivity();
                             }
@@ -205,24 +203,22 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void switchActivity() {
-        GlobalParams.TOKEN= mApp.getUserToken();
-        GlobalParams.USER_ID=mApp.getUserId();
-        if(GlobalParams.TOKEN!=null){
-            if(GlobalParams.TOKEN.length()==0|GlobalParams.USER_ID.length()==0){
-                Intent intent=new Intent(SplashActivity.this, LoginActivity.class);
+
+        if (mApp.getUserToken() != null) {
+            if (mApp.getUserToken().length() == 0 | mApp.getUserId().length() == 0) {
+                Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
-            }else{
-                Intent intent=new Intent(SplashActivity.this, MainActivity.class);
+            } else {
+                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
-        }else{
-            Intent intent=new Intent(SplashActivity.this, LoginActivity.class);
+        } else {
+            Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         }
-
 
 
     }

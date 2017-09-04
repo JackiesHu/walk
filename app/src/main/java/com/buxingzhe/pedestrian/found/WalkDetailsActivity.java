@@ -43,7 +43,6 @@ import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.baiduView.WalkingRouteOverlay;
 import com.buxingzhe.pedestrian.bean.RequestResultInfo;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.StarBarBean;
 import com.buxingzhe.pedestrian.found.adapter.PointCommentAdapter;
 import com.buxingzhe.pedestrian.found.bean.Comment;
@@ -134,8 +133,8 @@ public class WalkDetailsActivity extends BaseActivity implements View.OnClickLis
     private void loadComments() {
         Map<String, String> paramsMap = new HashMap<>();
         paramsMap.put("remarkPoint", remarkPoint.getId());
-        paramsMap.put("token", GlobalParams.TOKEN);
-        paramsMap.put("userId", GlobalParams.USER_ID);
+        paramsMap.put("token", baseApp.getUserToken());
+        paramsMap.put("userId", baseApp.getUserId());
 
         Subscriber mSubscriber = new Subscriber<String>() {
 

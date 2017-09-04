@@ -24,7 +24,6 @@ import com.baidu.trace.model.OnCustomAttributeListener;
 import com.baidu.trace.model.ProcessOption;
 import com.buxingzhe.lib.util.NetUtil;
 import com.buxingzhe.pedestrian.PDConfig;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.SPConstant;
 import com.buxingzhe.pedestrian.utils.map.CommonUtil;
 import com.tencent.bugly.crashreport.CrashReport;
@@ -182,6 +181,7 @@ public class PDApplication extends MultiDexApplication {
         return stepDistance;
     }
 
+
     public static String getUserId() {
         return userId;
     }
@@ -189,10 +189,20 @@ public class PDApplication extends MultiDexApplication {
         return userToken;
     }
     public static void setUserId(String  id) {
-         userId=id;
+        userId = id;
+        SharedPreferences preferences = pdAPP.getSharedPreferences(SPConstant.USER_SP, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(SPConstant.USER_SP_ID, id);
+        editor.apply();
+
     }
     public static void setUserToken(String token) {
         userToken=token;
+        SharedPreferences preferences = pdAPP.getSharedPreferences(SPConstant.USER_SP, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(SPConstant.USER_SP_TOKEN, token);
+        editor.apply();
+
     }
 
     public static int getLoginType() {
@@ -201,6 +211,7 @@ public class PDApplication extends MultiDexApplication {
 
     private void getLocalCityName(Context context) {
         LocationClientOption option = new LocationClientOption();
+        option.setIsNeedAddress(true);
         option.setOpenGps(true);// 打开GPS
         option.setAddrType("all");// 返回的定位结果包含地址信息
         option.setCoorType("bd09ll");// 返回的定位结果是百度经纬度,默认值gcj02
@@ -211,7 +222,6 @@ public class PDApplication extends MultiDexApplication {
         mLocationClient.setLocOption(option);// 使用设置
         mLocationClient.start();// 开启定位SDK
         mLocationClient.requestLocation();// 开始请求位置
-
         mLocationClient.registerLocationListener(new BDLocationListener() {
 
 
@@ -220,12 +230,11 @@ public class PDApplication extends MultiDexApplication {
 
                 String city = location.getCity();
                 if (city != null) {
-
                     city = city.replaceAll("市", "");
                     setCityName(city);
+                    mLocationClient.stop();
                 } else {
                     setCityName("北京");
-
                     return;
                 }
             }
@@ -248,6 +257,7 @@ public class PDApplication extends MultiDexApplication {
     }
 
     public void setCityName(String cityName) {
+
         this.cityName = cityName;
     }
 
@@ -317,25 +327,6 @@ public class PDApplication extends MultiDexApplication {
         }
     }
 
-
-    @Override
-    public void onTrimMemory(int level) {
-        super.onTrimMemory(level);
-        if (GlobalParams.TOKEN != null) {
-            if (GlobalParams.TOKEN.length() != 0) {
-                SharedPreferences preferences = getSharedPreferences("token", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("token", GlobalParams.TOKEN);
-                editor.commit();
-                SharedPreferences preferencesId = getSharedPreferences("userid", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editorId = preferencesId.edit();
-                editorId.putString("userid", GlobalParams.USER_ID);
-                editorId.commit();
-            }
-        }
-
-
-    }
 
     @Override
     public void onTerminate() {

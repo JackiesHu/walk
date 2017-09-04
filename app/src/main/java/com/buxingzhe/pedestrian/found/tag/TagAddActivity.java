@@ -12,11 +12,8 @@ import android.widget.RelativeLayout;
 import com.alibaba.fastjson.JSON;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
-import com.buxingzhe.pedestrian.bean.HotUserTag;
 import com.buxingzhe.pedestrian.bean.RequestResultInfo;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.SwipeRefreshProperty;
-import com.buxingzhe.pedestrian.found.bean.HotTagBean;
 import com.buxingzhe.pedestrian.found.bean.Tag;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.listen.SwpipeListViewOnScrollListener;
@@ -34,7 +31,7 @@ import rx.Subscriber;
  * 评价
  * Created by QJ on 2016/6/30.
  */
-public class TagAddActivity extends BaseActivity implements View.OnClickListener{
+public class TagAddActivity extends BaseActivity implements View.OnClickListener {
     private SwipeRefreshLayout mRefresh;
     private ListView mListView;
     private int currentIndex = 1;
@@ -54,11 +51,12 @@ public class TagAddActivity extends BaseActivity implements View.OnClickListener
         addListen();
 
     }
+
     public void findViewId() {
         vTitleBar = (TitleBarView) findViewById(R.id.tag_title_bar);
         mRefresh = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         mListView = (ListView) findViewById(R.id.myHistoryActListView);
-        vAddTagRL = (RelativeLayout)findViewById(R.id.addTagRL);
+        vAddTagRL = (RelativeLayout) findViewById(R.id.addTagRL);
         SwipeRefreshProperty.getInstall().setSwipeInfo(getBaseContext(), mRefresh);
         SwpipeListViewOnScrollListener scrollListener = new SwpipeListViewOnScrollListener(mRefresh);
         mRefresh.setEnabled(false);
@@ -71,6 +69,7 @@ public class TagAddActivity extends BaseActivity implements View.OnClickListener
         loadTag();
 
     }
+
     public void addListen() {
         mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -107,26 +106,26 @@ public class TagAddActivity extends BaseActivity implements View.OnClickListener
     private void addTag() {
         Intent intent = new Intent();
         ArrayList<Tag> hotSelectTags = new ArrayList<>();
-        if (addTagAdapter != null){
+        if (addTagAdapter != null) {
             ArrayList<Tag> hotUserTags = addTagAdapter.getHotUserTags();
-            for (int i=0;i<hotUserTags.size();i++){
+            for (int i = 0; i < hotUserTags.size(); i++) {
                 Tag tag = hotUserTags.get(i);
-               if (tag.isSelect()){
-                   hotSelectTags.add(tag);
-               }
+                if (tag.isSelect()) {
+                    hotSelectTags.add(tag);
+                }
             }
         }
-        intent.putExtra("data",hotSelectTags);
+        intent.putExtra("data", hotSelectTags);
         setResult(RESULT_OK, intent);
         EnterActUtils.finishActivity(mActivity);
     }
 
     private void loadTag() {
-        Map<String,String> paramsMap = new HashMap<>();
-        paramsMap.put("userId", GlobalParams.USER_ID);
-        paramsMap.put("code","1");
+        Map<String, String> paramsMap = new HashMap<>();
+        paramsMap.put("userId", baseApp.getUserId());
+        paramsMap.put("code", "1");
 
-        Subscriber mSubscriber = new Subscriber<String>(){
+        Subscriber mSubscriber = new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -145,47 +144,49 @@ public class TagAddActivity extends BaseActivity implements View.OnClickListener
                 if ("0".equals(resultInfo.getCode())) {
                     Object o = resultInfo.getContent();
                     if (o != null) {
-                        tags = JSON.parseArray(o.toString(),Tag.class);
+                        tags = JSON.parseArray(o.toString(), Tag.class);
                         getHotTag(true, tags);
                     }
                 }
             }
         };
 
-        NetRequestManager.getInstance().queryTag(paramsMap,mSubscriber);
+        NetRequestManager.getInstance().queryTag(paramsMap, mSubscriber);
     }
 
-    private void getHotTag(final boolean isClean, List<Tag> tags){
+    private void getHotTag(final boolean isClean, List<Tag> tags) {
 
-        if (addTagAdapter != null){
-            addTagAdapter.setHotUserTagDatas(isClean,tags);
+        if (addTagAdapter != null) {
+            addTagAdapter.setHotUserTagDatas(isClean, tags);
         }
         stopRefresh();
 
     }
+
     private void stopRefresh() {
         if (mRefresh != null)
             mRefresh.setRefreshing(false);
     }
-    private void stopRefreshAnimation(){
+
+    private void stopRefreshAnimation() {
 
     }
 
     @Override
     public void onClick(View view) {
         int id = view.getId();
-        switch (id){
+        switch (id) {
             case R.id.addTagRL:
-            Intent intent = new Intent(mContext,TagCreateActivity.class);
-            EnterActUtils.startForResultAct(mActivity, intent, 1);
-            break;
+                Intent intent = new Intent(mContext, TagCreateActivity.class);
+                EnterActUtils.startForResultAct(mActivity, intent, 1);
+                break;
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case 1:
                 if (resultCode == RESULT_OK) {
                     String tag = data.getStringExtra("createTag");
@@ -198,7 +199,7 @@ public class TagAddActivity extends BaseActivity implements View.OnClickListener
                         }
                     }
                 }
-            break;
+                break;
 
         }
     }

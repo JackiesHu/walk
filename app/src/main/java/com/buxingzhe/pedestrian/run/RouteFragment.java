@@ -475,7 +475,6 @@ public class RouteFragment extends BaseFragment implements SensorEventListener {
      * 查询历史轨迹
      */
     private void queryHistoryTrack() {
-        System.out.println("draw--queryHistoryTrack");
         trackApp.initRequest(historyTrackRequest);
         endTime = CommonUtil.getCurrentTime();
         historyTrackRequest.setSupplementMode(SupplementMode.no_supplement);

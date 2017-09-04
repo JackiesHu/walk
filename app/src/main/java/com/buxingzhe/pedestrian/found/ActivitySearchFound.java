@@ -12,8 +12,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -25,9 +23,7 @@ import com.alibaba.fastjson.JSON;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
 import com.buxingzhe.pedestrian.bean.RequestResultInfo;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.found.bean.PageContent;
-import com.buxingzhe.pedestrian.found.bean.RemarkPoint;
 import com.buxingzhe.pedestrian.found.bean.Tag;
 import com.buxingzhe.pedestrian.found.bean.WalkRecord;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
@@ -71,7 +67,7 @@ public class ActivitySearchFound extends BaseActivity implements View.OnClickLis
 
     private void loadTag() {
         Map<String,String> paramsMap = new HashMap<>();
-        paramsMap.put("userId", GlobalParams.USER_ID);
+        paramsMap.put("userId", baseApp.getUserId());
         paramsMap.put("code","1");
 
         Subscriber mSubscriber = new Subscriber<String>(){
@@ -133,7 +129,7 @@ public class ActivitySearchFound extends BaseActivity implements View.OnClickLis
     private void loadData(final String key, int pageNo) {
         Map<String,String> paramsMap = new HashMap<>();
         paramsMap.put("title", key);
-        paramsMap.put("userId", GlobalParams.USER_ID);
+        paramsMap.put("userId", baseApp.getUserId());
         paramsMap.put("pageNo",String.valueOf(pageNo));
         paramsMap.put("pageSize ","20");
 

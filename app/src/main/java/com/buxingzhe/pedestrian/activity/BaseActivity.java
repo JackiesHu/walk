@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.buxingzhe.pedestrian.application.PDApplication;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.widget.TitleBarLinstener;
 import com.buxingzhe.pedestrian.widget.TitleBarView;
 import com.umeng.analytics.MobclickAgent;
@@ -98,13 +97,6 @@ public class BaseActivity extends AppCompatActivity implements TitleBarLinstener
     @Override
     protected void onResume() {
         super.onResume();
-
-        if(null!=GlobalParams.TOKEN){
-            if(GlobalParams.TOKEN.length()==0){
-                GlobalParams.TOKEN= baseApp.getUserToken();
-                GlobalParams.USER_ID=baseApp.getUserId();
-            }
-        }
 
         String contextString = mContext.toString();
         MobclickAgent.onPageStart(contextString); //统计页面(仅有Activity的应用中SDK自动调用，不需要单独写。"SplashScreen"为页面名称，可自定义)

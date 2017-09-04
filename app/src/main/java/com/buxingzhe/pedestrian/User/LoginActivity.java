@@ -23,9 +23,7 @@ import com.buxingzhe.lib.util.StringUtil;
 import com.buxingzhe.lib.widget.AwesomeDialogUtil;
 import com.buxingzhe.pedestrian.R;
 import com.buxingzhe.pedestrian.activity.BaseActivity;
-import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.bean.user.UserLoginResultInfo;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.common.SPConstant;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
 import com.buxingzhe.pedestrian.utils.EnterActUtils;
@@ -73,11 +71,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         registerListener();
 
         //自动登陆
-        GlobalParams.TOKEN = baseApp.getUserToken();
-        GlobalParams.USER_ID = baseApp.getUserId();
-        GlobalParams.LOGIN_TYPE = baseApp.getLoginType();
-        if (!TextUtils.isEmpty(GlobalParams.TOKEN)) {
-            login(null, GlobalParams.LOGIN_TYPE);
+
+        if (!TextUtils.isEmpty(baseApp.getUserToken())) {
+            login(null, baseApp.getLoginType());
         }
 
     }
@@ -298,7 +294,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             public void onNext(String jsonStr) {
                 Log.i(jsonStr);
                 // AwesomeDialogUtil.getInstance().create(LoginActivity.this).dismissDialog();
-
                 // 由于服务端的返回数据格式不固定，因此这里采用手动解析
                 Object[] datas = JsonParseUtil.getInstance().parseJson(jsonStr, UserLoginResultInfo.class);
                 if ((Integer) datas[0] == 0) {
@@ -311,24 +306,20 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                         userInfo.formatUser(resultInfo);
                         userInfo.saveUserInfo(mContext, userInfo);
 
-                        GlobalParams.TOKEN = resultInfo.getToken();
-                        GlobalParams.USER_ID = resultInfo.getId();
-                        GlobalParams.mUserLoginResultInfo = resultInfo;
+                        baseApp.setUserId(resultInfo.getId());
+                        baseApp.setUserToken(resultInfo.getToken());
 
-                        baseApp.setUserId( GlobalParams.USER_ID);
-                        baseApp.setUserToken( GlobalParams.TOKEN);
-                        baseApp.setStepDistance(resultInfo.getHeight());
                         SharedPreferences preferences = getSharedPreferences(SPConstant.USER_SP, Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = preferences.edit();
-                        editor.putString(SPConstant.USER_SP_TOKEN, GlobalParams.TOKEN);
-                        editor.putString(SPConstant.USER_SP_ID, GlobalParams.USER_ID);
+                        editor.putString(SPConstant.USER_SP_TOKEN, resultInfo.getToken());
+                        editor.putString(SPConstant.USER_SP_ID, resultInfo.getId());
                         editor.putString(SPConstant.USER_SP_HEIGHT, resultInfo.getHeight());
                         editor.putString(SPConstant.USER_SP_WEIGHT, resultInfo.getWeight());
                         editor.putInt(SPConstant.USER_SP_LOGIN_TYPE, loginType);
 
-                        editor.apply();
+                        editor.commit();
 
-
+                        baseApp.setStepDistance(resultInfo.getHeight());
                         //TODO 跳转Main
                         EnterActUtils.enterMainActivity(LoginActivity.this);
                         finish();

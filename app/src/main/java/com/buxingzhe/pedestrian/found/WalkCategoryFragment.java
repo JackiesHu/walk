@@ -11,8 +11,8 @@ import android.widget.ListView;
 
 import com.alibaba.fastjson.JSON;
 import com.buxingzhe.pedestrian.R;
+import com.buxingzhe.pedestrian.application.PDApplication;
 import com.buxingzhe.pedestrian.bean.RequestResultInfo;
-import com.buxingzhe.pedestrian.common.GlobalParams;
 import com.buxingzhe.pedestrian.found.bean.PageContent;
 import com.buxingzhe.pedestrian.found.bean.WalkRecord;
 import com.buxingzhe.pedestrian.http.manager.NetRequestManager;
@@ -37,13 +37,14 @@ public class WalkCategoryFragment extends Fragment {
     private WalkCategoryAdapter adapter;
     private int pageNo = 1;
     private String key;
-
+    private PDApplication pdApp;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.walk_category_fragment, container,false);
         findViewId(view);
         setRecycler();
         onClick();
+        pdApp = PDApplication.getApp();
         return view;
     }
 
@@ -70,7 +71,7 @@ public class WalkCategoryFragment extends Fragment {
     private void loadData() {
         Map<String,String> paramsMap = new HashMap<>();
         paramsMap.put("title", key);
-        paramsMap.put("userId", GlobalParams.USER_ID);
+        paramsMap.put("userId", pdApp.getUserId());
         paramsMap.put("pageNo",String.valueOf(++pageNo));
         paramsMap.put("pageSize ","20");
 
